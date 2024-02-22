@@ -1,0 +1,88 @@
+<div class="form-group">
+    <label [for]="formName" class="btn-default-font" *ngIf="label">
+        <span class="star-color" *ngIf="castedRequired">* </span>{{label}}</label>
+    <div>
+        <ng-container [ngSwitch]="inputType">
+            <!--Input currency-->
+            <ng-container *ngSwitchCase="'money'">
+                <input class="form-control"
+                    currencyInput
+                    [id]="formName"
+                    [type]="typeInput"
+                    [formControlName]="formName"
+                    [ngClass]="{'input-danger': castedInputRequired}"
+                    [attr.disabled]="castedDisabled ? true : null"
+                    autocomplete="off"
+                    [placeholder]="placeholder"
+                    [pattern]="pattern"
+                    (input)="onChangeVal($event)">
+            </ng-container>
+
+            <!--Input number-->
+            <ng-container *ngSwitchCase="'number'">
+                <input class="form-control"
+                    format-number
+                    [id]="formName"
+                    [type]="typeInput"
+                    [formControlName]="formName"
+                    [ngClass]="{'input-danger': castedInputRequired}"
+                    [attr.disabled]="castedDisabled ? true : null"
+                    autocomplete="off"
+                    [placeholder]="placeholder"
+                    [pattern]="pattern"
+                    onkeydown="return event.keyCode !== 69"
+                    (input)="onChangeVal($event)">
+            </ng-container>
+
+            <!--Input phone number-->
+            <ng-container *ngSwitchCase="'phoneNumber'">
+                <input class="form-control"
+                    [id]="formName"
+                    [type]="typeInput"
+                    [formControlName]="formName"
+                    [ngClass]="{'input-danger': castedInputRequired}"
+                    [attr.disabled]="castedDisabled ? true : null"
+                    autocomplete="off"
+                    [placeholder]="placeholder"
+                    [pattern]="pattern"
+                    onkeydown="return event.keyCode !== 69"
+                    (input)="onChangeVal($event)">
+            </ng-container>
+              <!--Input name-->
+              <ng-container *ngSwitchCase="'name'">
+                <input class="form-control"
+                    [id]="formName"
+                    [type]="typeInput"
+                    [formControlName]="formName"
+                    [ngClass]="{'input-danger': castedInputRequired}"
+                    [attr.disabled]="castedDisabled ? true : null"
+                    autocomplete="off"
+                    [placeholder]="placeholder"
+                    [pattern]="pattern"
+                    (input)="onChangeVal($event)">
+            </ng-container>
+
+            <!--default Input-->
+            <ng-container *ngSwitchDefault>
+                <input class="form-control"
+                    [id]="formName"
+                    [type]="typeInput"
+                    [formControlName]="formName"
+                    [ngClass]="{'input-danger': castedInputRequired}"
+                    [attr.disabled]="castedDisabled ? true : null"
+                    autocomplete="off"
+                    [placeholder]="placeholder"
+                    [pattern]="pattern"
+                    (input)="onChangeVal($event)">
+            </ng-container>
+        </ng-container>
+        <div *ngIf="castedInputRequired && label">
+            <p class="text-danger" *ngIf="castedInputValid">Nhập {{label}}</p>
+        </div>
+        <!-- <div *ngIf="_formControl.errors?.pattern && label">
+          <p class="text-danger" *ngIf="_formControl.errors?.pattern">{{label}} không hợp lệ</p>
+      </div> -->
+        <ng-content select=".regexTel"></ng-content>
+        <ng-content select=".duplicate"></ng-content>
+    </div>
+</div>

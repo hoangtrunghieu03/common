@@ -1,0 +1,227 @@
+/*
+ --------------button style---------------
+*/
+
+/* button primary*/
+.btn-primarys {
+  background:  #f99f2a !important;
+  color: #fff !important;
+  // border: 1px solid #f99f2a !important;
+}
+
+/* button primary*/
+.btn-second {
+  background:  #006199 !important;
+  color: #fff !important;
+  // border: 1px solid #f99f2a !important;
+}
+
+/* button export and payment  */
+
+.btn-export {
+  border: 2px solid #13c9ca;
+  background: #fff;
+  color: #13c9ca;
+  &:hover:not([disabled]) {
+    background: rgba(19, 201, 202, 0.12);
+  }
+  &:disabled,
+  &[disabled] {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #ddd !important;
+  }
+}
+
+/* button print */
+
+.btn-print {
+  border: 2px solid #398dd7;
+  background: #fff;
+  color: #398dd7;
+  &:hover:not([disabled]) {
+    background: rgba(57, 141, 215, 0.12);
+  }
+  &:disabled,
+  &[disabled] {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #ddd !important;
+  }
+}
+
+/* button email and shipping */
+
+.btn-email {
+  border: 2px solid #ffbc58;
+  background: #fff;
+  color: #ffbc58;
+  &:hover:not([disabled]) {
+    background: rgba(255, 188, 88, 0.12);
+  }
+  &:disabled,
+  &[disabled] {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #ddd !important;
+  }
+}
+
+/* button delete and cancel */
+
+.btn-delete {
+  background: #ff0000 !important;
+  color: #fff !important;
+  // border: 1px solid #f99f2a !important;
+}
+
+/* button next, update, add tag*/
+
+.btn-second {
+  border: 2px solid #323232;
+  background: #fff;
+  color: #323232;
+  &:hover:not([disabled]) {
+    background: #dddddd;
+  }
+  &:disabled,
+  &[disabled] {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #ddd !important;
+  }
+}
+
+/* buton add information Tertiary*/
+
+.btn-add-tertiary {
+  border: 2px solid #dddddd;
+  color: #323232;
+  background: #fff;
+  &:hover:not([disabled]) {
+    background: rgba(221, 221, 221, 0.2);
+  }
+  &:disabled,
+  &[disabled] {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #ddd !important;
+  }
+  height: 40px;
+  padding: 10.5px 36px !important;
+}
+
+.btn-tertiary {
+  padding: 9px 20px;
+  font-weight: bold;
+  font-family: Montserrat;
+  text-transform: uppercase;
+  border-radius: 5px;
+}
+
+.btn-default-disable {
+  border: 2px solid #9b9b9b;
+  background: #fff;
+  color: #9b9b9b;
+  &:hover:not([disabled]) {
+    background: #000;
+  }
+}
+.btn-default-silver {
+  border: none;
+  background: none;
+  color: #323232;
+  &:hover:not([disabled]) {
+    background: #ddd;
+  }
+}
+.btn-default-white {
+  border: 2px solid #13c9ca;
+  color: #13c9ca;
+  background: #fff;
+  &:hover:not([disabled]) {
+    background: rgba(19, 201, 202, 0.16);
+  }
+  &:disabled,
+  &[disabled] {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #ddd !important;
+  }
+}
+.btn-default-style {
+  padding: 10px 36px;
+  font-weight: bold;
+  font-family: Montserrat;
+  text-transform: uppercase;
+  border-radius: 5px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+.btn-default-font {
+  font-family: Montserrat;
+  color: #323232 !important;
+  font-weight: 400 !important;
+}
+
+.btn-menu{
+    background: rgba(221, 221, 221, 0.2);
+    color: #9b9b9b;
+    padding: 6px 10px !important;
+    margin-right: 20px !important;
+    border : 0px;
+    &:hover{
+        color: #323232;
+    }
+    height: 40px;
+}
+
+.btn-filter{
+  border: 1px solid #c1c1c1;
+  background: #fff;
+  text-transform: none;
+  height: 38px !important;
+  font-weight: 400;
+  &::after {
+    display: none;
+  }
+  &:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+  }
+}
+
+.hide-arrow{
+  .dropdown-toggle::after{
+    display: none !important;
+  }
+}
+.dropdown,.dropup{
+  .dropdown-menu{
+    height: max-content;
+    max-height: 280px;
+    overflow: auto;
+    padding: 0;
+    box-shadow: 0 5px 10px 3px rgb(33 33 33 / 10%);
+    li{
+      cursor: default;
+    }
+  }
+}
+
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid silver;
+  border-radius: 5px;
+  box-shadow: rgb(213 217 217 / 50%) 0 2px 5px 0;
+  background: #fff;
+  svg{
+    width: 16px;
+    height: 16px;
+  }
+}

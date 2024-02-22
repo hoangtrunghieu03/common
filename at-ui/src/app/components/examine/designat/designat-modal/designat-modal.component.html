@@ -1,0 +1,97 @@
+<at-modal-header (onClose)="activeModal.dismiss('Cross click')">
+    Chi tiết chỉ định thực hiện
+</at-modal-header>
+<div class="modal-body">
+    <div class="needs-validation" [formGroup]="designatForm">
+        <div class="row">
+            <div class="col-6">
+                <at-input
+                    [label]="'Tên chỉ định'"
+                    [formName]="'name'"
+                    [disabled]="true">
+                </at-input>
+            </div>
+            <div class="col-6">
+                <at-select
+                    [AtData]="staffs"
+                    [formName]="'staffId'"
+                    label="Người thực hiện"
+                    [disabled]="true"
+                    [formControlSelect]="designatForm?.controls.staffId">
+                </at-select>
+            </div>
+            <!-- <div class="col-6">
+                <at-autocomplete
+                    [_label]="'Họ tên bệnh nhân'"
+                    [inpId]="'doctor'"
+                    [_data]="staffs"
+                    [container]="null"
+                    (onChange)="onSelectDoctor($event)"
+                    [formValue]="designatForm.get('doctor').value"
+                    #ipName>
+                </at-autocomplete> 
+            </div> -->
+            <div class="col-6">
+                <at-datepicker
+                    [formCtrlName]="'executionDate'"
+                    label='Ngày thực hiện'
+                    [date]="designatForm.get('executionDate').value"
+                    [inputRequired]="validateForm(designatForm, 'executionDate')">
+                    <div class="dp-valid">
+                        <ng-container *ngIf="designatForm.controls.executionDate.errors?.ngbDate">
+                            <p class="text-danger"> Ngày không hợp lệ</p>
+                        </ng-container>
+                    </div>
+                </at-datepicker>
+            </div>
+            <div class="col-6">
+                <at-datepicker
+                    [formCtrlName]="'finishDate'"
+                    label='Ngày hoàn thành'
+                    [date]="designatForm.get('finishDate').value"
+                    [inputRequired]="validateForm(designatForm, 'finishDate')">
+                    <div class="dp-valid">
+                        <ng-container *ngIf="designatForm.controls.finishDate.errors?.ngbDate">
+                            <p class="text-danger"> Ngày không hợp lệ</p>
+                        </ng-container>
+                    </div>
+                </at-datepicker>
+            </div>
+            <div class="col-6" *ngIf="medicalServiceIndicate?.typeIndicate == typeServiceIndicate.CAPTUREIMAGE">
+                <div class='d-flex justify-content-between align-items-center'>
+                    <span>Hình ảnh</span>
+                    <span>
+                        <input type="file"
+                        (change)="handleAddImg($event)"
+                        [hidden]="true" #inpFile
+                        accept=".png, .jpg, .jpeg, .svg, .stl" multiple>
+                        <button class="btn btn-second" (click)="inpFile.click()">Thêm ảnh</button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class='checkbox-primary px-17 checkbox'>
+                    <input type="checkbox"
+                        id='designat'
+                        class="form-check-input m-t-0"
+                        formControlName="executeOutSide">
+                    <label for='designat'>Thực hiện ngoài</label>
+                </div>
+            </div>
+            <div class="col-12 p-0">
+                <at-picture-block [_imgData]="imgs" [isAddPicture]="true" [pictureAction]="{ delete: true, download: false }" (_onDeleteImg)="deleteImage($event)"></at-picture-block>
+            </div>
+            <div class="col-12">
+                <at-textarea
+                    formName="comment"
+                    label="Ghi chú">
+                </at-textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<at-modal-footer>
+    <button type="button" class="btn btn-primarys m-r-20" (click)="onCheckValidForm(false)">Lưu</button> 
+    <button type="button" class="btn btn-primarys m-r-20" (click)="onCheckValidForm(true)">Lưu & Hoàn thành</button> 
+    <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>

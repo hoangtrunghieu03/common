@@ -1,0 +1,11 @@
+<at-modal-header (onClose)="activeModal.dismiss('Cross click')">
+  Danh sách ghế
+</at-modal-header>
+
+<div class="modal-body">
+  <at-chair-content [medicalRecord]="medicalRecord" [_view]="_view"></at-chair-content>
+</div>
+
+<at-modal-footer>
+  <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>

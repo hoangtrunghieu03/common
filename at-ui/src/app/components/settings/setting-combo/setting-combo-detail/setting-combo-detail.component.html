@@ -1,0 +1,113 @@
+<div class="container-fluid m-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between hide-arrow">
+            <h5>combo chỉ định</h5>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'edit'" (click)="onHandelUpdate()" *ngIf="comboService._id && !isEdit">
+            </at-feather-icons>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'x-square'" (click)="onHandelUpdate()" *ngIf="comboService._id && isEdit">
+            </at-feather-icons>
+           <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right" *ngIf="comboService._id">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" (click)="onHandelUpdate()">Chỉnh sửa</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body needs-validation" [formGroup]="comboServiceForm">
+            <div class='row'>
+                <div class="col-12 form-group">
+                    <div class="row align-items-center">
+                        <ng-container *ngIf="!isEdit && comboService?._id; else blockNameEdit">
+                            <span class="col-12 col-md-3">Tên combo chỉ định: </span>
+                            <span class="col-12 col-md-6 f-w-700">{{ comboService?.name }}</span>
+                        </ng-container>
+                        <ng-template #blockNameEdit>
+                            <span class="col-12 col-md-3 m-t-8"><span class="star-color">* </span>Tên combo chỉ định: </span>
+                            <at-input
+                                class="hidden-margin"
+                                [formName]="'name'"
+                                [required]="true"
+                                [inputRequired]="validateForm(comboServiceForm,'name')"
+                                [inputValid]="comboServiceForm.controls.name.errors?.required">
+                                <div class="regexTel" *ngIf="validateForm(comboServiceForm,'name')">
+                                    <p class="text-danger" *ngIf="comboServiceForm.controls.name.errors?.required">Nhập Tên combo chỉ định</p>
+                                </div>
+                            </at-input>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <div class="col-12 form-group">
+                    <div class="row align-items-center">
+                        <ng-container *ngIf="!isEdit && comboService?._id; else blockPriceEdit">
+                            <span class="col-12 col-md-3">Giá combo: </span>
+                            <span class="col-12 col-md-6 f-w-700">{{ formatCurentcy(comboService?.price) }}</span>
+                        </ng-container>
+                        <ng-template #blockPriceEdit>
+                            <span class="col-12 col-md-3 m-t-8"><span class="star-color">* </span>Giá combo: </span>
+                            <at-input
+                                class="hidden-margin"
+                                [formName]="'price'"
+                                [required]="true"
+                                [inputType]="'money'"
+                                [inputRequired]="validateForm(comboServiceForm,'price')"
+                                [inputValid]="comboServiceForm.controls.price.errors?.required">
+                                <div class="regexTel" *ngIf="validateForm(comboServiceForm,'price')">
+                                    <p class="text-danger" *ngIf="comboServiceForm.controls.price.errors?.required">Nhập Giá combo</p>
+                                </div>
+                            </at-input>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <div class="col-12 m-t-30">
+                    <form class="needs-validation">
+                    
+                        <ng-container *ngFor="let group of medicalServiceIndicateGroups;let inP = index; let last = last">
+                    
+                            <div class="form-group">
+                    
+                                <h4>{{inP+1+". "}}{{group.tagService}}</h4>
+                    
+                                <div class="d-flex flex-wrap">
+                                    <ng-container *ngFor="let service of group.medicalServiceIndicates; let se = index">
+                    
+                                        <ng-container *ngTemplateOutlet="el, context: {$implicit: service, fir: inP, se: se}">
+                                        </ng-container>
+                    
+                                    </ng-container>
+                    
+                                </div>
+                    
+                            </div>
+                        </ng-container>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+       
+    <at-examina-footer (eventCancel)="location.back()" [_isComplete]="true">
+       <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onDeleteRole()" *ngIf="comboService._id" >xóa</button>
+        <button class="btn btn-primarys m-r-12" (click)="onSaveRole()" *ngIf="isEdit || !comboService._id">lưu</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem  (click)="onDeleteRole()" *ngIf="comboService._id">Xóa</button>
+            <button ngbDropdownItem (click)="onSaveRole()" *ngIf="isEdit || !comboService._id">Lưu</button>
+        </ng-container>
+    </at-examina-footer>
+</div>
+
+<ng-template #el let-data let-fir="fir" let-se="se">
+    <div class='checkbox-primary px-17 checkbox col-12 col-md-6 col-xl-4'>
+        <input type="checkbox" id='service-modal-{{fir}}-{{se}}'
+            class="form-check-input m-t-0"
+            [value]='data._id'
+            (change)='onSelectServiceIndicate(data)'
+            [checked]='checkedServiceIndicate(data)'
+            [disabled]="!isEdit && comboService._id">
+        <label for='service-modal-{{fir}}-{{se}}'>{{data.name}}</label>
+    </div>
+</ng-template>
+    

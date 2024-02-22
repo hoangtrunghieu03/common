@@ -1,0 +1,33 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    {{ chairInfo.name }}
+  </h4>
+  <div>
+    <span class="hide-arrow" ngbDropdown #myDrop="ngbDropdown" *ngIf="staffLoginId === chairInfo.staffId && medicalRecord?._id === chairInfo.medicalRecordId">
+      <at-feather-icons ngbDropdownToggle class="h-px-18 c-pointer" [icon]="'more-horizontal'"></at-feather-icons>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+        <button class="btn border-white" ngbDropdownItem (click)="changeStatusChair(statusList.IN_PROGRESS)">Tiến hành</button>
+        <button class="btn border-white" ngbDropdownItem (click)="changeStatusChair(statusList.IN_TEST)">Đợi kiểm tra</button>
+        <button class="btn border-white" ngbDropdownItem (click)="changeStatusChair(statusList.AVAILABLE)">Hoàn thành & Rời ghế</button>
+      </div>
+    </span>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+</div>
+
+<div class="modal-body">
+  <div class="row">
+    <ng-container *ngFor="let chairContentItem of chairContent">
+      <div class="col-12 col-md-6 form-group">
+        <span>{{chairContentItem.label}} </span>
+        <span class="f-w-700">{{ chairContentItem.value }}</span>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<at-modal-footer>
+  <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>

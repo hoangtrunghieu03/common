@@ -1,0 +1,128 @@
+<div class="row">
+    <h4 class="col-12 d-flex justify-content-between align-items-center hide-arrow m-b-16">
+        <h5 class="f-w-700">THÔNG TIN BỆNH NHÂN </h5>
+        <ng-container *ngIf="actionRole.edit">
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'edit'" (click)="handleUpdate()" *ngIf="!isEdit">
+            </at-feather-icons>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'x-square'" (click)="handleUpdate()" *ngIf="isEdit">
+            </at-feather-icons>
+        </ng-container>
+    </h4>
+    <div class="col-12 needs-validation" [formGroup]="customerForm">
+        <div class="row">
+            <ng-container *ngFor="let obj of customerInfo">
+                <div class="col-12 col-md-6">
+                    <ng-container *ngIf="!obj.isUpdate; else checkEdit">
+                        <div class="d-flex justify-content-between form-group">
+                            <span class="w-50">{{obj.label}}:</span><span class="f-w-700">{{obj.value}}</span>
+                        </div>
+                    </ng-container>
+                    <ng-template #checkEdit>
+                        <ng-container [ngSwitch]="obj.formName">
+                            <ng-container *ngSwitchCase="'birthday'">
+                                <at-datepicker
+                                    [formCtrlName]="'birthday'"
+                                    [label]="'Ngày sinh'" required
+                                    [inputRequired]="validateForm(customerForm,'birthday')"
+                                    [date]="customerForm.get('birthday').value"
+                                    [minDate]="minDate"
+                                    [maxDate]="maxDate">
+                                    <div class="dp-valid" *ngIf="validateForm(customerForm,'birthday')">
+                                        <p class="text-danger" *ngIf="customerForm.controls.birthday.errors?.required">Chọn
+                                            Ngày tháng năm sinh</p>
+                                        <p class="text-danger" *ngIf="customerForm.controls.birthday.errors?.ngbDate">
+                                            Ngày không hợp lệ</p>
+                                    </div>
+                                </at-datepicker>
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'tel'">
+                                <at-input
+                                    class="hidden-margin"
+                                    [label]="obj.label"
+                                    [formName]="obj.formName"
+                                    [inputType]="'phoneNumber'"
+                                    [preValue]="customerForm.value.tel"
+                                    [formControl]="customerForm?.controls.tel"
+                                    [inputRequired]="validateForm(customerForm,obj.formName)"
+                                    [inputValid]="customerForm.controls[obj.formName].errors?.required"
+                                    [required]="obj.require"
+                                    [disabled]="obj.disabled">
+                                    <div class="regexTel" *ngIf='regexEmail(customerForm, obj.formName)'>
+                                        <p class="text-danger"> {{obj.label}} không hợp lệ </p>
+                                    </div>
+                                    <div class="duplicate">
+                                        <ng-container *ngIf="obj.formName == 'tel'">
+                                            <ng-container *ngIf="customerForm.get('tel')?.errors?.telDuplicated">
+                                                <p class="text-danger"> Số điện thoại đã được sử dụng</p>
+                                            </ng-container>
+                                        </ng-container>
+                                    </div>
+                                </at-input>
+                                <ng-container *ngIf="customerForm.get('tel')?.errors?.telDuplicated || customerForm.get('isPhoneContact').value">
+                                  <div class="needs-validation form-group p-l-18 m-b-5 m-t-1">
+                                      <div class="checkbox-primary checkbox d-flex align-items-center">
+                                      <input class="form-check-input"
+                                          formControlName="isPhoneContact"
+                                          type="checkbox"
+                                          name="checkbox-contact"
+                                          id="checkbox-contact"
+                                          (change)="onChangeFlagPhoneContact($event.target.checked)">
+                                      <label class="form-check-label m-t-0" for="checkbox-contact">
+                                          Sử dụng SĐT người thân để liên hệ
+                                      </label>
+                                      </div>
+                                  </div>
+                              </ng-container>
+                            </ng-container>
+                            <ng-container *ngSwitchDefault>
+                                <at-input
+                                    [label]="obj.label"
+                                    [formName]="obj.formName"
+                                    [inputType]="obj.type"
+                                    [inputRequired]="validateForm(customerForm,obj.formName)"
+                                    [inputValid]="customerForm.controls[obj.formName].errors?.required"
+                                    [required]="obj.require"
+                                    [disabled]="obj.disabled">
+                                    <div class="regexTel" *ngIf='regexEmail(customerForm, obj.formName)'>
+                                        <p class="text-danger"> {{obj.label}} không hợp lệ </p>
+                                    </div>
+                                </at-input>
+                            </ng-container>
+                        </ng-container>
+                    </ng-template>
+                </div>
+            </ng-container>
+            <div class="col-12 col-md-6 d-flex justify-content-between form-group">
+                <label for="">Giới tính</label>
+                <div class="d-flex form-group align-items-start m-b-0">
+                    <ng-container *ngFor='let item of sexOption;let i = index'>
+                        <div [ngClass]="{'p-r-24': i == 0}">
+                            <label class="d-block btn-default-font" for="group-mode{{i}}">
+                                <input class="radio_animated" id="group-mode{{i}}" type="radio" name="sex" [value]="item"
+                                    formControlName="sex" [attr.disabled]="!isEdit ? true : null">
+                                {{item}}
+                            </label>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="m-0" for="note">Ghi chú</label>
+                <textarea class="form-control" id="note" type="text" formControlName='note' [attr.disabled]="!isEdit ? true : null"></textarea>
+            </div>
+        </div>
+        <hr class="m-t-0">
+    </div>
+    <h4 class="text-uppercase f-w-700 col-12 form-group m-b-16">thông tin khám</h4>
+    <div class="col-12">
+        <div class="row">
+            <ng-container *ngFor="let obj of medicalInfo">
+                <div class="col-12 col-md-6 form-group">
+                    <div class="d-flex justify-content-between">
+                        <span>{{obj.label}}:</span><span class="f-w-700">{{obj.value}}</span>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

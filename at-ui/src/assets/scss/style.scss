@@ -1,0 +1,60 @@
+@import "~bootstrap/scss/bootstrap";
+@import 'feather-icon/feather-icon';
+
+@import 'theme/button_style';
+@import 'theme/variables';
+@import 'theme/admin_style';
+@import 'theme/breakpoints';
+@import 'theme/rtl';
+@import 'theme/chartist.scss';
+@import 'theme/datatable';
+@import 'icons/icoicon/icons';
+@import 'theme/generic_style';
+// Flag contents
+@import 'flag-icon/flag-icon-base';
+@import 'flag-icon/flag-icon-more';
+@import 'flag-icon/flag-icon-list';
+@import 'icons/themify/themify-icons';
+@import '~dropzone/dist/min/dropzone.min.css';
+@import '~ngx-owl-carousel-o/lib/styles/scss/owl.carousel';
+@import '~ngx-owl-carousel-o/lib/styles/scss/owl.theme.default';
+
+
+at-content-print {
+    display: none;
+}
+
+@page {
+    @bottom-center {width: 100%; content: element(footer)}
+}
+
+@media print {
+    
+    .landscape-page {
+        display: none !important;
+    }
+
+    .main-page {
+        display: block !important;
+    }
+
+    .app-printing > app-content-layout { display: none; }
+
+    .app-printing {
+        at-content-print { 
+            display: block !important; 
+        }
+        .notifycation { display: none !important; }
+    }
+
+    @page {
+        margin:0cm;
+        size: auto
+    }
+
+    at-footer-content-print {
+        top: 50px;
+        position: running(footer);
+    }
+
+}

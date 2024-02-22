@@ -1,0 +1,85 @@
+<div class="overflow-auto">
+    <table class="base-table needs-validation">
+        <thead>
+            <tr>
+                <th class="w-px-50" *ngIf="action?.isDelete">
+                    <span>&nbsp;</span>
+                </th>
+                <ng-container *ngFor="let col of colDef">
+                    <th [style]="col.headerStyle">{{col.label}}</th>
+                </ng-container>
+                <th class="w-px-50" *ngIf="action?.isDone">
+                    <span>&nbsp;</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngIf="tableData && tableData?.length != 0; else noData">
+                <tr *ngFor="let row of tableData">
+                    <td class="w-px-50" *ngIf="action?.isDelete">
+                        <at-feather-icons class="c-pointer" [icon]="'trash-2'" (click)="onDeleteRow(row)">
+                        </at-feather-icons>
+                    </td>
+                    <ng-container *ngFor="let col of colDef">
+                        <td [style]="col.style">
+                            <ng-container *ngIf="col.canUpdate else noUpdate">
+                                <ng-container [ngSwitch]="col.updateType">
+                                    <ng-container *ngSwitchCase="'money'">
+                                        <input class="form-control" currencyInput autocomplete="off"
+                                            [(ngModel)]="row[col.fieldUpdate]">
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'number'">
+                                        <input class="form-control" format-number autocomplete="off"
+                                            [(ngModel)]="row[col.fieldUpdate]">
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'quantity'">
+                                        <div class='d-flex justify-content-between align-items-center'>
+                                            <at-feather-icons class="c-pointer d-flex align-items-center"
+                                                [icon]="'minus'"
+                                                (click)="row[col.fieldUpdate] > 1 ? onDecrease(row, col.fieldUpdate, col.fieldCompare) : $event.stopPropagation">
+                                            </at-feather-icons>
+                                            <input class="form-control mx-12 text-center" format-number
+                                                autocomplete="off" [value]="row[col.fieldUpdate]"
+                                                (input)="changeQuantity(row, $event, col.fieldUpdate, col.fieldCompare)">
+                                            <at-feather-icons class="c-pointer d-flex align-items-center"
+                                                [icon]="'plus'"
+                                                (click)="onIncrease(row, col.fieldUpdate, col.fieldCompare)">
+                                            </at-feather-icons>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        <input class="form-control" autocomplete="off" type="text"
+                                            [(ngModel)]="row[col.fieldUpdate]">
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+
+                            <ng-template #noUpdate>
+                                <ng-container *ngIf="col.colType != 'innerHTML'; else inner">
+                                    {{col.colType == "money"
+                                    ? ( row[col.title] | currency:'VND':'symbol':null:'vi-VN' )
+                                    : col.colType == "date"
+                                    ? ( row[col.title] | date : 'dd/MM/yyyy' )
+                                    : row[col.title] | replaceNull}}
+                                </ng-container>
+                                <ng-template #inner>
+                                    <span [innerHTML]="row[col.title]"></span>
+                                </ng-template>
+                            </ng-template>
+                        </td>
+                    </ng-container>
+                    <td *ngIf="action?.isDone" class="w-px-50">
+                        <at-feather-icons class="c-pointer" [icon]="'check'" (click)="onSave(row)"></at-feather-icons>
+                    </td>
+                </tr>
+            </ng-container>
+
+            <ng-template #noData>
+                <tr class="empty-row w-100">
+                    <td [attr.colspan]="onGetColSpan()">{{ emptyMessage }}</td>
+                </tr>
+            </ng-template>
+        </tbody>
+
+    </table>
+</div>

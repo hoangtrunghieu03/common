@@ -1,0 +1,94 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class='row'>
+                <div class='col-12 col-md-6 xl-50 m-b-30' *ngFor='let item of repoContent'>
+                    <div class="card o-hidden widget-cards">
+                        <div class="card-body" [style.background]='item.color'>
+                            <div class="media static-top-widget row w-100">
+                                <div class="icons-widgets col-5 p-r-0 d-flex justify-content-center align-content-center h-100">
+                                    <at-feather-icons class='feather-40 d-flex align-items-center' [icon]="item.icon">
+                                    </at-feather-icons>
+                                </div>
+                                <div class="media-body col-7">
+                                    <h4 class="m-0 f-w-600 m-b-10">{{item.name}}</h4>
+                                    <h4 class="mb-0 d-flex justify-content-between align-items-baseline">
+                                        <span class="counter">{{item.val}}</span>
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="m-0 f-w-600">Doanh thu theo ngày</h4>
+                </div>
+                <div class="card-body">
+                    <ng-container *ngIf="revenueDays && revenueDays.revenueday.length != 0; else noRevenue">
+                        <div class="peity-chart-dashboard text-center chart-vertical-center">
+                            <canvas height="400px" baseChart [chartType]="'line'" [datasets]="revenueDayAttr.data"
+                                [labels]="revenueDayAttr.label" [options]="revenueDayAttr.option" [legend]="false">
+                            </canvas>
+                        </div>
+                    </ng-container>
+                    <ng-template #noRevenue>
+                        <div class="text-center">
+                            <span>Không có dữ liệu</span>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="m-0 f-w-600">Doanh thu theo dịch vụ</h4>
+                </div>
+                <div class="card-body">
+                    <at-base-table [colDef]="colDef" [tableData]="medicalServices">
+                    </at-base-table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="m-0 f-w-600">Bệnh nhân hiện tại</h4>
+                </div>
+                <div class="card-body">
+                    <ng-container *ngIf="customer && customer.customers.length != 0; else noCustomer">
+                        <div class="row m-b-6" *ngFor="let item of customer?.customers">
+                            <span class="col-6">{{item?.room}}:</span><span>{{item?.customerCurrent}}</span>
+                        </div>
+                    </ng-container>
+                    <ng-template #noCustomer>
+                        <div class="text-center">
+                            <span>Không có dữ liệu</span>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header text-center c-pointer">
+                    <h4 class="m-0 f-w-600" (click)="onMedicalRecordChair()">Trạng thái ghế</h4>
+                </div>
+                <div class="card-body">
+                    <ng-container *ngIf="chairStatus && chairStatus.length != 0; else noChair">
+                        <div class="row m-b-6" *ngFor="let item of chairStatus">
+                            <span class="col-6">{{item.name}}:</span><span>{{item.value}}</span>
+                        </div>
+                    </ng-container>
+                    <ng-template #noChair>
+                        <div class="text-center">
+                            <span>Không có dữ liệu</span>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>DANH SÁCH BỆNH NHÂN CHỜ</h5>
+            <div ngbDropdown class="d-inline-block hide-arrow" placement="bottom-right">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem [routerLink]="['/kham-benh/phong-chi-dinh/lam-cung/I']"
+                        [queryParams]="{roomName: roomList.designat}">Danh sách làm cung</button>
+                    <button class="btn border-white" ngbDropdownItem [routerLink]="['/kham-benh/phong-chi-dinh/danh-sach-vat-dung']" [queryParams]="{_id: getRoomId()}">Danh sách vật dụng</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body validateSearch">
+            <div class="block-search-filter row p-lg-0 m-b-15">
+                <div class="col-12 col-md-4 col-xl-3">
+                    <ng-container *ngTemplateOutlet="filter"></ng-container>
+                </div>
+
+                <at-input-delay-search  class='col-12 col-md-8 col-xl-9 w-100 block-search'
+                                        (inputEmitter)="onSearch($event)">
+                </at-input-delay-search>
+            </div>
+
+            <ng-container *ngTemplateOutlet="result"></ng-container>
+
+            <at-table
+                [scrollbarH]="true"
+                [tableData]="customerDesignation"
+                [columnDef]="columnDef"
+                [limit]="10"
+                [emptyMessage]="'Hiện chưa có bệnh nhân nào đang chờ'">
+            </at-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #filter>
+    <at-filter-view
+        (eventAddFilter)="onAddCondiotion()"
+        [title]="'Hiển thị bệnh nhân chờ theo'">
+        <select class="form-control"
+            [(ngModel)]="filterResult.condition">
+            <ng-container *ngFor="let item of conditionData | keyvalue">
+                <option *ngIf="item.value == conditionData.room" [value]="item.key">
+                    {{item.value}}
+                </option>
+            </ng-container>
+        </select>
+        <select class="form-control mt-2"
+            [(ngModel)]="filterResult.value">
+            <option [ngValue]="null">Chọn điều kiện</option>
+            <ng-container *ngFor="let item of rooms">
+                <option *ngIf="item.name != 'Chỉ định'" [value]="item._id">
+                    {{item.name}}
+                </option>
+            </ng-container>
+        </select>
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15" *ngIf="renderSelect?.length > 0">
+      <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <span>
+                {{item.firstCondition + ' là ' +
+                ( item.key === 'room' ? getRoomName(item.secondCondition) : item.secondCondition)}}
+            </span>
+        <button (click)="onRemoveFilter(item)">X</button>
+      </span>
+    </div>
+</ng-template>

@@ -1,0 +1,53 @@
+<div class="container-fluid">
+    <div class="card hide-arrow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>DANH SÁCH BỆNH NHÂN CHỜ</h5>
+            <div ngbDropdown class="d-inline-block" placement="bottom-right">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem [routerLink]="['/kham-benh/phong-nieng-rang/lam-cung/I']"
+                        [queryParams]="{roomName: roomList.braces}">Bệnh nhân chờ cung</button>
+                    <button class="btn border-white" ngbDropdownItem [routerLink]="['/kham-benh/phong-nieng-rang/danh-sach-vat-dung']" [queryParams]="{_id: getRoomId()}">Danh sách vật dụng</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body validateSearch">
+            <ng-container *ngIf="actionRole">
+                <div class='tab2-card tab'>
+                    <ul ngbNav #nav="ngbNav" class="nav-tabs"
+                        [destroyOnHide]="true"
+                        [hidden]="!actionRole?.waitExamination && !actionRole?.waitImplementation && !actionRole?.chairManager"
+                        [(activeId)]="activeId">
+                        <li ngbNavItem [destroyOnHide]="true" [hidden]="!actionRole?.waitExamination" [ngbNavItem]="0">
+                            <a ngbNavLink>Chờ khám</a>
+                            <ng-template ngbNavContent>
+                                <at-examine-list [columnDef]="columnDef" [roomId]="getRoomId()"
+                                    [examinationFlag]="false" [braceWait]="true"></at-examine-list>
+                            </ng-template>
+                        </li>
+                        <li ngbNavItem [destroyOnHide]="true" [hidden]="!actionRole?.waitImplementation" [ngbNavItem]="1">
+                            <a ngbNavLink>Đợi thực hiện</a>
+                            <ng-template ngbNavContent>
+                                <at-examine-list [columnDef]="columnDefWaitPerform" [conditionData]="conditionData" [roomId]="getRoomId()"
+                                    [examinationFlag]="true" [braceWait]="true" [chairActive]="chairActive" [getDetail]="!actionRole?.getDetail"></at-examine-list>
+                            </ng-template>
+                        </li>
+                        <li ngbNavItem [destroyOnHide]="true" [hidden]="!actionRole?.chairManager" [ngbNavItem]="2">
+                            <a ngbNavLink>Quản lý ghế</a>
+                            <ng-template ngbNavContent>
+                                <at-chair-list-cusomer
+                                [chairActive]="chairActive"
+                                [chairCol]="chairCol"
+                                (changeTabActiveEvent)="onActiveTab()"
+                                ></at-chair-list-cusomer>
+                            </ng-template>
+                        </li>
+                    </ul>
+                    <div [ngbNavOutlet]="nav" [hidden]="!actionRole?.waitExamination && !actionRole?.waitImplementation && !actionRole?.chairManager"></div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

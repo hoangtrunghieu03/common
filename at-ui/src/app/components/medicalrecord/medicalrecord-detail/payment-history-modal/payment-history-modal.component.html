@@ -1,0 +1,27 @@
+<at-modal-header (onClose)="modal.dismiss('Cross click')">
+  Thanh toán
+</at-modal-header>
+<div class="modal-body p-30">
+  <at-base-table
+      [colDef]="colDef"
+      [tableData]="medicalRecordFee">
+  </at-base-table>
+  <div class="row justify-content-end">
+      <div class="form-group mb-0 col-12 col-xl-6 m-t-12">
+          <div class="row m-0">
+              <ng-container *ngFor="let item of contentPayment">
+                  <span class="d-flex justify-content-between w-50 m-t-6" style="line-height: 38px;">
+                      <span>{{item.label}}</span>
+                      <span class="p-r-16">:</span>
+                  </span>
+                  <div class="f-w-600 f-16 w-50 m-t-6" style="line-height: 38px;">{{ item.value | currency:'VND':'symbol':null:'vi-VN' }}</div>
+              </ng-container>
+          </div>
+      </div>
+  </div>
+</div>
+
+<at-modal-footer>
+  <button type="button" class="btn btn-primarys m-r-20" (click)="onPrint()">In </button>
+  <button type="button" class="btn" (click)="modal.close()">Quay lại</button>
+</at-modal-footer>

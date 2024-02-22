@@ -1,0 +1,81 @@
+<div class="row">
+    <div class="col-12">
+        <div class="custom-datatable">
+
+            <div id="batchDelete">
+        
+                <div class="table-responsive">
+        
+                    <ngx-datatable class="bootstrap"
+                        [rows]="customerMedical ? customerMedical : []"
+                        [columns]="colDef"
+                        [columnMode]="'force'"
+                        [headerHeight]="'auto'"
+                        [footerHeight]="customerMedical && customerMedical.length > 0 ? 50 : 0"
+                        [rowHeight]="'auto'"
+                        [limit]="limit"
+                        [scrollbarH]="true"
+                        [messages]="{emptyMessage: 'Không có dữ liệu'}"
+                        #tables>
+        
+                        <ngx-datatable-column
+                            *ngFor="let col of colDef"
+                            [prop]="col.prop"
+                            [width]='col.width'>
+                            <ng-template
+                                let-column="column"
+                                let-sort="sortFn"
+                                ngx-datatable-header-template>
+                                <div [style]="col.styleHeader">
+                                    <span class="mobile-hidden">{{col.name}}</span>
+                                </div>
+                            </ng-template>
+                            <ng-template
+                                let-value="value"
+                                ngx-datatable-cell-template
+                                let-row='row'>
+                                <div [style]="col.styleBody" (click)="onNavigateViewDetail(row)">
+                                    <span class="mobile-hidden"
+                                    [ngClass]="{'text-highlight': col.router}">
+                                        {{
+                                            !value ? "--"
+                                            : col.colType == "date" ? ( value | date : 'dd/MM/yyyy' : "GMT" )
+                                            : col.colType == "money" ? ( value | currency:'VND':'symbol':null:'vi-VN')
+                                            : col.colType == "dateTime" ? ( value | date : 'dd/MM/yyyy HH:mm' : "GMT" )
+                                            : value
+                                        }}
+                                    </span>
+                                </div>
+                            </ng-template>
+                        </ngx-datatable-column>
+        
+                        <ngx-datatable-footer>
+                            <ng-template
+                                ngx-datatable-footer-template
+                                let-rowCount="rowCount"
+                                let-pageSize="pageSize"
+                                let-selectedCount="selectedCount"
+                                let-curPage="curPage"
+                                let-offset="offset">
+                                <span>Tổng<span class="font-weight-bold">&nbsp;{{ customerMedical?.length }}</span></span>
+                                <datatable-pager
+                                    [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                    [pagerRightArrowIcon]="'datatable-icon-right'"
+                                    [pagerPreviousIcon]="'datatable-icon-prev'"
+                                    [pagerNextIcon]="'datatable-icon-skip'"
+                                    [page]="curPage" [size]="pageSize"
+                                    [count]="rowCount" [hidden]="!((rowCount / pageSize) > 1)"
+                                    (change)="tables.onFooterPage($event)">
+                                </datatable-pager>
+                            </ng-template>
+                        </ngx-datatable-footer>
+        
+                    </ngx-datatable>
+        
+                </div>
+        
+            </div>
+        
+        </div>
+    </div>
+</div>

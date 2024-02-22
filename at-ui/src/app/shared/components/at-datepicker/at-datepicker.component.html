@@ -1,0 +1,27 @@
+<div class="form-group">
+    <label [for]="formCtrlName" class="btn-default-font" *ngIf="label">
+        <span class="star-color" *ngIf="castedRequired">* </span>{{label}}
+    </label>
+    <div class="input-group flex-nowrap">
+        <input class="form-control" container="body"
+                placeholder="dd/mm/yyyy"
+                name="d2"
+                [(ngModel)]="date"
+                ngbDatepicker
+                #dp="ngbDatepicker"
+                autocomplete="off"
+                [formControlName]="formCtrlName"
+                [ngClass]="{'input-danger': inputRequired}"
+                [minDate]="minDate"
+                [maxDate]="maxDate"
+                [disabled]="castedDisabled"
+                />
+        <button class="calendar"
+            (click)="dp.toggle()" type="button"
+            [ngClass]="{'input-danger': inputRequired}"
+            [disabled]="castedDisabled">
+            <i class="fa fa-calendar"></i>
+        </button>
+    </div>
+    <ng-content select=".dp-valid"></ng-content>
+</div>

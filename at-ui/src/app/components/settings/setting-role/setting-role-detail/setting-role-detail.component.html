@@ -1,0 +1,62 @@
+<div class="container-fluid m-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between hide-arrow">
+            <h5>phân quyền</h5>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'edit'" (click)="onCheck()" *ngIf="role._id && !isEdit">
+            </at-feather-icons>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'x-square'" (click)="onCheck()" *ngIf="role._id && isEdit">
+            </at-feather-icons>
+           <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right" *ngIf="role._id">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" (click)="onCheck()">Chỉnh sửa</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body needs-validation" [formGroup]="roleForm">
+            <div class='row'>
+                <ng-container *ngFor="let item of contentForm">
+                    <div class="col-12 col-md-6 col-xl-6 d-flex justify-content-between">
+                        <ng-container *ngIf="!isEdit && role._id; else checkEdit">
+                            <label for="">{{item.label}}:</label>
+                            <span class="f-w-700">
+                                {{roleForm.get(item.formName).value}}</span>
+                        </ng-container>
+                        <ng-template #checkEdit >
+                            <div class="row needs-validation">
+                                <div class="col-12">
+                                    <at-input
+                                        [label]="'Tên vai trò'"
+                                        [formName]="'roleName'"
+                                        [inputType]="'name'"
+                                        [formControl]="roleForm?.controls.roleName"
+                                        [required]="true"
+                                        [inputRequired]="validateForm(roleForm,'roleName')"
+                                        [inputValid]="roleForm.controls.roleName.errors?.required">
+                                    </at-input>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                    </div>
+                </ng-container>
+                <div class="col-12 p-t-8"  >
+                    <at-data-access (selectedDataAccess)="onSelectDataAccess($event)" [dataAccessSelected]="roleForm.get('dataAccessNames').value" [isDisable]="role?._id && !isEdit">
+                    </at-data-access>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <at-examina-footer (eventCancel)="location.back()" [_isComplete]="true">
+       <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onDeleteRole()" *ngIf="role._id" >xóa</button>
+        <button class="btn btn-primarys m-r-12" (click)="onSaveRole()" *ngIf="isEdit || !role._id">lưu</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem  (click)="onDeleteRole()" *ngIf="role._id">Xóa</button>
+            <button ngbDropdownItem (click)="onSaveRole()" *ngIf="isEdit || !role._id">Lưu</button>
+        </ng-container>
+    </at-examina-footer>
+</div>
+

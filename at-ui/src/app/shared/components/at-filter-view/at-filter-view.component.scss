@@ -1,0 +1,9 @@
+@import '../../../../assets/scss/theme/breakpoints';
+
+.content-filter {
+  max-width: 350px;
+  max-height: fit-content !important;
+  @include media-breakpoint('lt-sm') {
+    position: absolute !important;
+  }
+}

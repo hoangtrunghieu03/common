@@ -1,0 +1,117 @@
+<div class="container-fluid content" #htmlData id="htmlData">
+
+  <ng-container *ngTemplateOutlet="header"></ng-container>
+
+  <ng-container *ngTemplateOutlet="body"></ng-container>
+
+  <ng-container *ngTemplateOutlet="signature"></ng-container>
+
+</div>
+<div class="container-fluid d-flex justify-content-end">
+  <button class="btn btn-primary m-b-30 m-r-20" (click)="saveImage()">Lưu</button>
+  <button class="btn m-b-30 m-r-15" (click)="activeModal.close()">Quay lại</button>
+</div>
+
+<ng-template #header>
+  <div class="content_header">
+    <div class="row content_header-top">
+      <div class="col-5 d-flex flex-column text-center">
+        <span>SỞ Y TẾ TP.ĐÀ NẴNG</span>
+        <span>PK: NHA KHOA A&T</span>
+      </div>
+      <div class="col-7 d-flex flex-column text-center">
+        <span>Cộng hoà Xã hội Chủ nghĩa Việt Nam</span>
+        <span>Độc lập - Tự do - Hạnh phúc</span>
+      </div>
+    </div>
+    <div class="content_header-title text-center d-flex justify-content-center m-t-12">
+      <span>GIẤY CAM ĐOAN CHẤP NHẬN
+        PHẪU THUẬT, THỦ THUẬT
+      </span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #body>
+  <div class="content_body m-t-12" [formGroup]="minorsurgeryForm">
+    <div class="d-flex content_body-infor-name">
+      <span>- Tên tôi là:</span>
+      <input class="form-input" formControlName="fullName" />
+    </div>
+    <div class="d-flex hide_lt-md">
+      <div class="content_body-infor-birthday d-flex">
+        <span>- Sinh ngày:</span>
+        <input class="form-input" formControlName="birthday" />
+      </div>
+      <div class="content_body-infor-sex d-flex">
+        <span>Nam/Nữ:</span>
+        <input class="form-input" formControlName="sex" />
+      </div>
+    </div>
+    <div class="content_body-infor-address d-none show_lt-md_block">
+      <span>- Sinh ngày:</span>
+      <input class="form-input" formControlName="birthday" />
+    </div>
+    <div class="content_body-infor-address d-none show_lt-md_block">
+      <span>- Nam/Nữ:</span>
+      <input class="form-input" formControlName="sex" />
+    </div>
+    <div class="d-flex content_body-infor-address">
+      <span>- Địa chỉ:</span>
+      <input class="form-input" formControlName="address" />
+    </div>
+    <div class="d-flex flex-column content_body-infor-customer">
+      <span>- Là người bệnh/ đại diện gia đình người bệnh/ họ tên là:</span>
+      <input class="form-input m-b-6" formControlName="representative" />
+    </div>
+    <div class="d-flex flex-column content_body-infor-customer">
+      <span>Sau khi nghe bác sĩ cho biết tình trạng bệnh của tôi (của người gia đình tôi); những nguy hiểm của bệnh nếu
+        không thực hiện phẫu thuật, thủ thuật và những rủi ro có thể xảy ra do bệnh tật, do khi tiến hành phẫu thuật,
+        thủ thuật. Tôi tự nguyện viết giấy cam đoan này:</span>
+    </div>
+    <div class="needs-validation">
+      <div class="checkbox-primary checkbox d-flex align-items-center">
+        <input class="form-check-input"
+          [checked]="agree"
+          type="checkbox"
+          name="checkboxSelect"
+          id="checkboxSelect_1"
+          [disabled]="agree"
+          (change)="agree = !agree">
+        <label class="form-check-label" for="checkboxSelect_1">
+          Đồng ý xin phẫu thuật, thủ thuật và để giấy này làm bằng chứng.
+        </label>
+      </div>
+    </div>
+    <div class="d-flex flex-column content_body-infor-customer">
+      <span>Nội dung phẫu thuật, thủ thuật:</span>
+      <input class="form-input m-b-6" />
+    </div>
+    <div class="needs-validation">
+      <div class="checkbox-primary checkbox d-flex align-items-center">
+        <input class="form-check-input"
+          [checked]="!agree"
+          type="checkbox"
+          name="checkboxSelect"
+          id="checkboxSelect_2"
+          [disabled]="!agree"
+          (change)="agree = !agree">
+        <label class="form-check-label" for="checkboxSelect_2">
+          Không đồng ý phẫu thuật, thủ thuật và để giấy này làm bằng chứng.
+        </label>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #signature>
+  <div class="content_signature m-t-12">
+    <div class="d-flex justify-content-end">
+      <div class="d-flex flex-column">
+        <span class="font-italic d-flex"><input  /> , ngày &nbsp;<input /> tháng &nbsp;<input /> năm &nbsp;<input /></span>
+        <span class="font-weight-bold text-right">NGƯỜI BỆNH/ ĐẠI DIỆN GIA ĐÌNH</span>
+        <at-signature-pad></at-signature-pad>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,16 @@
+<div class="modal-header">
+    <h4 class="modal-title">Hình ảnh</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <img [src]="img" alt="" width="100%">
+</div>
+<div class="modal-footer" [ngClass]="{'justify-content-between': pictureAction?.delete}">
+    <button type="button" class="btn btn-delete" *ngIf="pictureAction?.delete" (click)="activeModal.close('delete')">Xóa</button>
+    <div [ngClass]="{'btn-position-default': !pictureAction?.delete}">
+        <button type="button" class="btn btn-primary m-r-12" *ngIf="pictureAction?.download" (click)="activeModal.close('download')">Tải xuống</button>
+        <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>

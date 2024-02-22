@@ -1,0 +1,77 @@
+<div class="m-b-24 d-flex justify-content-between" *ngIf="showAction">
+    <h4 class="d-flex align-items-center m-0">
+        <span *ngIf="showTitle">QUÁ TRÌNH ĐIỀU TRỊ</span>
+        <at-input-delay-search class='f-14'
+            [ngClass]="{'m-l-12': showTitle}"
+            (inputEmitter)="onSearch($event)">
+        </at-input-delay-search>
+    </h4>
+    <button class="btn btn-second" (click)="handleTreatmentProcess(null, false)" *ngIf="actionRole.actionTreatment">Thêm quá trình điều trị</button>
+</div>
+<ng-container *ngTemplateOutlet="blockTb"></ng-container>
+
+<ng-template #blockTb>
+    <div class="overflow-auto needs-validation">
+        <table class="base-table">
+            <thead>
+                <tr>
+                    <ng-container *ngFor="let col of columnDef">
+                        <th [style]="col.headerStyle">{{col.label}}</th>
+                    </ng-container>
+                    <th class="w-px-100 text-center">
+                        <span></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of treatmentProcessFilter; let i = index">
+                    <ng-container *ngFor="let col of columnDef">
+                        <td [style]="col.style" (click)="handleTreatmentProcess(row, true)">
+                            <ng-container *ngIf="col.title != 'staffId' && col.title != 'staffCreateId' && col.title != 'serviceIndicateId'">
+                                {{col.colType == "money"
+                                ? ( row[col.title] | currency:'VND':'symbol':null:'vi-VN' )
+                                : ( col.title == 'serviceId' ? ( getMedicalServiceName(row[col.title]) | replaceNull)
+                                : ( col.title == 'serviceIndicateId' ? ( getMedicalServiceIndicateName(row[col.title]) | replaceNull)
+                                : ( col.title == 'processDay' ? ( row[col.title] | date : 'dd/MM/yyyy')
+                                : ( row[col.title] | replaceNull))))}}
+                            </ng-container>
+                            <ng-container *ngIf="col.title == 'staffId'">
+                                <span [innerHTML]="onSetStaff(row[col.title])"></span>
+                            </ng-container>
+                            <ng-container *ngIf="col.title == 'staffCreateId'">
+                              <span [innerHTML]="onSetStaffCreate(row[col.title])"></span>
+                          </ng-container>
+                            <ng-container *ngIf="col.title == 'serviceIndicateId'">
+                                <span [innerHTML]="onSetServiceIndicate(row[col.title])"></span>
+                            </ng-container>
+                        </td>
+                    </ng-container>
+                    <td>
+                        <div class="d-flex justify-content-center" *ngIf="showAction && (actionRole.deleteTreatment ||
+                                                 (row.treatmentStatus === medicalServiceStatus.NOT_FINISH))">
+                            <div ngbDropdown class="d-inline-block hide-arrow" container="body" placement="bottom-right">
+                                <at-feather-icons ngbDropdownToggle class="c-pointer btn-icon" [icon]="'more-horizontal'">
+                                </at-feather-icons>
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                    <button class="btn border-white" ngbDropdownItem (click)="onFinishRow(row)"
+                                        *ngIf="row.treatmentStatus === medicalServiceStatus.NOT_FINISH && actionRole.actionTreatment">Đã thực
+                                        hiện</button>
+                                    <!-- <button ngbDropdownItem (click)="handleTreatmentProcess(row, true)"
+                                        *ngIf="row.treatmentStatus === medicalServiceStatus.NOT_FINISH">Chỉnh sửa</button> -->
+                                    <button class="btn border-white" ngbDropdownItem (click)="onDeleteRow(row)"
+                                        *ngIf="onCheckTreatmentDelete(row)">Xóa</button>                                                                                                                             
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <ng-container *ngIf="!treatmentProcess || treatmentProcess?.length == 0">
+            <div class="empty-row">
+                {{ emptyMessage }}
+            </div>
+        </ng-container>
+    </div>
+
+</ng-template>

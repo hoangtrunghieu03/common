@@ -1,0 +1,65 @@
+<div class="modal-header">
+    <h4 class="modal-title">Thông tin dịch vụ</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="" [formGroup]="serviceForm" class="needs-validation">
+        <div class="row">
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input 
+                    [label]="'Tên dịch vụ'" 
+                    [formName]="'name'" [required]="true"
+                    [inputRequired]="validateForm(serviceForm,'name')"
+                    [inputValid]="serviceForm.controls.name.errors?.required">
+                    <div class="regexTel" *ngIf="serviceForm.get('name')?.errors?.nameDuplicated">
+                        <p class="text-danger"> Tên dịch vụ đã tồn tại </p>
+                    </div>
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input 
+                    [label]="'Giá'"
+                    [inputType]="'money'" 
+                    [formName]="'price'" 
+                    [required]="true"
+                    [inputRequired]="validateForm(serviceForm,'price')"
+                    [inputValid]="serviceForm.controls.price.errors?.required">
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input 
+                    [label]="'Giá nhỏ nhất'" 
+                    [formName]="'priceMin'"
+                    [inputType]="'money'">
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input 
+                    [label]="'Giá lớn nhất'" 
+                    [formName]="'priceMax'"
+                    [inputType]="'money'">
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-select [label]="'Nhóm'" [formName]="'tagService'" [textPlaceHolder]="'Nhập thông tin'" [AtData]="medicalSupply"
+                    [formControlSelect]="serviceForm?.controls.tagService" [selectRequired]="validateForm(serviceForm, 'tagService')"
+                    [selectValid]="serviceForm.controls.name.errors?.required"
+                    (_onChangeValue)="serviceForm.get('tagService').setValue($event);serviceForm.get('tagService').markAsTouched({ onlySelf: true })"
+                    [required]="'true'">
+                </at-select>
+            </div>
+            <div class="col-12">
+                <label for="description">Mô tả</label>
+                <textarea class="form-control" id="description" type="text" formControlName="description"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn btn-primarys m-r-12" (click)="onSaveForm()">lưu</button>
+        <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>

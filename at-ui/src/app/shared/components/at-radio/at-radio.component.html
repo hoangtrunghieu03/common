@@ -1,0 +1,10 @@
+<div class="d-flex form-group align-items-start m-b-0" >
+    <ng-container *ngFor='let item of [1,2];let i = index'>
+        <div [ngClass]="{'col-4 p-l-0': i == 0, 'col-8 p-r-0': i == 1}">
+            <label class="d-block btn-default-font p-b-10 " for="group-mode{{i}}">
+                <input class="radio_animated " id="group-mode{{i}}" type="radio" name="addProductMode" [value]="item.value">
+                {{item.name}}
+            </label>
+        </div>
+    </ng-container>
+</div>

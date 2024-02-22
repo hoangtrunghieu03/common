@@ -1,0 +1,13 @@
+.calendar {
+    border: 1px solid silver;
+    background: none;
+    border-radius: 0 5px 5px 0;
+    border-left: unset;
+    padding: 0 10px;
+}
+
+::ng-deep {
+    ngb-datepicker {
+        z-index: 3000 !important;
+    }
+}

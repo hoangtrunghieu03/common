@@ -1,0 +1,23 @@
+<div class="row container-fluid m-0 px-24 f-16" id="print-demo">
+  <div class="col-12 py-20">
+    <h3 class="text-center text-uppercase f-w-700 m-b-0">Phiếu {{ dataCustom.title }}</h3>
+  </div>
+
+  <div class="col-12 p-b-10 d-flex flex-column">
+    <span class="py-4">{{ dataCustom.sender.label }}: {{ dataCustom.sender.value }}</span>
+    <span class="py-4">{{ dataCustom.receiver.label }}: {{ dataCustom.receiver.value }}</span>
+    <span class="py-4">{{ dataCustom.dateDelivery.label }}: {{ dataCustom.dateDelivery.value }}</span>
+    <span class="py-4">{{ dataCustom.content.label }}: {{ dataCustom.content.value }}</span>
+  </div>
+
+  <div class="col-12 p-b-10 d-flex justify-content-end">
+    <div class="d-flex flex-column justify-content-center">
+        <span>Ngày {{ dateCurrent[0] }} tháng {{ dateCurrent[1] }} năm {{ dateCurrent[2] }}</span>
+
+        <div class="d-flex flex-column text-center m-t-12">
+            <span>Người nhận</span>
+        </div>
+    </div>
+
+</div>
+</div>

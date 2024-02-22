@@ -1,0 +1,26 @@
+<div class="form-group">
+    <label
+        *ngIf="label"
+        [for]="formName"
+        class="btn-default-font" >
+        <span class="star-color"
+            *ngIf="castedRequired">
+            *
+        </span>
+        {{label}}
+    </label>
+    <textarea
+        class="form-control"
+        [id]="formName" type="text"
+        [formControlName]='formName'
+        [attr.disabled]="castedDisabled ? true : null"></textarea>
+    <div
+        *ngIf="castedRequired">
+        <p
+            class="text-danger"
+            *ngIf="castedValid">
+            Nhập {{label}}
+        </p>
+    </div>
+    <ng-content ></ng-content>
+</div>

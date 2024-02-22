@@ -1,0 +1,33 @@
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row m-0 d-flex justify-content-between">            
+            <div class="page-header-left col-md-5 col-12 p-0">
+                <h3>{{title}} <span class='page-header-left__customer-name' *ngIf='customerName!=""'>/ {{customerName}}</span>
+                </h3>
+            </div>
+            <div class="col-md-7 col-12 p-0">
+                <ol class="breadcrumb pull-right d-flex align-items-center">
+                    <li class="breadcrumb-item">
+                        <a [routerLink]="'tong-quan'">
+                            <at-feather-icons [icon]="'home'"></at-feather-icons>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item" *ngIf="breadcrumbs?.parentBreadcrumb">{{breadcrumbs?.parentBreadcrumb}}
+                    </li>
+                    <li class="breadcrumb-item" *ngIf="breadcrumbs?.parent_oneBreadcrumb&&breadcrumbs.parent_oneBreadcrumb!=undefined">
+                        {{breadcrumbs?.parent_oneBreadcrumb}}
+                    </li>
+                    <li class="breadcrumb-item" *ngIf="breadcrumbs?.parent_towBreadcrumb&&breadcrumbs.parent_towBreadcrumb!=undefined">
+                        {{breadcrumbs?.parent_towBreadcrumb}}
+                    </li>
+                    <li class="breadcrumb-item" *ngIf="breadcrumbs?.parent_threeBreadcrumb&&breadcrumbs.parent_threeBreadcrumb!=undefined">
+                        {{breadcrumbs?.parent_threeBreadcrumb}}
+                    </li>
+                    <li class="breadcrumb-item active" *ngIf="breadcrumbs?.childBreadcrumb">
+                        {{breadcrumbs?.childBreadcrumb}}
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

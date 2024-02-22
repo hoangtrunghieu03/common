@@ -1,0 +1,17 @@
+.table-print {
+  th,
+  td {
+    border: 1px solid #000;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: center;
+  }
+}
+
+// at-footer-content-print {
+//   position: fixed;
+//   bottom: 50px;
+//   right: 0px;
+// }

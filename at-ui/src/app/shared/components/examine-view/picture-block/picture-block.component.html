@@ -1,0 +1,19 @@
+<div class='product-img_list'>
+    <ng-container *ngFor="let img of _imgData; let i = index">
+        <div class='product-img_list-item b-r-5 my-12 mx-12 position-relative' >
+            <ng-container
+                *ngIf="isAddPicture ? img.imageType?.includes(imageType.STL) : img?.includes(imageType.STL); else not_3d">
+                <img src="../../../../assets/images/3d_img.png" [ngStyle]="{'opacity': img?.isUpload == false ? '0.2' : '1'}" alt=""  (click)='viewDetail(isAddPicture ? img.imageUrl : (UrlImage+img))'>
+            </ng-container>
+
+            <ng-template #not_3d>
+                <img [src]="isAddPicture ? img.imageUrl : UrlImage+img" alt=""
+                    (error)="$event.target.src = '../../../../assets/images/missing_img.png'" [ngStyle]="{'opacity': img?.isUpload == false ? '0.2' : '1'}" (click)='viewDetail(isAddPicture ? img.imageUrl : (UrlImage+img))'>
+            </ng-template>
+            <div class="position-absolute d-flex flex-column justify-content-center align-items-center w-100" *ngIf="img?.isUpload == false" (click)='viewDetail(isAddPicture ? img.imageUrl : img)'>
+              <at-feather-icons class="feather-30" [icon]="'alert-triangle'"></at-feather-icons>
+              <label>lớn hơn 15mb</label>
+            </div>
+        </div>
+    </ng-container>
+</div>

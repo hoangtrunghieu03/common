@@ -1,0 +1,57 @@
+
+<div class="modal-header">
+    <h4 class="modal-title">Thông tin combo dịch vụ</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="" [formGroup]="comboForm" class="needs-validation">
+        <div class="row">
+            <div class="col-6">
+                <at-input
+                    [label]="'Tên combo dịch vụ'"
+                    [formName]="'name'">
+                </at-input>
+            </div>
+            <div class="col-6">
+                <at-autocomplete
+                    [_label]="'Dịch vụ trong combo'"
+                    [container]="null"
+                    [_keySearch]="comboForm.get('consumable').value"
+                    [_data]="consumable"
+                    (onChange)="onSelectItem($event)">
+                </at-autocomplete>
+            </div>
+            <div class="col-12 form-group">
+                <at-base-table
+                    [colDef]="colDef"
+                    [tableData]="data"
+                    [action]="{isDelete: true, isDone: false}"
+                    (deleteRowEvent)="handleEventDeleteRow($event)">
+                </at-base-table>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-6 d-flex align-items-center"><span>Giá combo</span><span>:</span></div>
+                    <div class="col-6 d-flex align-items-center">
+                        <at-input
+                            [formName]="'wage'"
+                            [inputType]="'money'">
+                        </at-input>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <label for="">Ghi chú</label>
+                <textarea class="form-control" id="reason" type="text" formControlName="note"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn btn-primarys" (click)="onSaveForm()">lưu</button>
+        <button type="button" class="btn m-r-12" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>

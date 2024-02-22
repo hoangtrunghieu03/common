@@ -1,0 +1,57 @@
+<div class="container-fluid">
+    <at-card>
+        <h5 class="d-flex justify-content-between align-items-center hide-arrow ">
+            <span>THÔNG TIN BỆNH NHÂN </span>
+            <div>
+                <button class="btn btn-second m-r-12 hide_lt-md" [routerLink]="['/kham-benh/phong-cay-implant/I']"
+                    [queryParams]="{_id: medicalRecordData._id}" *ngIf="actionRole.continueCheck && medicalRecordData.serviceType == roomList.implant">tiếp tục khám</button>
+                <div ngbDropdown class="d-inline-block" placement="bottom-right">
+                    <button ngbDropdownToggle class="btn-icon m-0">
+                        <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <button  class="d-none show_lt-md_block btn border-white" ngbDropdownItem
+                            [routerLink]="['/kham-benh/phong-cay-implant/I']"
+                            [queryParams]="{_id: medicalRecordData._id}" *ngIf="actionRole.continueCheck && medicalRecordData.serviceType == roomList.implant">Tiếp tục khám</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="onMedicalRecordCommitment()">Thực hiện cam kết</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleTreatmentProcess()" *ngIf="actionRole.actionTreatment">Thêm quá trình điều trị</button>
+                    </div>
+                </div>
+            </div>
+        </h5>
+        <at-customer-info [customer]="customer" [medicalRecord]="medicalRecordData"></at-customer-info>
+    </at-card>
+
+    <at-card>
+        <h5 class="text-uppercase">Quá trình điều trị</h5>
+        <at-treatment [medicalRecordData]="medicalRecordData" [showTitle]="false">
+        </at-treatment>
+    </at-card>
+
+    <at-card>
+        <h5 class="text-uppercase">Ghi chú</h5>
+        <ng-container *ngTemplateOutlet="noteBlock"></ng-container>
+    </at-card>
+
+    <at-card>
+        <h5 class="text-uppercase">thu phí</h5>
+        <at-fee [medicalRecord]="medicalRecordData"></at-fee>
+    </at-card>
+
+    <at-examina-footer (eventCancel)="onBackClick()"
+        currentRoom="implant"
+        #ftA>
+        <button class="btn btn-primary m-l-12 move-room m-t-5 hide_lt-md" (click)="onMoveRoome(ftA)">chuyển phòng</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onMoveRoome(ftA)">Chuyển phòng</button>
+        </ng-container>
+    </at-examina-footer>
+</div>
+
+<ng-template #noteBlock>
+    <textarea class="form-control" [(ngModel)]="medicalRecordData.note"></textarea>
+    <div class="w-100 m-t-24 d-flex justify-content-end">
+      <button class="btn btn-second" (click)="onSaveNote()">Lưu</button>
+    </div>
+  </ng-template>
+

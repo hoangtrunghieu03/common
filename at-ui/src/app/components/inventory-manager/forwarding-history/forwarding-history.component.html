@@ -1,0 +1,63 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="text-uppercase">danh sách phiếu giao nhận</h5>
+        </div>
+        <div class="card-body validateSearch">
+            <ng-container *ngTemplateOutlet="forwarding"></ng-container>
+        </div>
+    </div>
+</div>
+
+<ng-template #forwarding>
+    <div class="custom-datatable">
+        <div id="batchDelete">
+            <div class="table-responsive">
+                <ngx-datatable 
+                    class="bootstrap" 
+                    [rows]="forwardingHistory" 
+                    [columns]="colDef" 
+                    [columnMode]="'force'"
+                    [headerHeight]="'auto'" 
+                    [footerHeight]="forwardingHistory && forwardingHistory.length > 0 ? 50 : 0" 
+                    [rowHeight]="'auto'"
+                    [limit]="10" 
+                    [scrollbarH]="true" 
+                    [messages]="{emptyMessage: 'Không có dữ liệu'}"
+                    #tables>
+                    <ngx-datatable-column *ngFor="let col of colDef" [prop]="col.prop" [width]='col.width'>
+                        <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+                            <div [style]="col.styleHeader">
+                                <span class="mobile-hidden">{{col.name}}</span>
+                            </div>
+                        </ng-template>
+                        <ng-template let-value="value" ngx-datatable-cell-template let-row='row'>
+                            <div [style]="col.styleBody" *ngIf="col.prop != 'action'; else action">
+                                <span class="mobile-hidden">
+                                    {{ col.colType == 'date' && value ? (value | date : 'dd/MM/yyyy' : "GMT") : value | replaceNull }}
+                                </span>
+                            </div>
+                            <ng-template #action>
+                                <div [style]="col.styleBody">
+                                    <button class="btn btn-second" (click)="viewDetail(row.image, row)">Xem</button>
+                                </div>
+                            </ng-template>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-footer>
+                        <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                            let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                            <span>Tổng<span class="font-weight-bold">&nbsp;{{ forwardingHistory?.length }}</span></span>
+                            <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                [pagerRightArrowIcon]="'datatable-icon-right'"
+                                [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'"
+                                [page]="curPage" [size]="pageSize" [count]="rowCount"
+                                [hidden]="!((rowCount / pageSize) > 1)" (change)="tables.onFooterPage($event)">
+                            </datatable-pager>
+                        </ng-template>
+                    </ngx-datatable-footer>
+                </ngx-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>

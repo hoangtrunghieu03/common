@@ -1,0 +1,52 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5 class='d-flex justify-content-between hide-arrow align-items-center'>
+                <h5>THÔNG TIN BỆNH NHÂN</h5>
+                <div ngbDropdown class="d-inline-block hide-arrow" container="body">
+                    <at-feather-icons ngbDropdownToggle class="c-pointer btn-icon" [icon]="'more-horizontal'"></at-feather-icons>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <button class="btn border-white" ngbDropdownItem (click)="onMedicalRecordFinish()">Hoàn thành</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleAddDesignation()">Thêm chỉ định</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="onUpdateRoomStatus()">Cho về</button>
+                    </div>
+                </div>
+            </h5>
+        </div>
+        <div class="card-body needs-validation">
+            <div class='row'>
+                <div class="col-12 col-md-6 row">
+                    <span class="col-5 form-group d-flex justify-content-between">Mã hồ sơ bệnh án <span>:</span></span>
+                    <span class="col-7 f-w-700 text-highlight" [routerLink]="['/benh-an/chi-tiet/I']" [queryParams]="{_id: medicalRecord?._id}">{{
+                        medicalRecord?.medicalRecordCode }}</span>
+                    <ng-container *ngFor="let obj of receptionContent?.slice(0,4)">
+                        <span class="col-5 form-group d-flex justify-content-between">{{obj.label}} <span>:</span></span>
+                        <span class="col-7 f-w-700">{{obj.value | replaceNull}}</span>
+                    </ng-container>
+                </div>
+                <div class="col-12 col-md-6 row">
+                    <ng-container *ngFor="let obj of receptionContent?.slice(4,6)">
+                        <span class="col-5 d-flex justify-content-between">{{obj.label}} <span>:</span></span>
+                        <span class="col-7 d-flex flex-column f-w-700">
+                            {{obj.value | replaceNull}}
+                        </span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    <at-card>
+        <h5 class="text-uppercase">bảng phí và dịch vụ</h5>
+        <label for="">Chỉ định: </label>
+        <at-fee [medicalRecord]="medicalRecord" [mergeData]="false"></at-fee>
+    </at-card>
+    <at-examina-footer #foView (eventCancel)="onBackClick(roomStatus.WAITING)" currentRoom="tiếp tân">
+        <button class="btn btn-primary m-l-12 move-room m-t-5 hide_lt-md" (click)="onMoveRoom(foView)">chuyển phòng</button>
+        <button class="btn btn-primary m-r-12" (click)="onPayment()">Thanh toán</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onMoveRoom(foView)">Chuyển phòng</button>
+            <button ngbDropdownItem (click)="onPayment()">Thanh toán</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

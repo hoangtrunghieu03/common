@@ -1,0 +1,200 @@
+<div class="container-fluid p-b-15">
+  <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between ">
+          <h5 class="text-uppercase">Lịch hẹn : <span *ngIf="customerSelected">{{customerSelected.customerCode}} - </span> {{ customerForm?.value?.fullName }} </h5>
+      </div>
+      <div class="card-body needs-validation" >
+          <form class='row' [formGroup]="customerForm">
+            <div class="col-12"><h5 class="text-uppercase">thông tin bệnh nhân</h5></div>
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-input
+                      [label]="'Họ tên bệnh nhân'"
+                      [formName]="'fullName'"
+                      [required]="true"
+                      [inputType]="'name'"
+                      [formControl]="customerForm?.controls?.fullName"
+                      [inputRequired]="validateForm(customerForm,'fullName')"
+                      [inputValid]="customerForm?.controls?.fullName?.errors?.required"
+                      [disabled]="customerSelected"
+                      >
+                    </at-input>
+                </div>
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-input
+                    class="hidden-margin"
+                    [label]="'Số điện thoại'"
+                    [formName]="'tel'"
+                    [required]="true"
+                    [pattern]="telPattern"
+                    (inputChange)="onInputChange($event)"
+                    [inputType]="'phoneNumber'"
+                    [preValue]="customerForm?.value['tel']"
+                    [formControl]="customerForm?.controls?.tel"
+                    [inputRequired]="validateForm(customerForm,'tel')"
+                    [inputValid]="customerForm?.controls?.tel?.errors?.required"
+                    >
+                    <div class="regexTel">
+                        <ng-container *ngIf="regexEmail(customerForm, 'tel')">
+                            <p class="text-danger"> Số điện thoại không hợp lệ </p>
+                        </ng-container>
+                        <ng-container *ngIf="customerForm?.get('tel')?.errors?.telDuplicated">
+                            <p class="text-danger"> Số điện thoại đã được sử dụng</p>
+                        </ng-container>
+                    </div>
+                </at-input>
+                <ng-container *ngIf="customerForm.get('isPhoneContact').value">
+                  <div class="needs-validation form-group p-l-18 m-b-5 m-t-1">
+                      <div class="checkbox-primary checkbox d-flex align-items-center p-0">
+                      <input class="form-check-input"
+                          formControlName="isPhoneContact"
+                          type="checkbox"
+                          name="checkbox-contact"
+                          id="checkbox-contact"
+                          [attr.disabled]="true">
+                      <label class="form-check-label m-t-0" for="checkbox-contact">
+                          Sử dụng SĐT người thân để liên hệ
+                      </label>
+                      </div>
+                  </div>
+              </ng-container>
+                </div>
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-input
+                    [label]="'Email'"
+                    [formName]="'email'"
+                    [disabled]="customerSelected">
+                    <div class="regexTel">
+                        <ng-container *ngIf="regexEmail(customerForm, 'email')">
+                            <p class="text-danger"> Email không hợp lệ</p>
+                        </ng-container>
+                    </div>
+                  </at-input>
+                </div>
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-datepicker
+                    [formCtrlName]="'birthday'"
+                    [label]="'Ngày tháng năm sinh'"
+                    [date]="customerForm.get('birthday').value"
+                    [disabled]="customerSelected">
+                    </at-datepicker>
+                </div>
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-input
+                       [label]="'Địa chỉ'"
+                       [formName]="'address'"
+                       [disabled]="customerSelected">
+                   </at-input>
+                </div>
+          </form>
+          <form class="row" [formGroup]="scheduleForm">
+            <div class="col-12"><hr><h5 class="text-uppercase">thông tin cuộc hẹn</h5></div>
+
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-datepicker
+                        [label]="'Thời gian'"
+                        [required]="false"
+                        [formCtrlName]="'scheduleTime'"
+                        [date]="scheduleForm.get('scheduleTime').value"
+                        [required]="true"
+                        [inputRequired]="validateForm(scheduleForm,'scheduleTime')"
+                        [minDate]="minScheduleDate">
+                        <div class="dp-valid" *ngIf="validateForm(scheduleForm,'scheduleTime')">
+                            <p class="text-danger" *ngIf="scheduleForm.controls.scheduleTime.errors?.required">Chọn Thời gian</p>
+                            <p class="text-danger" *ngIf="scheduleForm.controls.scheduleTime.errors?.ngbDate">Ngày không hợp lệ</p>
+                        </div>
+                    </at-datepicker>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-6" >
+                  <at-select
+                    class="hidden-margin"
+                    [required]="true"
+                    [label]="'Loại lịch hẹn'"
+                    [formName]="'typeSchedule'"
+                    [AtData]="scheduleTypeList"
+                    [formControlSelect]="scheduleForm?.controls.typeSchedule"
+                    [disabled]="true">
+                  </at-select>
+                </div>
+
+                <div class="col-12">
+                  <label for="note"><span>*</span> Nội dung</label>
+                  <textarea class="form-control" id="note" type="text" formControlName="content"></textarea>
+                  <div class="regexTel">
+                    <ng-container *ngIf="validateForm(scheduleForm,'content')">
+                        <p class="text-danger"> Nhập nội dung</p>
+                    </ng-container>
+                </div>
+                </div>
+          </form>
+      </div>
+  </div>
+  <div class="card">
+    <div class="card-body needs-validation" >
+      <h5 class="text-uppercase">Danh sách bệnh nhân liên quan</h5>
+      <ng-container *ngTemplateOutlet="schedule"></ng-container>
+    </div>
+  </div>
+  <at-examina-footer (eventCancel)="location.back()" #footer [_isComplete]="true">
+      <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="handleCancelSchedule()">Hủy</button>
+      <button class="btn btn-primary m-r-12" (click)="handleConfirmSchudule()">Xác nhận</button>
+
+      <ng-container class="mobile">
+          <button ngbDropdownItem class="btn border-white"  (click)="handleCancelSchedule()">Hủy</button>
+          <button ngbDropdownItem class="btn border-white" (click)="handleConfirmSchudule()">Xác nhận</button>
+      </ng-container>
+  </at-examina-footer>
+</div>
+<ng-template #schedule>
+  <div class="custom-datatable">
+      <div id="batchDelete">
+          <div class="table-responsive">
+              <ngx-datatable class="bootstrap" [rows]="listCustomerByTel" [columns]="columnDef" [columnMode]="'force'"
+                  [headerHeight]="'auto'" [footerHeight]="listCustomerByTel && listCustomerByTel.length > 0 ? 50 : 0" [rowHeight]="'auto'"
+                  [limit]="limit" [scrollbarH]="true" [messages]="{emptyMessage: 'Không có dữ liệu'}" #tables>
+                  <ngx-datatable-column *ngFor="let col of columnDef" [prop]="col.prop">
+                      <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+                          <div [style]="col.styleHeader">
+                              <span class="mobile-hidden">{{col.name}}</span>
+                          </div>
+                      </ng-template>
+                      <ng-template let-value="value" ngx-datatable-cell-template let-row='row'>
+                          <div [style]="col.styleBody" (click)="onSelectRow(row, col.prop)" *ngIf="col.prop !== 'action'; else action">
+                              <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                  {{
+                                      col.colType == "money" ? ( value | currency:'VND':'symbol':null:'vi-VN')
+                                      : (col.colType == 'tel' && value) ? formatPhoneNumber(value)
+                                      : col.colType == "date" ? ( value | date : 'dd/MM/yyyy' )
+                                      : value | replaceNull
+                                  }}
+                              </span>
+                          </div>
+                          <ng-template #action>
+                              <div [style]="col.styleBody" class="d-flex">
+                                <button class="btn btn-second" *ngIf="row.customerId != customerSelected?._id"  (click)="onSelectCustomer(row.customerId)" >
+                                  Chọn
+                                </button>
+                                <button class="remove btn btn-delete" *ngIf="row.customerId == customerSelected?._id" (click)="onResetSchedule()" >
+                                  Bỏ chọn
+                                </button>
+                              </div>
+                          </ng-template>
+                      </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-footer>
+                      <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                          let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                          <span>Tổng<span class="font-weight-bold">&nbsp;{{ listCustomerByTel?.length }}</span></span>
+                          <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                              [pagerRightArrowIcon]="'datatable-icon-right'"
+                              [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'"
+                              [page]="curPage" [size]="pageSize" [count]="rowCount"
+                              [hidden]="!((rowCount / pageSize) > 1)" (change)="tables.onFooterPage($event)">
+                          </datatable-pager>
+                      </ng-template>
+                  </ngx-datatable-footer>
+              </ngx-datatable>
+          </div>
+      </div>
+  </div>
+</ng-template>

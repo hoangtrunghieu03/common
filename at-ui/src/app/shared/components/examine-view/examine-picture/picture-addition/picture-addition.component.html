@@ -1,0 +1,10 @@
+<div class='product-img_list'>
+  <div class='product-img_list-item b-r-5 my-12 mx-12' (click)="onAddImage()">
+    <img [src]="'../../../../assets/images/missing_img.png'" alt=""
+      (error)="$event.target.src = '../../../../assets/images/missing_img.png'">
+    <div class='product-img_list-item__action align-items-center justify-content-center b-r-5'>
+      <at-feather-icons [icon]="'plus'"></at-feather-icons>
+    </div>
+    <div class="product-img_list-item__overlay"></div>
+  </div>
+</div>

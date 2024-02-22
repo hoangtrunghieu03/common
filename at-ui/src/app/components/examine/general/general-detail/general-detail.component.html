@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <at-card>
+        <h5>THÔNG TIN BỆNH NHÂN</h5>
+        <at-customer-info [customer]="customerInfo" [medicalRecord]="medicalRecordGeneral"></at-customer-info>
+        <div class='tab2-card tab'>
+            <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false" [(activeId)]="active" (navChange)="onNavChange($event)">
+                <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="1">
+                    <a ngbNavLink>Bệnh án</a>
+                    <ng-template ngbNavContent>
+                        <at-patient 
+                            [_footerAction]="true"
+                            [medicalRecordData]="medicalRecordGeneral"
+                            (eventChangeTab)="onChangeTab($event)">
+                        </at-patient>
+                    </ng-template>
+                </li>
+                <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="2">
+                    <a ngbNavLink>Hình ảnh</a>
+                    <ng-template ngbNavContent>
+                        <at-pickture [medicalRecord]="medicalRecordGeneral" [screenImage]="screenImage.examine"></at-pickture>
+                    </ng-template>
+                </li>
+                <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="3">
+                    <a ngbNavLink>Chỉ định dịch vụ</a>
+                    <ng-template ngbNavContent>
+                        <at-service
+                            footerAction
+                            [medicalRecordData]="medicalRecordGeneral"
+                            [medicalDesignatData]="medicalRecordGeneral?.medicalServiceIndicates"
+                            [medicalServiceData]="medicalRecordGeneral.medicalServices"
+                            (eventChangeTab)="onChangeTab($event)"></at-service>
+                    </ng-template>
+                </li>
+                <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="4">
+                    <a ngbNavLink>Quá trình điều trị</a>
+                    <ng-template ngbNavContent>
+                        <at-treatment [medicalRecordData]="medicalRecordGeneral"></at-treatment>
+                    </ng-template>
+                </li>
+                <li ngbNavItem [destroyOnHide]="true">
+                    <a ngbNavLink>Thu phí</a>
+                    <ng-template ngbNavContent>
+                        <at-fee [medicalRecord]="medicalRecordGeneral"></at-fee>
+                    </ng-template>
+                </li>
+            </ul>
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </at-card>
+    <at-examina-footer (eventCancel)="onBackClick()" currentRoom="tổng quát" #ftA>
+        <button class="btn btn-primarys m-l-12 move-room m-t-5 hide_lt-md" (click)="onMoveRoom(ftA)">chuyển phòng</button>
+        <button class="btn btn-primarys m-r-12" (click)="onExaminationFinish()">hoàn thành khám</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onMoveRoom(ftA)">Chuyển phòng</button>
+            <button ngbDropdownItem (click)="onExaminationFinish()">Hoàn thành khám</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

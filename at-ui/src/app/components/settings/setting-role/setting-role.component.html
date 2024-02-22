@@ -1,0 +1,25 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between hide-arrow">
+            <h5 class="text-uppercase">Danh sách vai trò</h5>
+            <button class="btn btn-second hide_lt-md" [routerLink]="'tao-moi'">thêm vai trò</button>
+            <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" [routerLink]="'tao-moi'">Thêm vai trò</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body validateSearch">
+            <at-table
+                [tableData]="rolesList"
+                [columnDef]="columnDef"
+                [limit]="10"
+                [scrollbarH]="true">
+            </at-table>
+        </div>
+    </div>
+</div>
+

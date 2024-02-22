@@ -1,0 +1,138 @@
+<div class="page-main-header" [class.open]="!open">
+    <div class="main-header-right row">
+        <div class="mobile-sidebar nav-left d-flex align-items-center">
+            <at-feather-icons class='d-flex' id="sidebar-toggle" [icon]="'align-left'" (click)="collapseSidebar()">
+            </at-feather-icons>
+            <img class="img-logo m-l-24 c-pointer" src="../../../../assets/images/logo__.png" alt="" (click)="onNavigateHomePage()">
+            <!-- <span class="f-18 m-l-24 f-w-600">Hệ thống quản lý phòng khám A&T</span> -->
+        </div>
+        <!-- <div class="main-header-left m-l-50">
+            <div class="logo-wrapper">
+                <a [routerLink]="'/dashboard/default'">
+                    <img class="blur-up lazyloaded"
+                        src="../../../../assets/images/sidabar-menu/nWine_Logo.svg" alt="">
+                </a>
+            </div>
+        </div> -->
+        <div class="nav-right">
+            <ul class="nav-menus open">
+                <!-- <li>
+                    <form class="form-inline search-form">
+                        <div class="form-group">
+                            <input class="form-control-plaintext" [class.open]="isOpenMobile" type="search"
+                                placeholder="Search..">
+                            <span class="d-sm-none mobile-search">
+                                <at-feather-icons [icon]="'search'" (click)="isOpenMobile=!isOpenMobile">
+                                </at-feather-icons>
+                            </span>
+                        </div>
+                    </form>
+                </li> -->
+                <!-- <li>
+                    <a href="javascript:void(0)" class="text-dark" toggleFullscreen>
+                        <at-feather-icons [icon]="'maximize-2'"></at-feather-icons>
+                    </a>
+                </li> -->
+                <!-- <li class="onhover-dropdown"><a class="txt-dark" href="javascript:void(0)">
+                        <h6>EN</h6>
+                    </a>
+                    <ul class="language-dropdown onhover-show-div p-20">
+                        <li><a href="javascript:void(0)" data-lng="en"><i class="flag-icon flag-icon-is"></i>
+                                English</a></li>
+                        <li><a href="javascript:void(0)" data-lng="es"><i class="flag-icon flag-icon-um"></i>
+                                Spanish</a></li>
+                        <li><a href="javascript:void(0)" data-lng="pt"><i class="flag-icon flag-icon-uy"></i>
+                                Portuguese</a></li>
+                        <li><a href="javascript:void(0)" data-lng="fr"><i class="flag-icon flag-icon-nz"></i> French</a>
+                        </li>
+                    </ul>
+                </li> -->
+                <!-- <li class="onhover-dropdown">
+                    <span class="badge badge-pill badge-primary pull-right notification-badge">3</span>
+                    <at-feather-icons [icon]="'bell'"></at-feather-icons><span class="dot"></span>
+                    <ul class="notification-dropdown onhover-show-div">
+                        <li>Notification <span class="badge badge-pill badge-primary pull-right">3</span></li>
+                        <li>
+                            <div class="media">
+                                <div class="media-body">
+                                    <h6 class="mt-0"><span>
+                                            <at-feather-icons class="shopping-color" [icon]="'shopping-bag'">
+                                            </at-feather-icons>
+                                        </span>Your order ready for Ship..!
+                                    </h6>
+                                    <p class="mb-0">Lorem ipsum dolor sit amet, consectetuer.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="media">
+                                <div class="media-body">
+                                    <h6 class="mt-0 txt-success"><span>
+                                            <at-feather-icons class="download-color font-success" [icon]="'download'">
+                                            </at-feather-icons>
+                                        </span>Download Complete</h6>
+                                    <p class="mb-0">Lorem ipsum dolor sit amet, consectetuer.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="media">
+                                <div class="media-body">
+                                    <h6 class="mt-0 txt-danger"><span>
+                                            <at-feather-icons class="alert-color font-danger" [icon]="'alert-circle'">
+                                            </at-feather-icons>
+                                        </span>250 MB trash files</h6>
+                                    <p class="mb-0">Lorem ipsum dolor sit amet, consectetuer.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="txt-dark"><a href="javascript:void(0)">All</a> notification</li>
+                    </ul>
+                </li> -->
+                <!-- <li><a>
+                        <img src="../../../../assets/images/sidabar-menu/re_load.svg" alt="">
+                    </a>
+                </li>
+                <li><a>
+                        <img src="../../../../assets/images/sidabar-menu/earth.svg" alt="">
+                    </a>
+                </li> -->
+                <li>
+                    <at-notification></at-notification>
+                </li>
+                <li class="onhover-dropdown">
+                    <div class="media align-items-center">
+                        <img class="align-self-center pull-right  rounded-circle" width="36px" height="36px"
+                            src="../../../../assets/images/user.png"
+                            alt="header-user">
+
+                        <div class="dotted-animation">
+                            <span class="animate-circle"></span>
+                            <span class="main-circle"></span>
+                        </div>
+                    </div>
+                    <ul  class="profile-dropdown onhover-show-div profile-dropdown-hover">
+                        <li class="px-12 py-6" (click)="moveToUserProfile()">
+                            <small>
+                                <a href="javascript:void(0)" class="login ">{{userLogin.userName}}</a>
+                            </small>
+                        </li>
+                        <li class="px-12 py-6">
+                            <small>
+                                <a href="javascript:void(0)" class="login ">{{userLogin.email}}</a>
+                            </small>
+                        </li>
+                        <hr class='m-0'>
+                        <li class="hoverLi px-12 py-6">
+                            <small>
+                                <a class="login" (click)='logout()'>Đăng xuất</a></small>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- <div class="d-lg-none mobile-toggle pull-right" (click)="openMobileNav()">
+                <at-feather-icons [icon]="'more-horizontal'"></at-feather-icons>
+            </div> -->
+        </div>
+    </div>
+</div>

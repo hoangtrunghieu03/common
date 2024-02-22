@@ -1,0 +1,164 @@
+<!-- <form class="needs-validation" [formGroup]="designatForm">
+
+    <ng-container *ngFor="let obj of designatService;let inP = index; let last = last">
+
+        <div [ngClass]="{'form-group': !last}">
+
+            <h4>{{inP+1+". "}}{{obj.label}}</h4>
+
+            <div class="d-flex flex-wrap">
+
+                <ng-container  *ngIf="obj.group">
+
+                    <ng-container *ngTemplateOutlet="group, context: {$implicit: obj, inP: inP}"></ng-container>
+                    <div class="col-6 text-center" *ngIf="obj.group.length <= 1"></div>
+
+                </ng-container>
+
+                <ng-container *ngIf="obj.value">
+
+                    <ng-container *ngTemplateOutlet="el, context: {$implicit: obj, inP: inP}"></ng-container>
+
+                </ng-container>
+                <ng-container *ngIf="!obj.value && !obj.group">
+                    <div class="w-100">
+                        <textarea class="form-control" id="note" type="text" [formControlName]="obj.formName"></textarea>
+                    </div>
+                </ng-container>
+
+            </div>
+
+        </div>
+
+    </ng-container>
+
+</form> -->
+
+<form class="needs-validation">
+
+    <div class="form-group m-b-30">
+        <div class="d-flex flex-wrap">
+            <ng-container *ngFor="let comboService of medicalComboService; let se = index">
+                <ng-container *ngTemplateOutlet="elCombo, context: {$implicit: comboService, se: se}">
+                </ng-container>
+            </ng-container>
+        </div>  
+    </div>
+
+    <ng-container *ngFor="let group of medicalServiceIndicateGroups;let inP = index; let last = last">
+
+        <div class="form-group">
+
+            <h4>{{inP+1+". "}}{{group.tagService}}</h4>
+
+            <div class="d-flex flex-wrap">
+                <ng-container *ngFor="let service of group.medicalServiceIndicates; let se = index">
+
+                    <ng-container *ngTemplateOutlet="el, context: {$implicit: service, fir: inP, se: se}"></ng-container>
+
+                </ng-container>
+
+            </div>
+
+        </div>
+    </ng-container>
+    <div class="form-group">
+        <h4>{{ medicalServiceIndicateGroups ? (medicalServiceIndicateGroups?.length + 1) : 1 }}. KHÁC</h4>
+
+        <div class="w-100">
+            <textarea class="form-control" id="note" type="text"
+                (input)="onChangeVal($event)"></textarea>
+        </div>
+    </div>
+
+</form>
+
+<div class="m-t-24">
+    <h4>DANH SÁCH CHỈ ĐỊNH</h4>
+    <ng-container *ngTemplateOutlet="serviceIndicate"></ng-container>
+    
+</div>
+
+<ng-template #el let-data let-fir="fir" let-se="se">
+    <div class='checkbox-primary px-17 checkbox col-12 col-md-6 col-xl-4'>
+        <input type="checkbox"
+            id='service-{{fir}}-{{se}}'
+            class="form-check-input m-t-0"
+            [value]='data._id'
+            (change)='onChangeSelected($event, data, false)'
+            [checked]='onCheckDesignat(data, false)'
+            [disabled]='data.disabled'>
+        <!-- (change)='onChangeRole($event,role)' -->
+        <label for='service-{{fir}}-{{se}}'>{{data.name}}</label>
+    </div>
+</ng-template>
+
+<ng-template #elCombo let-data let-fir="fir" let-se="se">
+    <div class='checkbox-primary px-17 checkbox col-12 col-md-6 col-xl-4'>
+        <input type="checkbox" id='service-{{fir}}-{{se}}' class="form-check-input m-t-0" [value]='data._id'
+            (change)='onChangeComboSelected($event, data)'
+            [checked]='onCheckCombo(data)'>
+        <label for='service-{{fir}}-{{se}}'>{{data.name}}</label>
+    </div>
+</ng-template>
+
+<ng-template #serviceIndicate>
+    <div class="overflow-auto">
+        <table class="base-table needs-validation">
+            <thead>
+                <tr>
+                    <th class="w-px-50">
+                        <span>&nbsp;</span>
+                    </th>
+                    <ng-container *ngFor="let col of medicalServiceIndicatesColDef">
+                        <th [style]="col.headerStyle">{{col.label}}</th>
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngIf="(serviceIndicateSelected && serviceIndicateSelected?.length != 0) || (serviceIndicateAddition && serviceIndicateAddition?.length != 0); else noData">
+                    <tr *ngFor="let row of serviceIndicateSelected.concat(serviceIndicateAddition), let i = index">
+                        <td class="w-px-50">
+                            <at-feather-icons 
+                                class="c-pointer"
+                                [icon]="'trash-2'"
+                                *ngIf="row.status === serviceStatus.NOT_FINISH || row.isCombo"
+                                (click)="onRemoveServiceIndicate(row, i)">
+                            </at-feather-icons>
+                        </td>
+                        <ng-container *ngFor="let col of medicalServiceIndicatesColDef">
+                            <td [style]="col.style">
+                                <ng-container *ngIf="col.canUpdate else noUpdate">
+                                    <ng-container [ngSwitch]="col.updateType">
+                                        <ng-container *ngSwitchCase="'money'">
+                                            <input class="form-control" currencyInput autocomplete="off"
+                                                [(ngModel)]="row[col.fieldUpdate]">
+                                        </ng-container>
+                                        <ng-container *ngSwitchDefault>
+                                            <input class="form-control" autocomplete="off" type="text"
+                                                [(ngModel)]="row[col.fieldUpdate]">
+                                        </ng-container>
+                                    </ng-container>
+                                </ng-container>
+    
+                                <ng-template #noUpdate>
+                                    {{col.colType == "money"
+                                    ? ( row[col.title] | currency:'VND':'symbol':null:'vi-VN' )
+                                    : row[col.title] | replaceNull}}
+                                </ng-template>
+                            </td>
+                        </ng-container>
+                    </tr>
+                </ng-container>
+    
+                <ng-template #noData>
+                    <tr class="empty-row w-100">
+                        <td [attr.colspan]="medicalServiceIndicatesColDef.length + 1">Không có dữ liệu</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+    
+        </table>
+    </div>
+</ng-template>
+

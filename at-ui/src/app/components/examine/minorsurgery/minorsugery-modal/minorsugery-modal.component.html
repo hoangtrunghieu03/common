@@ -1,0 +1,69 @@
+<at-modal-header (onClose)="activeModal.dismiss('Cross click')">
+    Chi tiết dịch vụ thực hiện
+</at-modal-header>
+<div class="modal-body p-30" container="body">
+    <div class="needs-validation" [formGroup]="minorsugeryForm">
+        <div class="row">
+            <div class="col-6">
+                <at-input
+                    [label]="'Tên chỉ định'"
+                    [formName]="'name'"
+                    disabled>
+                </at-input>
+            </div>
+            <div class="col-6">
+                <at-select
+                    label="Người thực hiện"
+                    [AtData]="staffs"
+                    formName="staffId"
+                    [formControlSelect]="minorsugeryForm?.controls.staffId">
+                </at-select>
+                <!-- <at-autocomplete
+                    [_label]="'Người thực hiện'"
+                    [inpId]="'doctor'"
+                    [_data]="staffs"
+                    [container]="null"
+                    (onChange)="onSelectDoctor($event)"
+                    [formValue]="minorsugeryForm.get('doctor').value">
+                </at-autocomplete> -->
+            </div>
+            <div class="col-6">
+                <at-datepicker
+                    [formCtrlName]="'executionDate'"
+                    label='Ngày thực hiện'
+                    [date]="minorsugeryForm.get('executionDate').value">
+                    <div class="dp-valid">
+                        <ng-container *ngIf="minorsugeryForm.controls.executionDate.errors?.ngbDate">
+                            <p class="text-danger"> Ngày không hợp lệ</p>
+                        </ng-container>
+                    </div>
+                </at-datepicker>
+            </div>
+            <div class="col-6">
+                <at-datepicker
+                    [formCtrlName]="'finishDate'"
+                    label='Ngày hoàn thành'
+                    [date]="minorsugeryForm.get('finishDate').value">
+                    <div class="dp-valid">
+                        <ng-container *ngIf="minorsugeryForm.controls.finishDate.errors?.ngbDate">
+                            <p class="text-danger"> Ngày không hợp lệ</p>
+                        </ng-container>
+                    </div>
+                </at-datepicker>
+            </div>
+            <div class="col-12">
+                <at-textarea
+                    formName="comment"
+                    label="Ghi chú">
+                </at-textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<at-modal-footer>
+    <button class="btn btn-second m-l-12 commit-btn" (click)="onMedicalRecordCommitment()">thực hiện cam kết</button>
+    <button type="button" class="btn btn-primarys m-r-20" (click)="onSaveModal(false)">Lưu</button> 
+    <button type="button" class="btn btn-second m-r-20" (click)="onSaveModal(true)">Hoàn thành</button> 
+    <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>

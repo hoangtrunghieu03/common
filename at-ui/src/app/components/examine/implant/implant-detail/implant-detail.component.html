@@ -1,0 +1,184 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="d-flex justify-content-between align-items-center hide-arrow ">
+                THÔNG TIN BỆNH NHÂN
+                <div ngbDropdown class="d-inline-block" placement="bottom-right">
+                    <button ngbDropdownToggle class="btn-icon m-0">
+                        <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <button class="btn border-white" ngbDropdownItem (click)="onMedicalRecordCommitment()">Thực hiện cam kết</button>
+                    </div>
+                </div>
+            </h5>
+        </div>
+        <div class="card-body">
+            <at-customer-info [customer]="customerInfo" [medicalRecord]="medicalRecordImplant"></at-customer-info>
+            <div class='tab2-card tab'>
+                <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false" [(activeId)]="active" (navChange)="onNavChange($event)">
+                    <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="1">
+                        <a ngbNavLink>Bệnh án</a>
+                        <ng-template ngbNavContent>
+                            <ng-container *ngTemplateOutlet="implantPatient"></ng-container>
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="2">
+                        <a ngbNavLink>Hình ảnh</a>
+                        <ng-template ngbNavContent>
+                            <at-pickture [medicalRecord]="medicalRecordImplant" [screenImage]="screenImage.examine"></at-pickture>
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="3">
+                        <a ngbNavLink>Chỉ định dịch vụ</a>
+                        <ng-template ngbNavContent>
+                            <at-service
+                                footerAction
+                                [medicalRecordData]="medicalRecordImplant"
+                                [medicalDesignatData]="medicalRecordImplant?.medicalServiceIndicates"
+                                [medicalServiceData]="medicalRecordImplant.medicalServices"
+                                (eventChangeTab)="onChangeTab($event)"></at-service>
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="4">
+                        <a ngbNavLink>Quá trình điều trị</a>
+                        <ng-template ngbNavContent>
+                            <at-treatment [medicalRecordData]="medicalRecordImplant"></at-treatment>
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem [destroyOnHide]="true">
+                        <a ngbNavLink>Thu phí</a>
+                        <ng-template ngbNavContent>
+                            <at-fee [medicalRecord]="medicalRecordImplant"></at-fee>
+                        </ng-template>
+                    </li>
+                </ul>
+                <div [ngbNavOutlet]="nav"></div>
+            </div>
+        </div>
+    </div>
+    <at-examina-footer (eventCancel)="onBackClick()" currentRoom="implant" #ftA>
+        <button class="btn btn-primarys m-l-12 move-room m-t-5 hide_lt-md" (click)="onMoveRoom(ftA)">chuyển phòng</button>
+        <button class="btn btn-primarys m-r-12" (click)="onExaminationFinish()">hoàn thành khám</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onMoveRoom(ftA)">Chuyển phòng</button>
+            <button ngbDropdownItem (click)="onExaminationFinish()">Hoàn thành khám</button>
+        </ng-container>
+    </at-examina-footer>
+</div>
+
+<ng-template #implantPatient>
+    <form action="" class="needs-validation">
+        <ng-container *ngFor="let obj of implantOption; let i = index">
+            <div class="form-group">
+                <h4>{{ i + 1 + ". " }}{{ obj.label }}</h4>
+                <div class="row m-0">
+                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4 col-xl-3"
+                        [ngClass]="sub.class"
+                        *ngFor="let sub of obj.value; let j = index">
+                        <input type="checkbox" id="service-group-{{ i }}-{{ j }}"
+                            class="form-check-input m-t-0"
+                            [value]="sub.value"
+                            (change)="onSelectedImplantPatient($event, obj.key, null, null)" 
+                            [checked]='toothChecked(sub.value, obj.key, null, null)'/>
+                        <label class="w-100" for="service-group-{{ i }}-{{ j }}">
+                            <span>{{ sub.label }}</span>
+                            <ng-container *ngIf="sub?.input">
+                                <input type="text" style="opacity: 1; border: none; background: #fff" placeholder="............"
+                                    [value]="onInputOtherRender(obj.key, null, sub.label)"
+                                    [disabled]="!toothChecked(sub.value, obj.key, null, null)"
+                                    (change)="onInputOtherReason($event, obj.key, null, sub.label, toothChecked(sub.value, obj.key, null, null))">
+                            </ng-container>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <at-tooth-diagram class="hide_lt-md"
+            [tooth]="implantExamination?.tooth ? implantExamination?.tooth : []"
+            (selectedTooth$)="onSelectedTooth($event)">
+        </at-tooth-diagram>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="dentalSymptoms" class="font-weight-bold">Triệu chứng nha khoa</label>
+                    <div class="d-flex flex-column m-l-24">
+                        <ng-container *ngFor="let syp of dentalsymptoms; let i = index">
+                            <span class="f-w-700">{{syp.label}}</span>
+                            <div class="d-flex flex-wrap">
+                                <div class="checkbox-primary px-17 checkbox col-12 col-md-4"
+                                    *ngFor="let sub of syp.option; let j = index">
+                                    <input type="checkbox" id="implant-syp-{{ i }}-{{ j }}"
+                                        class="form-check-input m-t-0"
+                                        [value]="sub"
+                                        (change)="onSelectedImplantPatient($event, 'dentalSymptoms', syp.key, null)"
+                                        [checked]="toothChecked(sub, 'dentalSymptoms', syp.key, null)"/>
+                                    <label class="d-flex w-100" for="implant-syp-{{ i }}-{{ j }}">{{ sub }}</label>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="diagnostic" class="font-weight-bold">Chẩn đoán</label>
+                    <textarea class="form-control" id="diagnostic" type="text" [(ngModel)]="implantExamination.diagnostic"
+                    [ngModelOptions]="{standalone: true}"></textarea>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="treatment" class="font-weight-bold">Điều trị</label>
+                    <div class="d-flex flex-column m-l-24">
+                        <ng-container *ngFor="let obj of treatmentOption; let i = index">
+                            <span class="f-w-700" [ngClass]="obj.option?.length == 0 ?'d-flex form-group' : null">
+                                {{obj.label}}
+                                <div class="checkbox-primary px-17 checkbox m-l-12"
+                                    *ngIf="obj.option?.length == 0">
+                                    <input type="checkbox" id="implant-treatment-{{ i }}"
+                                        (change)="onSelectedImplantPatient($event, 'treatment', obj.key, true)"
+                                        [checked]="toothChecked(null, 'treatment', obj.key, true)"
+                                        class="form-check-input m-t-0"/>
+                                    <label class="d-flex w-100 m-0" for="implant-treatment-{{ i }}">&nbsp;</label>
+                                </div>
+                            </span>
+                            <div class="d-flex flex-wrap">
+                                <ng-container *ngIf="obj.option?.length > 0">
+                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4"
+                                        *ngFor="let sub of obj.option; let j = index">
+                                        <input type="checkbox" id="implant-treatment-{{ i }}-{{ j }}"
+                                            class="form-check-input m-t-0"
+                                            [value]="sub"
+                                            (change)="onSelectedImplantPatient($event, 'treatment', obj.key, null)"
+                                            [checked]="toothChecked(sub, 'treatment', obj.key, null)"/>
+                                        <label class="d-flex w-100" for="implant-treatment-{{ i }}-{{ j }}">{{ sub }}
+                                            <ng-container *ngIf="sub == 'Khác: '">
+                                                <input type="text" style="opacity: 1; border: none; background: #fff" placeholder="............"
+                                                    [value]="onInputOtherRender('treatment', obj.key, sub)"
+                                                    [disabled]="!toothChecked(sub, 'treatment', obj.key, null)"
+                                                    (change)="onInputOtherReason($event, 'treatment', obj.key, sub, toothChecked(sub, 'treatment', obj.key, null))">
+                                            </ng-container>
+                                        </label>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="advice" class="font-weight-bold">Lời khuyên</label>
+                    <textarea class="form-control" id="advice" type="text" [(ngModel)]="implantExamination.advice"
+                    [ngModelOptions]="{standalone: true}"></textarea>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <button class="btn btn-second" (click)="onCreateMedicalRecordPatient(2)">lưu</button>
+            </div>
+        </div>
+    </form>
+</ng-template>
+

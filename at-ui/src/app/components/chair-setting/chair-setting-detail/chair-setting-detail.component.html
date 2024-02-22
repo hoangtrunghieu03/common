@@ -1,0 +1,89 @@
+<div class="container-fluid">
+  <at-card>
+      <h5 class='d-flex justify-content-between hide-arrow align-items-center'>
+        <h5>THÔNG TIN GHẾ</h5>
+        <div class="d-flex align-items-center hide_lt-md">
+          <!-- <button class="btn btn-second m-l-12 move-room m-r-12" (click)="onResetChair()">Làm mới</button> -->
+          <at-feather-icons class='btn-icon c-pointer' [icon]="'edit'" (click)="handleUpdate()" *ngIf="!isEdit">
+          </at-feather-icons>
+          <at-feather-icons class='btn-icon c-pointer' [icon]="'x-square'" (click)="handleUpdate()" *ngIf="isEdit">
+          </at-feather-icons>
+        </div>
+        <span class="d-none show_lt-md_block hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right"
+          display="dynamic">
+          <button ngbDropdownToggle class="btn-icon m-0">
+            <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+          </button>
+          <div class='dropdown-dialog' ngbDropdownMenu>
+            <div class="mobile-content d-flex flex-column">
+              <button class="btn border-white" ngbDropdownItem (click)="handleUpdate()">Chỉnh sửa</button>
+              <!-- <button ngbDropdownItem (click)="onResetChair()">Làm mới</button> -->
+            </div>
+          </div>
+        </span>
+      </h5>
+      <div [formGroup]="chairForm">
+        <div class="d-flex flex-column m-b-15" *ngIf="!isEdit; else editBlock">
+          <label>Tên ghế: <span class="f-w-600">{{chair?.name}}</span></label>
+          <label>Người thực hiện: <span class="f-w-600">{{getStaffName(chair.staffId)}}</span>
+          </label>
+        </div>
+        <ng-template #editBlock>
+          <div class="row">
+            <div class="col-12">
+              <div class="row col-6">
+                <span class="m-t-8 m-r-4"><span class="star-color">* </span>Tên ghế: </span>
+                <at-input
+                  class="col-12 col-md-6"
+                  [formName]="'name'"
+                  [required]="true"
+                  [inputRequired]="validateForm(chairForm, 'name')"
+                  [inputValid]="chairForm.controls.name.errors?.required">
+                  <div class="regexTel">
+                    <ng-container *ngIf="validateForm(chairForm, 'name')">
+                        <p class="text-danger" *ngIf="chairForm.get('name')?.errors?.required"> Nhập Tên ghế</p>
+                    </ng-container>
+                  </div>
+                </at-input>
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <div class="row col-6">
+                <span class="m-t-8 m-r-4">Người sử dụng: </span>
+                <at-select
+                  class="hidden-margin col-12 col-md-6 p-0"
+                  [required]="true"
+                  [formName]="'staffId'"
+                  [AtData]="staffList"
+                  [formControlSelect]="chairForm?.controls.staffId">
+                  <div class="regexTel">
+                    <ng-container *ngIf="chairForm.get('staffId')?.errors?.staffDuplicated">
+                        <p class="text-danger"> Nhân viên đang thuộc ghế khác</p>
+                    </ng-container>
+                  </div>
+                </at-select>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      
+      
+  </at-card>
+
+  <at-card>
+      <h5 class="text-uppercase">Danh sách bệnh nhân</h5>
+      <at-chair-list-cusomer [chairActive]="chair" [isManager]="true"></at-chair-list-cusomer>
+  </at-card>
+
+  <at-examina-footer (eventCancel)="location.back()" [_isComplete]="true">
+    <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveChair()">Xóa</button>
+      <button class="btn btn-primarys m-r-12" (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+
+      <ng-container class="mobile">
+          <button ngbDropdownItem  (click)="onRemoveChair()">Xóa</button>
+          <button ngbDropdownItem (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+      </ng-container>
+  </at-examina-footer>
+</div>

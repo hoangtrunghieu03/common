@@ -1,0 +1,103 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="text-uppercase">lịch sử nhập vật tư</h5>
+            <div class="d-flex align-items-center" *ngIf="importHistorySelected?.length != 0">
+                <button class="btn btn-second m-r-12 hide_lt-md" (click)="onHandlePrint()">In</button>
+                <div ngbDropdown class="d-none show_lt-md_block hide-arrow" placement="bottom-right">
+                    <button ngbDropdownToggle class="btn-icon m-0">
+                        <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" (click)="onHandlePrint()">In</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body validateSearch">
+            <div class="block-search-filter row p-lg-0 m-b-15">
+                <div class="col-12 col-md-4 col-xl-3">
+                    <ng-container *ngTemplateOutlet="filter"></ng-container>
+                </div>
+
+                <at-input-delay-search  class='col-12 col-md-8 col-xl-9 w-100 block-search'
+                                        (inputEmitter)="onSearch($event)">
+                </at-input-delay-search>
+            </div>
+
+            <ng-container *ngTemplateOutlet="result"></ng-container>
+
+            <at-table
+                [tableData]="importHistory"
+                [columnDef]="colDef"
+                [limit]="10"
+                [scrollbarH]="true"
+                [haveCheckbox]="true"
+                (emitSelectRow)="onSelectRow($event)">
+            </at-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #filter>
+    <at-filter-view (eventAddFilter)="onAddCondiotion()" [title]="'Hiển thị vật dụng theo'">
+        <select class="form-control" [(ngModel)]="filterResult.condition" (change)="onFilterConditionChange()">
+            <option *ngFor="let item of conditionData | keyvalue" [value]="item.key">
+                {{item.value}}
+            </option>
+        </select>
+        <ng-container *ngIf="filterResult.condition == 'unit'">
+            <select class="form-control mt-2" [(ngModel)]="filterResult.value">
+                <option [ngValue]="null">Chọn điều kiện</option>
+                <ng-container *ngIf="!checkConditions() else roomReturn">
+                  <option *ngFor="let item of unitList" [value]="item.origin">
+                    {{item.origin}}
+                  </option>
+                </ng-container>
+                <ng-template #roomReturn>
+                  <option *ngFor="let item of rooms" [value]="item.name">
+                    {{item.name}}
+                  </option>
+                </ng-template>
+
+            </select>
+        </ng-container>
+        <ng-container *ngIf="filterResult.condition == 'reason'">
+          <select class="form-control mt-2" [(ngModel)]="filterResult.value">
+            <option [ngValue]="null">Chọn điều kiện</option>
+            <option *ngFor="let item of typeWarahorse | keyvalue" [value]="item.value">
+                {{item.value}}
+            </option>
+          </select>
+        </ng-container>
+        <ng-container *ngIf="filterResult.condition == 'time'">
+          <div class="row m-0">
+              <div class="col-12 p-0">
+                  <span>Từ</span>
+                  <input class="form-control" type="date" required="" [(ngModel)]="filterResult.fromDate" />
+              </div>
+              <div class="col-12 p-0">
+                  <span>Đến</span>
+                  <input class="form-control" type="date" required="" [(ngModel)]="filterResult.toDate" />
+              </div>
+          </div>
+      </ng-container>
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15" *ngIf="renderSelect?.length > 0">
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <ng-container *ngIf="item.key === 'unit' || item.key === 'reason'; else date">
+                <span>{{item.firstCondition + ' là ' + item.secondCondition }}</span>
+            </ng-container>
+            <ng-template #date>
+                <span *ngIf="item.from && item.to">
+                    {{item.firstCondition +' '+ (item.from | date : 'dd/MM/yyyy') + ' - '
+                    + (item.to | date : 'dd/MM/yyyy')}}
+                </span>
+            </ng-template>
+            <button (click)="onRemoveFilter(item)">X</button>
+        </span>
+    </div>
+</ng-template>

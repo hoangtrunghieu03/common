@@ -1,0 +1,105 @@
+<div class="container-fluid p-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between ">
+            <h5 class="text-uppercase">Lịch hẹn: {{ customer?.customerCode }} - {{ customer?.fullName }}</h5>
+            <div class="d-flex align-items-center hide_lt-md" *ngIf="medicalSchedule.status === scheduleStatus.NOTYETARRIVED">
+                <button class="btn btn-second m-l-12 move-room m-r-12" (click)="onUpdateStatus(scheduleStatus.ARRIVED)">Tiếp nhận</button>
+                <button class="btn btn-second m-l-12 move-room m-r-12" (click)="onUpdateStatus(scheduleStatus.NOTARRIVE)">Không đến</button>
+                <at-feather-icons class='btn-icon c-pointer' [icon]="'edit'" (click)="handleUpdate()" *ngIf="!isEdit">
+                </at-feather-icons>
+                <at-feather-icons class='btn-icon c-pointer' [icon]="'x-square'" (click)="handleUpdate()" *ngIf="isEdit">
+                </at-feather-icons>
+            </div>
+            <span class="d-none show_lt-md_block hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" display="dynamic">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div class='dropdown-dialog' ngbDropdownMenu>
+                    <div class="mobile-content d-flex flex-column">
+                        <ng-content select=".mobile"></ng-content>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleUpdate()">Chỉnh sửa</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="onUpdateStatus(scheduleStatus.ARRIVED)">Tiếp nhận</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="onUpdateStatus(scheduleStatus.NOTARRIVE)">Không đến</button>
+                    </div>
+                </div>
+            </span>
+        </div>
+        <div class="card-body needs-validation" [formGroup]="scheduleForm">
+            <div class='row'>
+                <div class="col-12 form-group">
+                    <div class="row align-items-center">
+                        <ng-container *ngIf="!isEdit; else blockDateTimeEdit">
+                            <span class="col-12 col-md-3">Thời gian: </span>
+                            <span class="col-12 col-md-6 f-w-700">{{ medicalSchedule?.scheduleTime | date : 'dd/MM/yyyy' }}</span>
+                        </ng-container>
+                        <ng-template #blockDateTimeEdit>
+                            <span class="col-12 col-md-3 m-t-8"><span class="star-color">* </span>Thời gian: </span>
+                            <at-datepicker
+                                class="col-12 col-md-6 hidden-margin"
+                                [formCtrlName]="'scheduleTime'" 
+                                [date]="scheduleForm.get('scheduleTime').value"
+                                [minDate]="minDate"
+                                [inputRequired]="validateForm(scheduleForm,'scheduleTime')"
+                                [required]="true">
+                                <div class="dp-valid" *ngIf="validateForm(scheduleForm,'scheduleTime')">
+                                    <p class="text-danger" *ngIf="scheduleForm.controls.scheduleTime.errors?.required">Chọn Thời gian</p>
+                                    <p class="text-danger" *ngIf="scheduleForm.controls.scheduleTime.errors?.ngbDate">Ngày không hợp lệ</p>
+                                </div>
+                            </at-datepicker>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="col-12 form-group">
+                    <div class="row align-items-center">
+                        <ng-container *ngIf="!isEdit; else blockTypeEdit">
+                            <span class="col-12 col-md-3">Loại lịch hẹn: </span>
+                            <span class="col-12 col-md-6 f-w-700">{{ medicalSchedule?.typeSchedule }}</span>
+                        </ng-container>
+                        <ng-template #blockTypeEdit>
+                            <span class="col-12 col-md-3 m-t-8"><span class="star-color">* </span>Loại lịch hẹn: </span>
+                            <at-select
+                                class="hidden-margin col-12 col-md-6"
+                                [required]="true"
+                                [formName]="'typeSchedule'"
+                                [AtData]="scheduleTypeList"
+                                [formControlSelect]="scheduleForm?.controls.typeSchedule"
+                                [selectRequired]="validateForm(scheduleForm, 'typeSchedule')"
+                                [selectValid]="scheduleForm.controls.typeSchedule.errors?.required"
+                                [disabled]="true">
+                            </at-select>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="col-12 form-group">
+                    <div class="row align-items-center">
+                        <span for="staff" class="col-12 col-md-3">Người tạo cuộc hẹn: </span>
+                        <span for="staff" class="col-12 col-md-6 f-w-700">{{ onGetStaffName(medicalSchedule.staff) }}</span>
+                    </div>
+                </div>
+                <div class="col-12 form-group">
+                    <div class="row align-items-center" [ngClass]="{'mx-0': isEdit}">
+                        <ng-container *ngIf="!isEdit; else blockNoteEdit">
+                            <span class="col-12 col-md-3">Nội dung: </span>
+                            <span class="col-12 col-md-6 f-w-700">{{ scheduleForm.get('content')?.value }}</span>
+                        </ng-container>
+                        <ng-template #blockNoteEdit>
+                            <label for="">Nội dung</label>
+                            <textarea class="form-control" id="note" type="text" formControlName="content"></textarea>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <at-examina-footer (eventCancel)="location.back()" #footer [_isComplete]="true">
+        <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveMedicalSchedule()"
+            *ngIf="medicalSchedule.status === scheduleStatus.NOTYETARRIVED">Xóa</button>
+        <button class="btn btn-primary m-r-12" (click)="onSaveForm()" *ngIf="isEdit">lưu</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+            <button ngbDropdownItem (click)="onRemoveMedicalSchedule()"
+                *ngIf="medicalSchedule.status === scheduleStatus.NOTYETARRIVED">Xóa</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

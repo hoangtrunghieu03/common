@@ -1,0 +1,142 @@
+<at-modal-header (onClose)="modal.dismiss('Cross click')">
+    Thanh toán
+</at-modal-header>
+<div class="modal-body p-30">
+    <at-base-table
+        [colDef]="colDef"
+        [tableData]="medicalRecordFee">
+    </at-base-table>
+    <div class="row">
+        <div class="form-group mb-0 col-12 col-md-6 m-t-12">
+            <div class="row m-0">
+                <ng-container *ngFor="let item of contentPayment">
+                    <span class="d-flex justify-content-between w-50 m-t-6" style="line-height: 38px;">
+                        <span>{{item.label}}</span>
+                        <span class="p-r-16">:</span>
+                    </span>
+                    <div class="f-w-600 f-16 w-50 m-t-6" style="line-height: 38px;">{{ item.value | currency:'VND':'symbol':null:'vi-VN' }}</div>
+                </ng-container>
+                <span class="d-flex justify-content-between w-50 m-t-6" style="line-height: 38px;">
+                    <span>Tiền giảm giá</span>
+                    <span class="p-r-16">:</span>
+                </span>
+                <div class="f-w-600 f-16 w-50 m-t-6" style="line-height: 38px;">{{ this.paymentForm.get('discountAmount').value | currency:'VND':'symbol':null:'vi-VN' }}</div>
+                <span class="d-flex justify-content-between w-50 m-t-6" style="line-height: 38px;">
+                    <span>Còn lại</span>
+                    <span class="p-r-16">:</span>
+                </span>
+                <div class="f-w-600 f-16 w-50 m-t-6" style="line-height: 38px;">{{ this.paymentForm.get('moneyPayment').value | currency:'VND':'symbol':null:'vi-VN' }}</div>
+            </div>
+        </div>
+        <div class="form-group mb-0 col-12 col-md-6 m-t-12" [formGroup]="paymentForm">
+            <div class="row align-items-center m-0">
+                <span class="d-flex justify-content-between w-50">
+                    <span>Giảm giá</span>
+                    <span class="p-r-16">:</span>
+                </span>
+                <ng-container *ngTemplateOutlet="discount"></ng-container>
+            </div>
+            <div class="row align-items-center m-t-6 m-0">
+                <span class="d-flex justify-content-between w-50">
+                    <span><span class="star-color">* </span>Số tiền thanh toán</span>
+                    <span class="p-r-16">:</span>
+                </span>
+                <at-input
+                    class="w-50 hidden-margin"
+                    [formName]="'moneyCustomerProvide'"
+                    [inputType]="'money'"
+                    [required]="true"
+                    [inputRequired]="validateForm(paymentForm, 'moneyCustomerProvide')"
+                    [inputValid]="paymentForm.controls.moneyCustomerProvide.errors?.required"
+                    (onChangeVal)="paymentForm.get('moneyCustomerProvide').setValue($event)">
+                    <div class="duplicate">
+                        <ng-container *ngIf="validateForm(paymentForm, 'moneyCustomerProvide')">
+                            <p class="text-danger m-b-0" *ngIf="paymentForm.controls.moneyCustomerProvide.errors?.required">Nhập Số tiền thanh toán</p>
+                        </ng-container>
+                        <ng-container *ngIf="paymentForm.controls.moneyCustomerProvide.errors?.validCompareMoney">
+                            <p class="text-danger m-b-0">Số tiền thanh toán phải nhỏ hơn số tiền còn lại</p>
+                        </ng-container>
+                        <!-- <ng-container *ngIf="paymentForm.controls.moneyCustomerProvide.touched &&
+                                                                                    paymentForm.controls.moneyCustomerProvide.errors?.validPaymentMoney &&
+                                                                                    !paymentForm.controls.moneyCustomerProvide.errors?.required">
+                            <p class="text-danger m-b-0">Số tiền thanh toán phải lớn hơn 0</p>
+                        </ng-container> -->
+                    </div>
+                </at-input>
+            </div>
+            <div class="row align-items-center m-t-6 m-0">
+                <span class="d-flex justify-content-between w-50">
+                    <span>Phương thức thanh toán</span>
+                    <span class="p-r-16">:</span>
+                </span>
+                <at-select
+                    class="w-50 hidden-margin"
+                    [required]="true"
+                    [formName]="'paymentMethod'"
+                    [AtData]="paymentMethod"
+                    [formControlSelect]="paymentForm?.controls.paymentMethod">
+                </at-select>
+            </div>
+            <div class="row align-items-center m-t-6 m-0">
+                <span class="d-flex justify-content-between w-50">
+                    <span>Ngày thanh toán</span>
+                    <span class="p-r-16">:</span>
+                </span>
+                <at-datepicker
+                    class="w-50 hidden-margin"
+                    [formCtrlName]="'paymentDate'"
+                    [date]="paymentForm.get('paymentDate').value"
+                    [inputRequired]="validateForm(paymentForm, 'paymentDate')">
+                    <div class="dp-valid">
+                        <ng-container *ngIf="paymentForm.controls.paymentDate.errors?.ngbDate">
+                            <p class="text-danger"> Ngày không hợp lệ</p>
+                        </ng-container>
+                    </div>
+                </at-datepicker>
+            </div>
+        </div>
+    </div>
+</div>
+
+<at-modal-footer>
+    <button type="button" class="btn btn-primarys m-r-20" (click)="onSavePayment()">Hoàn tất</button> 
+    <button type="button" class="btn btn-primarys m-r-20" (click)="onSavePaymentAndPrint()">In & hoàn tất</button> 
+    <button type="button" class="btn" (click)="modal.close()">Quay lại</button>
+</at-modal-footer>
+
+<ng-template #discount>
+    <div class="form-group mb-0 w-50" [formGroup]="paymentForm">
+        <div class="input-group">
+            <input class="form-control discount-form"
+                id="discountValue"
+                format-number
+                formControlName="discountValue"
+                [attr.disabled]="medicalRecord?.payment?.discountAmount ?  true : null"
+                autocomplete="off"
+                placeholder="Nhập giảm giá"
+                *ngIf="paymentForm.get('discountUnit').value === '%'; else currentcy"
+                (input)="onChangeDiscountValue($event.target.value)">
+            <ng-template #currentcy>
+                <input class="form-control discount-form"
+                id="discountValue"
+                currencyInput
+                formControlName="discountValue"
+                [attr.disabled]="medicalRecord?.payment?.discountAmount ?  true : null"
+                autocomplete="off"
+                placeholder="Nhập giảm giá"
+                *ngIf="paymentForm.get('discountUnit').value"
+                (input)="onChangeDiscountValue($event.target.value)">
+            </ng-template>
+            <div class="units-dropdown hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right">
+                <button class="btn-unit" type="button" ngbDropdownToggle [disabled]="medicalRecord?.payment?.discountAmount">
+                    <span>{{ paymentForm.get('discountUnit').value }}</span>
+                </button>
+                <div class='dropdown-dialog' ngbDropdownMenu>
+                    <button ngbDropdownItem *ngFor="let unit of units"
+                        (click)="onChangeUnit(unit.value)">{{ unit.label }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+

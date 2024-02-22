@@ -1,0 +1,90 @@
+<div class="container-fluid m-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5>{{equipmentItem?.name}}</h5>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'edit'" (click)="handleUpdateInventory()" *ngIf="!isEdit">
+            </at-feather-icons>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'x-square'" (click)="handleUpdateInventory()" *ngIf="isEdit">
+            </at-feather-icons>
+            <div class="d-none show_lt-md_block hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" display="dynamic">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div class='dropdown-dialog' ngbDropdownMenu>
+                    <div class="mobile-content d-flex flex-column">
+                        <ng-content select=".mobile"></ng-content>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleUpdateInventory()">Chỉnh sửa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body needs-validation" [formGroup]="equipmentForm">
+            <div class='row'>
+                <ng-container *ngFor="let obj of inventoryContent">
+                    <div class="col-12 col-md-6">
+                        <ng-container *ngIf="!obj.isUpdate; else checkEdit">
+                            <!-- <div class="col-6 d-flex justify-content-between">
+                                <label for="">{{obj.label}}:</label>
+                                <span class="f-w-700">{{obj.value}}</span>
+                            </div> -->
+                                <div class="d-flex justify-content-between form-group">
+                                    <span class="w-50">{{obj.label}}:</span><span class="f-w-700">{{obj.value}}</span>
+                                </div>
+                        </ng-container>
+                        <ng-template #checkEdit>
+                            <div class="flex-column d-flex w-100">
+                                <ng-container *ngIf="obj.inputType != 'date'; else date">
+                                    <at-input [label]="obj.label" [formName]="obj.formName" [inputType]="obj.inputType"
+                                        [typeInput]="obj.typeInput"
+                                        [inputRequired]="validateForm(equipmentForm, obj.formName)"
+                                        [inputValid]="equipmentForm.controls[obj.formName].errors?.required"
+                                        [required]="obj.required">
+                                    </at-input>
+                                </ng-container>
+
+                                <ng-template #date>
+                                    <at-datepicker [required]="true" [formCtrlName]="obj.formName" [label]="obj.label"
+                                        [date]="equipmentForm.get(obj.formName).value" [disabled]="true"
+                                        [inputRequired]="validateForm(equipmentForm, obj.formName)">
+                                        <div class="dp-valid">
+                                            <ng-container *ngIf="equipmentForm.controls[obj.formName].errors?.ngbDate">
+                                                <p class="text-danger"> Ngày không hợp lệ</p>
+                                            </ng-container>
+                                        </div>
+                                    </at-datepicker>
+                                </ng-template>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <ng-template #checkForm>
+                        <div class="flex-column d-flex w-100">
+                            <ng-container >
+                                 <at-input 
+                                        [label]="obj.label"
+                                        [formName]="obj.formName"
+                                        [inputType]="obj.inputType"
+                                        [typeInput]="obj.typeInput"
+                                        [inputRequired]="validateForm(equipmentForm, obj.formName)"
+                                        [inputValid]="equipmentForm.controls[obj.formName].errors?.required"
+                                        [required]="true">
+                                    </at-input>   
+                            </ng-container>
+                        </div>
+                    </ng-template>
+                </ng-container>
+
+            </div>
+        </div>
+    </div>
+    
+    <at-examina-footer #footer (eventCancel)="location.back()" [_isComplete]="true">
+        <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveService()">Xóa</button>
+        <button class="btn btn-primary m-r-12" (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+            <button ngbDropdownItem (click)="onRemoveService()">Xóa</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

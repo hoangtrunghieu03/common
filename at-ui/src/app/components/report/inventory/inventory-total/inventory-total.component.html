@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <at-card [bodyClass]="'custom-datatable'">
+                <h5>danh sách hàng tồn tổng kho</h5>
+                <div class="validateSearch">
+                    <div class="block-search-filter row p-lg-0 m-b-15">
+                        <div class="col-12 col-md-4 col-xl-3">
+                            <ng-container *ngTemplateOutlet="filter"></ng-container>
+                        </div>
+
+                        <at-input-delay-search class='col-12 col-md-8 col-xl-9 w-100 block-search' (inputEmitter)="onSearch($event)">
+                        </at-input-delay-search>
+                    </div>
+
+                    <ng-container *ngTemplateOutlet="result"></ng-container>
+                </div>
+                <at-table-sumary
+                    [tableData]="inventory"
+                    [columnDef]="columnDef"
+                    [limit]="10"
+                    [scrollbarH]="true">
+                </at-table-sumary>
+            </at-card>
+        </div>
+    </div>
+</div>
+
+<ng-template #filter>
+    <at-filter-view (eventAddFilter)="onAddCondiotion()" [title]="'Hiển thị tồn kho theo'">
+        <select class="form-control" [(ngModel)]="filterResult.condition" (change)="onFilterConditionChange()">
+            <option *ngFor="let item of conditionData | keyvalue" [value]="item.key">
+                {{item.value}}
+            </option>
+        </select>
+
+        <div class="row m-0">
+            <div class="col-12 p-0">
+                <span>Từ</span>
+                <input class="form-control" type="date" required="" [(ngModel)]="filterResult.fromDate" />
+            </div>
+            <div class="col-12 p-0">
+                <span>Đến</span>
+                <input class="form-control" type="date" required="" [(ngModel)]="filterResult.toDate" />
+            </div>
+        </div>
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15" *ngIf="renderSelect?.length > 0">
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <span *ngIf="item.from && item.to">
+                {{item.firstCondition + ' ' + (item.from | date : 'dd/MM/yyyy') + ' - ' + (item.to | date : 'dd/MM/yyyy')}}
+            </span>
+            <button (click)="onRemoveFilter(item)">X</button>
+        </span>
+    </div>
+</ng-template>

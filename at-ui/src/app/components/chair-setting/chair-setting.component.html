@@ -1,0 +1,51 @@
+<div class="container-fluid">
+  <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center hide-arrow">
+          <h5 class="text-uppercase">Danh sách ghế</h5>
+          <button class="btn btn-second hide_lt-md" (click)="onCreateChair()">Thêm ghế</button>
+          <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right">
+              <button ngbDropdownToggle class="btn-icon m-0">
+                  <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+              </button>
+              <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                  <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" (click)="onCreateChair()">Thêm ghế</button>
+              </div>
+          </div>
+      </div>
+      <div class="card-body validateSearch">
+        <div class="chair row">
+          <ng-container *ngFor="let chair of chairList">
+            <div class="chair-item col-12 col-xl-4 col-md-6 c-pointer">
+              <div class="chair-item-border d-flex flex-column" [routerLink]="['/quan-ly-ghe/I']" [queryParams]="{_id: chair?._id}">
+                <span class="chair-item-name text-center font-weight-bold f-16 p-b-16">{{ chair.name | replaceNull }}</span>
+                <span class="p-t-16">Người thực hiện: <span class="f-w-700">{{ chair.staffName | replaceNull }}</span></span>
+                <span *ngIf="chair.chairStatus != chairStatus.AVAILABLE">Tên bệnh nhân: <span class="f-w-700">{{ chair.customerName | replaceNull }}</span></span>
+                <span>Trạng thái: <span class="f-w-700">{{ chair.chairStatus | replaceNull }}</span></span>
+                <ng-container *ngIf="chair.chairStatus != chairStatus.AVAILABLE">
+                  <span>Thời gian bắt đầu: <span class="f-w-700">{{ (chair.updateDateTime | date : 'HH:mm' : "GMT") | replaceNull
+                      }}</span></span>
+                  <span>Tổng thời gian đã dùng: <span class="f-w-700">{{ getTimeInChair(chair.updateDateTime) }}</span></span>
+                </ng-container>
+              
+                <div class="needs-validation m-t-12" *ngIf="chair.medicalRecord && chair.medicalRecord.length != 0">
+                  <table class="w-100">
+                    <tbody>
+                      <tr *ngFor="let row of chair.medicalRecord; let i = index">
+                        <td class="p-b-12 w-75">
+                          <span>{{ row.customerName }}</span>
+                        </td>
+                        <td class="d-flex justify-content-center p-b-12" style="width: 50px; min-width: 50px;">
+                          <div class="col-status" [ngStyle]="{'background-color': getItemColor(row.chairStatus)}">&nbsp;</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        
+        </div>
+      </div>
+  </div>
+</div>

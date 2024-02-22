@@ -1,0 +1,845 @@
+<div class="container-fluid m-b-15">
+  <ng-container *ngTemplateOutlet="general_info"></ng-container>
+
+  <div class="card">
+    <div class="card-body">
+      <div class='tab2-card tab'>
+        <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false">
+          <li [ngbNavItem]="1" [destroyOnHide]="true">
+            <a ngbNavLink>Thông tin chung</a>
+            <ng-template ngbNavContent>
+              <ng-container *ngTemplateOutlet="medical_record"></ng-container>
+
+              <ng-container *ngTemplateOutlet="general_content"></ng-container>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2" [destroyOnHide]="true">
+            <a ngbNavLink>Lịch sử điều trị</a>
+            <ng-template ngbNavContent>
+              <ng-container *ngTemplateOutlet="treatmenHistory"></ng-container>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="3" [destroyOnHide]="true">
+            <a ngbNavLink>Lịch sử thanh toán</a>
+            <ng-template ngbNavContent>
+              <ng-container *ngTemplateOutlet="paymentHistory"></ng-container>
+            </ng-template>
+          </li>
+        </ul>
+
+        <div [ngbNavOutlet]="nav"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <at-examina-footer (eventCancel)="onBackClick()" [_isComplete]="true">
+    <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveExamination()" *ngIf="actionRole.removeExamine">Xóa</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem  (click)="onRemoveExamination()" *ngIf="actionRole.removeExamine">Xóa</button>
+        </ng-container>
+  </at-examina-footer>
+</div>
+
+<ng-template #medical_record>
+  <div class="card shadow-none">
+    <div class="card-header px-0">
+      <h5>KHÁM BỆNH</h5>
+    </div>
+    <div class="card-body px-0">
+      <ng-container
+        *ngIf="(medicalRecordData.serviceType == medicalServiceType.GENERAL && medicalRecordData.generalExamination) ||
+                (medicalRecordData.serviceType == medicalServiceType.BRACES && medicalRecordData.braceExamination)
+                || (medicalRecordData.serviceType  == medicalServiceType.IMPLANT && medicalRecordData.implantExamination); else noContent">
+        <ng-container *ngTemplateOutlet="general_medical"></ng-container>
+        <ng-container *ngTemplateOutlet="brace_medical"></ng-container>
+        <ng-container *ngTemplateOutlet="implant_medical"></ng-container>
+      </ng-container>
+      <ng-template #noContent>
+        <div>Chưa có thông tin khám bệnh</div>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #general_info>
+  <at-card>
+    <h5 class="d-flex justify-content-between align-items-center hide-arrow ">
+      <span>THÔNG TIN HỒ SƠ BỆNH ÁN - {{ medicalRecordData?.medicalRecordCode }}</span>
+      <div class="d-flex align-items-center hide_lt-md">
+        <button class="btn btn-second move-room m-r-12" (click)="onPayment()" *ngIf="actionRole.payment">Thanh toán</button>
+        <button class="btn btn-second move-room m-r-12" (click)="onReExamination()"
+        *ngIf="actionRole.reExamine">Tái khám</button>
+        <span class="hide-arrow" ngbDropdown #myDrop="ngbDropdown" *ngIf="actionRole.finishExamine ||
+                actionRole.createSchedule || actionRole.goOut || actionRole.updateExamine" placement="bottom-right">
+          <at-feather-icons ngbDropdownToggle class="c-pointer btn-icon" [icon]="'more-horizontal'"></at-feather-icons>
+          <div class='dropdown-dialog' ngbDropdownMenu>
+            <div class="mobile-content d-flex flex-column">
+              <button class="btn border-white" ngbDropdownItem (click)="onMedicalRecordFinish()" *ngIf="actionRole.finishExamine">Hoàn thành</button>
+              <button class="btn border-white" ngbDropdownItem (click)="onMedicalSchedule()" *ngIf="actionRole.createSchedule">Tạo lịch hẹn</button>
+              <button class="btn border-white" ngbDropdownItem (click)="onUpdateRoomStatus()" *ngIf="actionRole.goOut">Cho về</button>
+              <button class="btn border-white" ngbDropdownItem (click)="onUpdateMedicalRecord()" *ngIf="actionRole.updateExamine">Cập nhật hồ sơ</button>
+            </div>
+          </div>
+        </span>
+      </div>
+    </h5>
+    <div class="row">
+      <div class="d-flex flex-column m-b-15 col-8">
+        <label>Họ và tên bệnh nhân: <span class="f-w-600">{{ customer?.fullName }}</span></label>
+        <label>Ngày tháng năm sinh: <span class="f-w-600">{{ customer?.birthday | date : 'dd/MM/yyyy' }}</span></label>
+        <label>Giới tính: <span class="f-w-600">{{ customer?.sex }}</span></label>
+        <label>Địa chỉ liên lạc: <span class="f-w-600">{{ customer?.address }}</span></label>
+        <label>Số điện thoại: <span class="f-w-600">{{ formatPhoneNumber(customer?.tel) }}</span></label>
+
+        <div class="d-flex align-items-center m-b-8">
+          <span>Tên bệnh án:&nbsp;</span>
+          <ng-container *ngIf="!formUpdate.medicalRecordName.isUpdate; else updateMedicalRecordName">
+            <span class="f-w-600">{{ medicalRecordData.medicalRecordName }}</span>
+            <at-feather-icons class="d-flex c-pointer m-l-16 feather-20" [icon]="'edit'"
+              (click)="cancelUpdate('medicalRecordName')"></at-feather-icons>
+          </ng-container>
+          <ng-template #updateMedicalRecordName>
+            <input [(ngModel)]="formUpdate.medicalRecordName.value" #medicalRecordNameInput>
+            <span class="c-pointer m-l-16 font-weight-bold" style="color: #f99f2a"
+              (click)="onSaveUpdate('medicalRecordName')">Lưu</span>
+            <at-feather-icons class="d-flex c-pointer m-l-16 feather-20" [icon]="'x-square'"
+              (click)="cancelUpdate('medicalRecordName')"></at-feather-icons>
+          </ng-template>
+        </div>
+
+        <div class="d-flex align-items-center m-b-8">
+          <span>Loại bệnh án:&nbsp;</span>
+          <ng-container *ngIf="!formUpdate.serviceType.isUpdate; else updateServiceType">
+            <span class="f-w-600">{{ medicalRecordData.serviceType }}</span>
+            <at-feather-icons class="d-flex c-pointer m-l-16 feather-20" [icon]="'edit'"
+              (click)="cancelUpdate('serviceType')"></at-feather-icons>
+          </ng-container>
+          <ng-template #updateServiceType>
+            <select [(ngModel)]="formUpdate.serviceType.value">
+              <option [ngValue]="null">Chọn loại bệnh án</option>
+              <option *ngFor="let serviceType of medicalServiceType | keyvalue" [value]="serviceType.value">{{ serviceType.value
+                }}</option>
+            </select>
+            <span class="c-pointer m-l-16 font-weight-bold" style="color: #f99f2a"
+              (click)="onSaveUpdate('serviceType')">Lưu</span>
+            <at-feather-icons class="d-flex c-pointer m-l-16 feather-20" [icon]="'x-square'"
+              (click)="cancelUpdate('serviceType')"></at-feather-icons>
+          </ng-template>
+        </div>
+
+        <label>Bác sĩ điều trị: <span class="f-w-600">{{ onGetStaffName(medicalRecordData.staffId) }}</span></label>
+        <label>Tổng tiền: <span class="f-w-600">{{ medicalRecordData?.payment?.totalMoney | currency:'VND':'symbol':null:'vi-VN' }}</span></label>
+        <label>Còn nợ: <span class="f-w-600">{{ medicalRecordData?.payment?.moneyPayment | currency:'VND':'symbol':null:'vi-VN' }}</span></label>
+        <label>Ngày khám đầu tiên: <span class="f-w-600">{{ (medicalRecordData.examinationDateHistory?.length > 0 &&
+            medicalRecordData.examinationDateHistory[0]) ?
+            (medicalRecordData.examinationDateHistory[0] | date : 'dd/MM/yyyy' : "GMT") : '--' }}</span></label>
+      </div>
+    </div>
+  </at-card>
+</ng-template>
+
+<ng-template #general_content>
+  <at-card [cardClass]="'shadow-none'" [headerClass]="'px-0'" [bodyClass]="'px-0 p-b-0'">
+    <h5 class="text-uppercase">hình ảnh</h5>
+    <at-pickture [medicalRecord]="medicalRecordData" [screenImage]="screenImage.medical_record"></at-pickture>
+  </at-card>
+
+  <at-card [cardClass]="'shadow-none'" [headerClass]="'px-0'" [bodyClass]="'px-0 p-b-0'">
+    <h5 class="text-uppercase">Danh sách chỉ định và dịch vụ</h5>
+    <h4 class="f-w-700 text-center p-b-25">Bảng chỉ định</h4>
+    <ng-container *ngTemplateOutlet="designatContent"></ng-container>
+
+    <h4 class="f-w-700 m-t-30 text-center p-b-25">Bảng dịch vụ</h4>
+    <at-base-table [colDef]="serviceColDef" [tableData]="medicalRecordData.medicalServices">
+    </at-base-table>
+  </at-card>
+
+  <at-card [cardClass]="'shadow-none'" [headerClass]="'px-0'" [bodyClass]="'px-0 p-b-0'">
+    <h5 class="text-uppercase">Quá trình điều trị</h5>
+    <at-base-table [colDef]="treatmenColumnDef" [tableData]="medicalRecordData.treatmentProcesses">
+    </at-base-table>
+  </at-card>
+
+  <at-card [cardClass]="'shadow-none'" [headerClass]="'px-0'" [bodyClass]="'px-0 p-b-0'">
+    <h5 class="text-uppercase">Vật dụng tiêu hao</h5>
+    <at-base-table [colDef]="supplyColumnDef" [tableData]="medicalRecordData.medicalSupply">
+    </at-base-table>
+  </at-card>
+
+  <at-card [cardClass]="'shadow-none'" [headerClass]="'px-0'" [bodyClass]="'px-0 p-b-0'">
+    <h5 class="text-uppercase">Ghi chú</h5>
+    <textarea class="form-control" [(ngModel)]="medicalRecordData.note" disabled></textarea>
+  </at-card>
+
+  <at-card [cardClass]="'shadow-none'" [headerClass]="'px-0'" [bodyClass]="'px-0'">
+    <h5 class="text-uppercase">thu phí</h5>
+    <at-fee [medicalRecord]="medicalRecordData"></at-fee>
+  </at-card>
+</ng-template>
+
+<ng-template #general_medical>
+  <div class="row" *ngIf="medicalRecordData.serviceType == medicalServiceType.GENERAL">
+    <ng-container *ngFor="let item of generalMedicalRecordContent; let i = index">
+      <div class="col-12">
+        <div class="form-group" [ngClass]="item.class">
+          <h4 class="f-w-700 m-r-12">{{i+1 +'. '+item.label}}</h4>
+          <ng-container *ngIf="item.type; else notType">
+            <ng-container *ngIf="item.value && item.value.length != 0; else notValue">
+              <span *ngFor="let re of item.value; let last = last">{{re + (!last ? ', ' : '')}}</span>
+            </ng-container>
+            <ng-template #notValue>
+              <span>--</span>
+            </ng-template>
+          </ng-container>
+          <ng-template #notType>
+            <span>{{item.value | replaceNull}}</span>
+          </ng-template>
+        </div>
+        <ng-container *ngIf="i == 2">
+          <at-tooth-diagram [tooth]="tooth" [disableTooth]="true"></at-tooth-diagram>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #implant_medical>
+  <div class="row" *ngIf="medicalRecordData.serviceType == medicalServiceType.IMPLANT && implantMedicalRecordContent">
+    <ng-container *ngFor="let item of implantMedicalRecordContent; let i = index">
+      <div class="col-12">
+        <div class="form-group" [ngClass]="item.class">
+          <h4 class="f-w-700 m-r-12">{{i+1 +'. '+item.label}}</h4>
+          <ng-container *ngIf="item.type && item.value != null; else notType">
+            <ng-container *ngIf="item.type =='object'">
+              <ng-container *ngFor="let ob of item.typeName; let obL = last">
+                <div [ngClass]="!obL ? 'form-group' : null" *ngIf="item?.value && item?.value[ob?.label]">
+                  {{ob.value +': '}}
+                  {{item.value[ob.label] == true ? 'Có' :
+                  (item.value[ob.label] | replaceNull)}}
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngIf="item.type =='array'">
+              <span *ngFor="let re of item.value; let last = last">{{re + (!last ? ', ' : '')}}</span>
+            </ng-container>
+          </ng-container>
+          <ng-template #notType>
+            <span>{{item.value | replaceNull}}</span>
+          </ng-template>
+        </div>
+        <ng-container *ngIf="i == 2">
+          <at-tooth-diagram [tooth]="tooth" [disableTooth]="true"></at-tooth-diagram>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #brace_medical>
+  <at-card class="needs-validation" [headerClass]="'p-0'" [bodyClass]="'p-0'" *ngIf="medicalRecordData.serviceType == medicalServiceType.BRACES">
+    <h4 class="f-w-700">Bệnh án chỉnh hình</h4>
+    <ng-container *ngTemplateOutlet="orthopedicBlock"></ng-container>
+    <hr>
+
+    <h4 class="f-w-700">Khám ngoài mặt</h4>
+    <ng-container *ngTemplateOutlet="examineBlock"></ng-container>
+    <hr>
+
+    <h4 class="f-w-700">Khám trong miệng</h4>
+    <ng-container *ngTemplateOutlet="oralExamineBlock"></ng-container>
+    <hr>
+
+    <h4 class="f-w-700">Tóm tắt chẩn đoán</h4>
+    <ng-container *ngTemplateOutlet="diagnosticSumaryBlock"></ng-container>
+    <hr>
+
+    <h4 class="f-w-700">Mục tiêu và kế hoạch điều trị</h4>
+    <ng-container *ngTemplateOutlet="targetAndPlanBlock"></ng-container>
+    <hr>
+
+    <h4 class="f-w-700">Phân loại bệnh</h4>
+    <ng-container *ngFor="let val of braceExamination?.classificationDisease">
+      <span class="f-w-700">{{ val }}, </span>
+    </ng-container>
+
+  </at-card>
+</ng-template>
+
+<ng-template #orthopedicBlock>
+  <div class="row">
+    <div class="col-12">
+      <div class="form-group">
+        <span class="f-w-700" for="reason">1. Lý do đến khám:</span>
+        <span>&nbsp;{{ braceExamination?.orthopedicCase?.reason }}</span>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngFor="let obj of orthopedic; let firstIndex = index; let last = last">
+    <div class="form-group">
+      <span class="f-w-700">{{ (firstIndex + 1) + 1 + ". " }}{{ obj.label }}:</span>
+      <ng-container *ngIf="obj.group && obj.group.length != 0; else orthopedicValue">
+        <div class="row m-0" *ngFor="let val of obj.group">
+          <div class="col-12 col-md-6">
+            <span class="f-w-700 p-l-15">{{ val.label }}:</span>
+            <span>&nbsp;{{ val.value }}</span>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #orthopedicValue>
+        <span>&nbsp;{{ obj?.value }}</span>
+      </ng-template>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #examineBlock>
+  <ng-container *ngFor="let obj of examineContent; let firstIndex = index; let last = last">
+    <div class="form-group">
+      <span class="f-w-700">{{ obj.label }}:</span>
+      <ng-container *ngIf="obj.group && obj.group.length != 0; else examineValue">
+        <div class="d-flex flex-wrap" *ngFor="let val of obj.group">
+          <ng-container *ngIf="val.value">
+            <span class="f-w-700 p-l-15">+&nbsp;{{ val.label }}:</span>
+            <span>&nbsp;{{ val.value }}</span>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #examineValue>
+        <span>&nbsp;{{ obj?.value }}</span>
+      </ng-template>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #oralExamineBlock>
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex flex-column">
+        <span class="f-w-700 form-group">1. Khám răng:</span>
+        <div class="row m-b-40">
+          <div class="col-12 d-flex justify-content-center">
+            <div class="d-flex flex-column">
+              <div class="d-flex" *ngFor='let row of [].constructor(2); let rowInd = index'>
+                  <div class='d-flex' [ngClass]="{'flex-column-reverse': rowInd == 0, 'flex-column': rowInd == 1}"
+                      *ngFor='let obj of [].constructor(2); let colInd = index'>
+                      <div class="d-flex bg-siler-f">
+                          <ng-container
+                              *ngFor="let title of handleRenderTitle(colInd == 0 ? false : true)">
+                              <div class="p-12 c-pointer w-px-46 h-px-46 p-relative text-center" style="border: 1px solid black"
+                                  [style.color]="checkIncludeCharacters(title, rowInd, colInd) ? '#f99f2a' : null">
+                                  <span class="p-6 f-w-700">{{title}}</span>
+                                  <span style="top: 7px; left: 19px;" class="p-absolute f-w-400 f-20"
+                                      [ngClass]="{'d-none': !checkIncludeCharacters(title, rowInd, colInd)}">\</span>
+                              </div>
+                          </ng-container>
+                      </div>
+                      <div class="d-flex">
+                          <ng-container *ngFor='let num of handleRenderData(colInd == 0 ? false : true)'>
+                              <div class="p-12 c-pointer w-px-46 h-px-46 p-relative text-center" style="border: 1px solid black"
+                                  [style.color]="checkIncludeNum(num, rowInd, colInd) ? '#f99f2a' : null">
+                                  <span class="p-6 f-w-700">{{num}}</span>
+                                  <span style="top: 7px; left: 19px;" class="p-absolute f-w-400 f-20"
+                                      [ngClass]="{'d-none': !checkIncludeNum(num, rowInd, colInd)}">\</span>
+                              </div>
+                          </ng-container>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6" *ngFor="let obj of oralExamineContent?.jaw; let firstIndex = index">
+            <div class="form-group">
+              <span class="f-w-700" *ngIf="obj.group && obj.group.length !== 0">-&nbsp;{{ obj.label }}: </span>
+              <ng-container *ngIf="obj.group && obj.group.length !== 0">
+                <div class="d-flex flex-wrap" *ngFor="let val of obj.group">
+                  <span class="f-w-700 p-l-16">+&nbsp;{{ val.label }}<span *ngIf="val.value">:</span></span>
+                  <span>&nbsp;{{ val.value }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex">
+          <ng-container *ngFor="let obj of oralExamineContent?.analysis; let firstIndex = index">
+            <span class="form-group f-w-700" *ngIf="obj.group && obj.group.length !== 0">{{ obj.label }}:</span>
+            <div class="d-block m-l-12">
+              <ng-container *ngIf="obj.group && obj.group.length !== 0">
+                <div *ngFor="let val of obj.group">
+                  <span>{{ val.label }}:</span>
+                  <span>&nbsp;{{ val.value }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+        <span class="f-w-700 form-group">2. Tương quan hai hàm:</span>
+        <ng-container *ngFor="let obj of jawBeforeContent?.front">
+          <div class="form-group">
+            <span class="form-group f-w-700">-&nbsp;{{ obj.label }}: </span>
+            <ng-container *ngFor="let val of obj.data">
+              <div [ngClass]="val.options && val.options.length == 0 ? 'd-block' : 'd-flex'">
+                <div class="f-w-700 p-l-16" *ngIf="(val.options && val.options?.length != 0) || (val.sub && val.sub?.length != 0)">+&nbsp;{{ val.label
+                  }}:</div>
+                <ng-container *ngIf="val.options && val.options.length != 0; else subValue">
+                  <div class="m-l-15" *ngFor="let option of val.options">
+                    <span *ngIf="option.label">-&nbsp;{{ option.label }}</span>
+                    <span *ngIf="option.options && option.options.length != 0">: </span>
+                    <span *ngFor="let ops of option.options">{{ ops }}, </span>
+                  </div>
+                </ng-container>
+                <ng-template #subValue>
+                  <div class="d-flex flex-column m-l-30" *ngIf="val.sub && val.sub.length !== 0">
+                    <ng-container *ngFor="let subValue of val.sub">
+                      <div class="d-flex">
+                        <span class="f-w-700" *ngIf="subValue.sub?.length != 0">{{ subValue.label }}:</span>
+                        <div class="d-flex flex-column m-l-15">
+                          <ng-container *ngFor="let sub of subValue.sub">
+                            <div>
+                              <span>-&nbsp;{{ sub.label}}</span>
+                              <span *ngIf="sub.options?.length != 0">:</span>
+                              <span *ngFor="let ops of sub.options">&nbsp;{{ ops }}, </span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-template>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+        <ng-container *ngFor="let obj of jawBeforeContent?.side">
+          <div class="form-group">
+            <span class="form-group f-w-700">-&nbsp;{{ obj.label }}: </span>
+            <table class="base-table m-b-18">
+              <thead>
+                <col>
+                <colgroup span="2"></colgroup>
+                <colgroup span="2"></colgroup>
+                <tr>
+                  <td rowspan="2" style="border-right: 1px solid #ced4da"></td>
+                  <th class="text-center" colspan="2" scope="colgroup">Răng nanh</th>
+                  <th class="text-center" colspan="2" scope="colgroup">Răng cối</th>
+                </tr>
+                <tr>
+                  <th class="text-center" scope="col">Bên phải</th>
+                  <th class="text-center" scope="col">Bên trái</th>
+                  <th class="text-center" scope="col">Bên phải</th>
+                  <th class="text-center" scope="col">Bên trái</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of angleType | keyvalue: correctOrder, let i = index">
+                  <th style="border-right: 1px solid #ced4da" scope="row">{{ row.value }}</th>
+                  <td *ngFor="let col of [].constructor(4), let j = index">
+                    <div class="checkbox-primary d-flex justify-content-center align-content-center checkbox m-b-12">
+                      <input type="checkbox" id='{{row.value + j}}' class="form-check-input m-t-0"
+                        [checked]="getValueColumn(row.value, j)" (change)="handleRenderColumn($event, row.value, j)" disabled>
+                      <label for='{{row.value + j}}'></label>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-container *ngFor="let val of obj.data">
+              <div class="m-t-24" [ngClass]="val.options.length == 0 ? 'd-block' : 'd-flex'">
+                <div class="f-w-700 p-l-16" *ngIf="val.options?.length != 0">+&nbsp;{{ val.label }}:</div>
+                <div class="m-l-15" *ngFor="let option of val.options">
+                  <span>-&nbsp;{{ option.label }}</span>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+        <span class="f-w-700 form-group">3. Khám chức năng và cận chức năng:</span>
+        <ng-container *ngFor="let obj of functionalContent">
+          <div class="form-group">
+            <span class="form-group f-w-700" *ngIf="obj.data && obj.data.length !== 0">-&nbsp;{{ obj.label }}: </span>
+            <ng-container *ngFor="let val of obj.data">
+              <div *ngIf="val.boolean; else value">
+                <div class="f-w-700 p-l-16" *ngIf="val.label">+&nbsp;{{ val.label }}</div>
+              </div>
+              <ng-template #value>
+                <div [ngClass]="val.options?.length == 0 ? 'd-block' : 'd-flex'">
+                  <div class="f-w-700 p-l-16" *ngIf="val.label && (val.options?.length != 0 || val.sub?.length != 0)">
+                    +&nbsp;{{ val.label }}:</div>
+                  <div class="flex flex-column">
+                    <ng-container *ngIf="val.options?.length != 0; else subValue">
+                      <div class="m-l-15" *ngFor="let option of val?.options">
+                        <span *ngIf="option.label">-&nbsp;{{ option.label }}<span *ngIf="option.options && option.options.length !== 0">:</span></span>
+                        <span *ngFor="let ops of option.options">&nbsp;{{ ops }}</span>
+                      </div>
+                    </ng-container>
+                  </div>
+                  <ng-template #subValue>
+                    <div class="d-flex flex-column m-l-30">
+                      <ng-container *ngFor="let subValue of val?.sub">
+                        <div class="d-flex">
+                          <span class="f-w-700">{{ subValue.label }}:</span>
+                          <div class="d-flex flex-column m-l-15">
+                            <ng-container *ngFor="let sub of subValue.sub">
+                              <div>
+                                <span class="f-w-700">-&nbsp;{{ sub.label }}:</span>
+                                <!-- <span *ngIf="sub.options && sub.options.length != 0">:</span> -->
+                                <span *ngFor="let ops of sub.options">&nbsp;{{ ops }}</span>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-template>
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #diagnosticSumaryBlock>
+  <table class="base-table">
+    <col>
+    <col>
+    <colgroup></colgroup>
+    <thead>
+      <tr>
+        <th class="text-center" *ngFor='let col of header'>{{col}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th rowspan="3" scope="rowgroup" style="border-right: 1px solid #ced4da">Xương</th>
+        <td>NpA = {{ diagnostic.anteriorNpa }}
+          mm.</td>
+        <td>6 – 6 width = {{ diagnostic.anteriorNpa }} mm.
+        </td>
+        <td>PP – MP = {{ diagnostic.verticalPP_MP }}</td>
+      </tr>
+      <tr>
+        <td>NpB = {{ diagnostic.anteriorSkeletalNpb }}
+          mm.</td>
+        <td>6’ – 6’ width = {{ diagnostic.tranveseSkeletal6_6_width }}
+          mm.</td>
+        <td>PP – OP = {{ diagnostic.verticalSkeletalPP_OP }}
+        </td>
+      </tr>
+      <tr>
+        <td>PA – PB = {{ diagnostic.anteriorSkeletalPA_PB }} mm.</td>
+        <td></td>
+        <td>MP – OP = {{ diagnostic.verticalSkeletalMP_OP }}
+        </td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr>
+        <th rowspan="3" scope="rowgroup" style="border-right: 1px solid #ced4da">Mô mềm</th>
+        <td>Profile: {{ diagnostic.profile }}</td>
+        <td>Ngắt hành lang : {{ diagnostic.breakCorridor }}</td>
+        <td>Lipe : {{ diagnostic.lipe }}</td>
+      </tr>
+      <tr>
+        <td>NLA : {{ diagnostic.NLA }}</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>E – line = {{ diagnostic.anteriorSofttissueEline }}
+          mm.</td>
+        <td></td>
+        <td>Hình dáng mặt : {{ diagnostic.surfaceLook }}</td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr>
+        <th rowspan="6" scope="rowgroup" style="border-right: 1px solid #ced4da">Răng</th>
+        <td>Molar : {{ diagnostic.molar }}</td>
+        <td>UDML = {{ diagnostic.tranveseSofttissueUDML }} mm.
+        </td>
+        <td>OB = {{ diagnostic.verticalSofttissueOB }}
+          mm.</td>
+      </tr>
+      <tr>
+        <td>OJ = {{ diagnostic.anteriorDentalOJ }} mm.
+        </td>
+        <td>LDML = {{ diagnostic.tranveseDentalLDML }}
+          mm.</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>U1 – PP = {{ diagnostic.anteriorDentalUI_PP }} mm.
+        </td>
+        <td>U – ALD = {{ diagnostic.tranveseDentalU_ALD }} mm.
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>IMPA = {{ diagnostic.anteriorDentalUIMPA }}
+          mm.</td>
+        <td>L – ALD = {{ diagnostic.tranveseDentalL_ALD }} mm.
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>3 – 3 width = {{ diagnostic.tranveseDentalL_3_3_width }} mm.
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>3’ – 3’ width = {{ diagnostic.tranveseDentalL_3_3__width }}
+          mm.</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #targetAndPlanBlock>
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex flex-column">
+        <div class="form-group">
+          <span class="f-w-700 form-group">1. Các vấn đề cần quan tâm:</span>
+          <span>&nbsp;{{ braceExamination?.braceExaminationPlan?.treatmentGoals }}</span>
+        </div>
+
+        <span class="f-w-700 form-group">2. Kế hoạch điều trị:</span>
+          <div class="form-group">
+            <ng-container *ngFor="let val of planContent">
+              <div [ngClass]="val.options && val.options.length == 0 ? 'd-block' : 'd-flex'">
+                <span class="f-w-700" *ngIf="val.label && (!val.options && !val.sub)">&nbsp;{{ val.label }}</span>
+                <span class="f-w-700" *ngIf="val.label && (val.options && val.options.length != 0) || (val.sub && val.sub.length != 0)">&nbsp;{{ val.label }}:</span>
+                <ng-container *ngIf="val.options && val.options.length != 0; else subValue">
+                  <div class="m-l-15" *ngFor="let option of val.options">
+                    <span *ngIf="option.label">-&nbsp;{{ option.label }}</span>
+                    <span *ngFor="let ops of option.options">{{ ops }}</span>
+                  </div>
+                </ng-container>
+                <ng-template #subValue>
+                  <div class="d-flex flex-column m-l-30">
+                    <ng-container *ngFor="let subValue of val.sub">
+                      <div class="d-flex">
+                        <span class="f-w-700" *ngIf="subValue.label">+&nbsp;{{ subValue.label }}</span>
+                        <span class="f-w-700" *ngIf="subValue.sub && subValue.sub.length != 0">:</span>
+                        <div class="d-flex flex-column m-l-15">
+                          <ng-container *ngFor="let sub of subValue.sub">
+                            <span *ngIf="sub.label">-&nbsp;{{ sub.label }}</span>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-template>
+              </div>
+            </ng-container>
+            <div class="d-flex" *ngIf="braceExamination?.braceExaminationPlan?.note">
+              <span class="f-w-700 form-group">&nbsp;Ghi chú:</span>
+              <span>&nbsp;{{ braceExamination?.braceExaminationPlan?.note }}</span>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #designatContent>
+  <div class="needs-validation overflow-auto">
+    <table class="base-table ">
+      <thead>
+        <tr>
+          <ng-container *ngFor="let col of designationColDef">
+            <th [style]="col.headerStyle">{{col.label}}</th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of medicalRecordData.medicalServiceIndicates; let i = index">
+          <ng-container *ngFor="let col of designationColDef">
+            <td [style]="col.style">
+              <ng-container *ngIf="col.colType =='checkbox' else noUpdate">
+                <ng-container [ngSwitch]="col.colType">
+                  <ng-container *ngSwitchCase="'checkbox'">
+                    <div class='checkbox-primary px-17 checkbox'>
+                      <input type="checkbox" id='designat-{{i}}' class="form-check-input m-t-0" [value]='row[col.title]'
+                        (change)="row[col.title] = !row[col.title]" [checked]="row[col.title]" disabled>
+                      <label for='designat-{{i}}'>Làm ngoài</label>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <ng-template #noUpdate>
+                <span>
+                  {{ col.title == 'money'
+                  ? ( row[col.title] | currency:'VND':'symbol':null:'vi-VN')
+                  : (row[col.title] | replaceNull) }}
+                </span>
+              </ng-template>
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+    <ng-container
+      *ngIf="!medicalRecordData.medicalServiceIndicates || medicalRecordData.medicalServiceIndicates?.length == 0">
+      <div class="empty-row">
+        Không có dữ liệu
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #treatmenHistory>
+  <div class="row">
+    <div class="col-12">
+        <div class="custom-datatable">
+
+            <div id="batchDelete">
+
+                <div class="table-responsive">
+
+                    <ngx-datatable class="bootstrap"
+                        [rows]="medicalRecordData?.treatmentProcesses ? medicalRecordData?.treatmentProcesses : []"
+                        [columns]="treatmentHistoryColumnDef"
+                        [columnMode]="'force'"
+                        [headerHeight]="'auto'"
+                        [footerHeight]="medicalRecordData?.treatmentProcesses && medicalRecordData?.treatmentProcesses.length > 0 ? 50 : 0"
+                        [rowHeight]="'auto'"
+                        [limit]="10"
+                        [scrollbarH]="true"
+                        [messages]="{emptyMessage: 'Không có dữ liệu'}"
+                        #tables>
+
+                        <ngx-datatable-column
+                            *ngFor="let col of treatmentHistoryColumnDef"
+                            [prop]="col.prop"
+                            [width]='col.width'>
+                            <ng-template
+                                let-column="column"
+                                let-sort="sortFn"
+                                ngx-datatable-header-template>
+                                <div [style]="col.styleHeader">
+                                    <span class="mobile-hidden">{{col.name}}</span>
+                                </div>
+                            </ng-template>
+                            <ng-template
+                                let-value="value"
+                                ngx-datatable-cell-template
+                                let-row='row'>
+                                <div [style]="col.styleBody" (click)="onNavigateViewDetail(row)">
+                                    <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                      <ng-container *ngIf="col.colType != 'innerHTML'; else inner">
+                                        {{
+                                        col.colType == "date" ? ( value | date : 'dd/MM/yyyy' )
+                                        : value | replaceNull
+                                        }}
+                                      </ng-container>
+                                      <ng-template #inner>
+                                        <span [innerHTML]="value"></span>
+                                      </ng-template>
+                                    </span>
+                                </div>
+                            </ng-template>
+                        </ngx-datatable-column>
+
+                        <ngx-datatable-footer>
+                            <ng-template
+                                ngx-datatable-footer-template
+                                let-rowCount="rowCount"
+                                let-pageSize="pageSize"
+                                let-selectedCount="selectedCount"
+                                let-curPage="curPage"
+                                let-offset="offset">
+                                <span>Tổng<span class="font-weight-bold">&nbsp;{{ medicalRecordData?.treatmentProcesses?.length }}</span></span>
+                                <datatable-pager
+                                    [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                    [pagerRightArrowIcon]="'datatable-icon-right'"
+                                    [pagerPreviousIcon]="'datatable-icon-prev'"
+                                    [pagerNextIcon]="'datatable-icon-skip'"
+                                    [page]="curPage" [size]="pageSize"
+                                    [count]="rowCount" [hidden]="!((rowCount / pageSize) > 1)"
+                                    (change)="tables.onFooterPage($event)">
+                                </datatable-pager>
+                            </ng-template>
+                        </ngx-datatable-footer>
+
+                    </ngx-datatable>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</ng-template>
+
+<ng-template #paymentHistory>
+  <!-- <at-table
+    [tableData]="paymentHistoryData"
+    [columnDef]="paymentColumnDef"
+    [limit]="10"
+    [scrollbarH]="true">
+  </at-table> -->
+
+  <div class="overflow-auto needs-validation">
+    <table class="base-table">
+      <thead>
+        <tr>
+          <ng-container *ngFor="let col of paymentColumnDef">
+            <th [style]="col.headerStyle">{{col.name}}</th>
+          </ng-container>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngIf="paymentHistoryData && paymentHistoryData?.length != 0; else noData">
+          <tr *ngFor="let row of paymentHistoryData; let i = index">
+            <ng-container *ngFor="let col of paymentColumnDef">
+              <td [style]="col.style">
+                <ng-container *ngIf="col.prop == 'processDay'; else noPath">
+                  <span style="cursor: pointer; font-weight: bold; color: #f99f2a"
+                    (click)="onNavigateViewDetail(row)">{{
+                    row[col.prop] | date : 'dd/MM/yyyy' }}</span>
+                </ng-container>
+                <ng-template #noPath>
+                  <span class="d-flex justify-content-start align-content-center">
+                    <div class="icon-dollar-back">
+                      <img *ngIf="col.prop == 'paymentDate'" class="icon-dollar" src="../../../../../assets/fonts/feather-custom/dollar.svg" alt="">
+                      <img class="icon-arrow" *ngIf="col.prop == 'paymentDate' && row?.paymentStatus == PAYMENT_STATUS.CANCEL" src="../../../../../assets/fonts/feather-custom/arrow.svg" alt="" >
+                    </div>
+                    <span [ngClass]="{'m-l-10': col.prop == 'paymentDate'}">
+                      {{col.colType == "date"
+                    ? ( row[col.prop] | date : 'dd/MM/yyyy' : "GMT" )
+                    : col.colType == "money" ? ( row[col.prop] | currency:'VND':'symbol':null:'vi-VN' )
+                    : ( row[col.prop] | replaceNull)}}
+                    </span>
+                  </span>
+                </ng-template>
+              </td>
+            </ng-container>
+            <td class="w-px-100 d-flex">
+              <button class="btn btn-second" (click)="onViewDetailPayment(row)">Xem</button>
+              <button class="remove btn btn-delete m-l-10" (click)="onDeletePayHistory(row)" *ngIf="i == firstIndexWithPaymentStatus" >Hủy</button>
+            </td>
+          </tr>
+        </ng-container>
+
+        <ng-template #noData>
+          <tr class="empty-row w-100">
+            <td [attr.colspan]="paymentColumnDef.length + 1">Không có dữ liệu</td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </table>
+  </div>
+</ng-template>

@@ -1,0 +1,19 @@
+@import '../input-delay-search/input-delay-search.component.scss';
+
+.select-active {
+  background-color: #1e90ff;
+  color: #fff;
+}
+
+.select-disabled {
+  pointer-events: none;
+  .input-filter__box, input {
+    background: #E9ECEF;
+  }
+}
+
+.dropdown-dialog,
+.dropdown-menu {
+  z-index: 5000;
+}
+

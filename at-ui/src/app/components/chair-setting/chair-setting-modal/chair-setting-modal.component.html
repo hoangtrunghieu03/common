@@ -1,0 +1,43 @@
+<at-modal-header (onClose)="activeModal.dismiss('Cross click')">
+  Thêm ghế
+</at-modal-header>
+<div class="modal-body">
+  <div class="needs-validation" [formGroup]="chairForm">
+      <div class="row">
+          <div class="col-12 row align-items-center mx-0 p-0 form-group">
+              <span class="col-12 col-md-3"><span class="star-color">* </span>Tên ghế: </span>
+              <at-input
+                  class="hidden-margin col-12 col-md-6 p-0"
+                  [formName]="'name'"
+                  [required]="true"
+                  [inputRequired]="validateForm(chairForm, 'name')"
+                  [inputValid]="chairForm.controls.name.errors?.required">
+                  <div class="regexTel">
+                    <ng-container *ngIf="validateForm(chairForm, 'name')">
+                        <p class="text-danger m-0" *ngIf="chairForm.get('name')?.errors?.required">Nhập Tên ghế</p>
+                    </ng-container>
+                  </div>
+                </at-input>
+          </div>
+          <div class="col-12 row align-items-center mx-0 p-0 form-group">
+              <span class="col-12 col-md-3">Nhân viên: </span>
+              <at-select
+                  class="hidden-margin col-12 col-md-6 p-0"
+                  [required]="true"
+                  [formName]="'staffId'"
+                  [AtData]="staffList"
+                  [formControlSelect]="chairForm?.controls.staffId">
+                  <div class="regexTel">
+                    <ng-container *ngIf="chairForm.get('staffId')?.errors?.staffDuplicated">
+                        <p class="text-danger m-0"> Nhân viên đang thuộc ghế khác</p>
+                    </ng-container>
+                  </div>
+                </at-select>
+          </div>
+      </div>
+  </div>
+</div>
+<at-modal-footer>
+  <button type="button" class="btn btn-primary m-r-20" (click)="onSaveForm()">Lưu</button>
+  <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>

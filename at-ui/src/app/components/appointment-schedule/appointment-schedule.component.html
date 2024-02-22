@@ -1,0 +1,186 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center hide-arrow">
+            <h5 class="text-uppercase">DANH SÁCH lịch hẹn</h5>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-second hide_lt-md m-r-12" style="position: relative"  (click)="handleEventAppointmentWait()">Chờ xác nhận
+                  <span
+                    class="badge badge-pill badge-primary"
+                    style="position: absolute; top: 0; right: 0; margin-top: -10px; margin-right: -10px;">
+                   {{lenghtScheduleWait}}
+                  </span>
+                </button>
+                <button class="btn btn-second hide_lt-md" (click)="handleEventAppointment()">thêm lịch hẹn</button>
+                <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right">
+                    <button ngbDropdownToggle class="btn-icon m-0">
+                        <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                      <button ngbDropdownItem style="position: relative" class="d-none show_lt-md_block btn border-white" (click)="handleEventAppointmentWait()">Chờ xác nhận
+                        <span
+                        class="badge badge-pill badge-primary"
+                        style="position: absolute; top: 0; right: 0; margin-top: 0px; margin-right: 0px;">
+                       {{lenghtScheduleWait}}
+                      </span>
+                      </button>
+                        <button ngbDropdownItem class="d-none show_lt-md_block btn border-white" (click)="handleEventAppointment()">Thêm lịch hẹn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body validateSearch">
+            <div class="block-search-filter row p-lg-0 m-b-15">
+                <div class="col-12 col-md-4 col-xl-3">
+                    <ng-container *ngTemplateOutlet="filter"></ng-container>
+                </div>
+
+                <at-input-delay-search  class='col-12 col-md-8 col-xl-9 w-100 block-search'
+                                        (inputEmitter)="onSearch($event)">
+                </at-input-delay-search>
+            </div>
+
+            <ng-container *ngTemplateOutlet="result"></ng-container>
+
+            <ng-container *ngTemplateOutlet="schedule"></ng-container>
+
+        </div>
+    </div>
+</div>
+
+<ng-template #filter class="">
+    <at-filter-view
+        (eventAddFilter)="onAddCondiotion()"
+        [title]="'Hiển thị lịch hẹn theo'">
+        <select class="form-control  "
+                [(ngModel)]="filterResult.condition"
+                (change)="onFilterConditionChange()">
+                <option *ngFor="let item of conditionData | keyvalue" [value]="item.key">
+                    {{item.value}}
+                </option>
+            </select>
+
+            <ng-container *ngIf="filterResult.condition == 'status'">
+                <select class="form-control mt-2 "
+                    [(ngModel)]="filterResult.value">
+                    <option [ngValue]="null">Chọn điều kiện</option>
+                    <option *ngFor="let item of status | keyvalue" [value]="item.value">
+                        {{item.value}}
+                    </option>
+                </select>
+            </ng-container>
+
+            <ng-container *ngIf="filterResult.condition == 'type'">
+                <select class="form-control mt-2 "
+                    [(ngModel)]="filterResult.value">
+                    <option [ngValue]="null">Chọn điều kiện</option>
+                    <option *ngFor="let item of scheduleType | keyvalue" [value]="item.value">
+                        {{item.value}}
+                    </option>
+                </select>
+            </ng-container>
+
+            <ng-container *ngIf="filterResult.condition == 'time'">
+                <div class="row m-0">
+                    <div class="col-12 p-0">
+                        <span>Từ</span>
+                        <input class="form-control" type="date" required="" [(ngModel)]="filterResult.fromDate" />
+                    </div>
+                    <div class="col-12 p-0">
+                        <span>Đến</span>
+                        <input class="form-control" type="date" required="" [(ngModel)]="filterResult.toDate" />
+                    </div>
+                </div>
+            </ng-container>
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15">
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" style="background-color: #f99f2a; color: #fff;"
+            *ngIf="!textSearch?.trim() && renderSelect?.length == 0">
+            Hiện tại đang hiển thị lịch hẹn của 7 ngày gần nhất
+        </span>
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <ng-container *ngIf="item.key == 'status' || item.key == 'type';else createDayRender">
+                <span>{{item.firstCondition + ' là ' + item.secondCondition}}</span>
+            </ng-container>
+
+            <ng-template #createDayRender>
+                <span *ngIf="item.from && item.to">
+                    {{item.firstCondition +' '+ (item.from | date : 'dd/MM/yyyy') + ' - '
+                    + (item.to | date : 'dd/MM/yyyy')}}
+                </span>
+            </ng-template>
+            <button (click)="onRemoveFilter(item)">X</button>
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #schedule>
+    <div class="custom-datatable">
+        <div id="batchDelete">
+            <div class="table-responsive">
+                <ngx-datatable class="bootstrap" [rows]="scheduleList" [columns]="columnDef" [columnMode]="'force'"
+                    [headerHeight]="'auto'" [footerHeight]="scheduleList && scheduleList.length > 0 ? 50 : 0" [rowHeight]="'auto'"
+                    [limit]="limit" [scrollbarH]="true" [messages]="{emptyMessage: 'Không có dữ liệu'}" #tables>
+                    <ngx-datatable-column *ngFor="let col of columnDef" [prop]="col.prop" [width]='col.width'>
+                        <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+                            <div [style]="col.styleHeader">
+                                <span class="mobile-hidden">{{col.name}}</span>
+                            </div>
+                        </ng-template>
+                        <ng-template let-value="value" ngx-datatable-cell-template let-row='row'>
+                            <div [style]="col.styleBody" (click)="onSelectRow(row, col.prop)" *ngIf="col.prop !== 'action'; else action">
+                                <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                    {{
+                                        col.colType == "money" ? ( value | currency:'VND':'symbol':null:'vi-VN')
+                                        : (col.colType == 'tel' && value) ? formatPhoneNumber(value)
+                                        : value | replaceNull
+                                    }}
+                                </span>
+                            </div>
+                            <ng-template #action>
+                                <div [style]="col.styleBody">
+                                  <button class="btn btn-second" style="position: relative" (click)="onMedicalScheduleReminder(row, getIndex(row))"
+                                  *ngIf="row.status === scheduleStatus.NOTYETARRIVED">
+                                  Nhắc nhở
+                                  <span *ngIf="row?.countRemind"
+                                    class="badge badge-pill badge-primary"
+                                    style="position: absolute; top: 0; right: 0; margin-top: -10px; margin-right: -10px;">
+                                    {{ row?.countRemind }}
+                                  </span>
+                                </button>
+                                </div>
+                                <ng-template #action>
+                                    <div [style]="col.styleBody">
+                                      <button class="btn btn-second" style="position: relative" (click)="onMedicalScheduleReminder(row, getIndex(row))"
+                                        *ngIf="row.status === scheduleStatus.NOTYETARRIVED">
+                                        Nhắc nhở
+                                        <span *ngIf="row?.countRemind"
+                                          class="badge badge-pill badge-primary"
+                                          style="position: absolute; top: 0; right: 0; margin-top: -10px; margin-right: -10px;">
+                                          {{ row?.countRemind }}
+                                        </span>
+                                      </button>
+                                    </div>
+                                </ng-template>
+                            </ng-template>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-footer>
+                        <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                            let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                            <span>Tổng<span class="font-weight-bold">&nbsp;{{ scheduleList?.length }}</span></span>
+                            <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                [pagerRightArrowIcon]="'datatable-icon-right'"
+                                [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'"
+                                [page]="curPage" [size]="pageSize" [count]="rowCount"
+                                [hidden]="!((rowCount / pageSize) > 1)" (change)="tables.onFooterPage($event)">
+                            </datatable-pager>
+                        </ng-template>
+                    </ngx-datatable-footer>
+                </ngx-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>

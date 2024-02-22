@@ -1,0 +1,232 @@
+<div class="container-fluid">
+    <at-card>
+        <h5 class='d-flex justify-content-between hide-arrow align-items-center'>
+            <h5>THÔNG TIN BỆNH NHÂN</h5>
+            <div ngbDropdown class="d-inline-block hide-arrow" container="body">
+                <!-- <at-feather-icons ngbDropdownToggle class="c-pointer btn-icon" [icon]="'more-horizontal'"></at-feather-icons> -->
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <!-- <button ngbDropdownItem>Bắt đầu thực hiện</button> -->
+                    <button ngbDropdownItem>Chờ bác sĩ kiểm tra</button>
+                </div>
+            </div>
+        </h5>
+        <at-customer-info [customer]="customer" [medicalRecord]="medicalRecordDesignat"></at-customer-info>
+        <!-- <div class="row">
+            <ng-container *ngFor="let item of designatContent; let i = index">
+                <div class="col-12">
+                    <div class="form-group" [ngClass]="item.class">
+                        <h4 class="f-w-700 m-r-12">{{i+1 +'. '+item.label}}</h4>
+                        <span>{{item.value | replaceNull}}</span>
+                    </div>
+                    <ng-container *ngIf="i == 2">
+                        <at-tooth-diagram></at-tooth-diagram>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div> -->
+    </at-card>
+
+    <at-card>
+        <h5 class="text-uppercase">Danh sách chỉ định</h5>
+        <ng-container *ngTemplateOutlet="blockDes"></ng-container>
+    </at-card>
+
+    <at-card>
+        <h5 class="text-uppercase">hình ảnh</h5>
+        <at-pickture [medicalRecord]="medicalRecordDesignat" [screenImage]="screenImage.examine"></at-pickture>
+    </at-card>
+
+    <!-- <at-card>
+        <h5 class="text-uppercase">quá trình điều trị</h5>
+        <ng-container *ngIf="designatblock.length > 0; else desBlock">
+            <ng-container *ngTemplateOutlet="b  lockTb"></ng-container>
+        </ng-container>
+        <ng-template #desBlock>
+            <span class="f-16 f-w-700">Chưa có thông tin</span>
+        </ng-template>
+    </at-card> -->
+
+    <at-card>
+        <h5 class="text-uppercase">Ghi chú</h5>
+        <ng-container *ngTemplateOutlet="noteBlock"></ng-container>
+    </at-card>
+
+    <at-card>
+        <h5 class="text-uppercase">thu phí</h5>
+        <at-fee [medicalRecord]="medicalRecordDesignat"></at-fee>
+    </at-card>
+
+    <at-examina-footer (eventCancel)="onBackClick()" #ftA currentRoom="chỉ định">
+        <button class="btn btn-primarys m-l-12 move-room m-t-5 hide_lt-md" (click)="onMoveRoome(ftA)">chuyển phòng</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onMoveRoome(ftA)">Chuyển phòng</button>
+        </ng-container>
+    </at-examina-footer>
+</div>
+
+<ng-template #noteBlock>
+    <textarea class="form-control" [(ngModel)]="medicalRecordDesignat.note"></textarea>
+    <div class="w-100 m-t-24 d-flex justify-content-end">
+        <button class="btn btn-second" (click)="onSaveNote()">Lưu</button>
+    </div>
+</ng-template>
+
+<ng-template #blockDes>
+    <div class="overflow-auto needs-validation">
+        <table class="base-table">
+            <thead>
+                <tr>
+                    <ng-container *ngFor="let col of designatCol">
+                        <th [style]="col.headerStyle">{{col.label}}</th>
+                    </ng-container>
+                    <th>
+                        <span>&nbsp;</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngIf="medicalServiceIndicates && medicalServiceIndicates?.length != 0; else noData">
+                    <tr *ngFor="let row of medicalServiceIndicates; let i = index">
+                        <ng-container *ngFor="let col of designatCol">
+                            <td [style]="col.style">
+                                <ng-container *ngIf="col.colType =='select' || col.colType =='checkbox' else noUpdate">
+                                    <ng-container [ngSwitch]="col.colType">
+                                        <ng-container *ngSwitchCase="'checkbox'">
+                                            <div class='checkbox-primary px-17 checkbox'>
+                                                <input type="checkbox" id='designat-{{i}}' class="form-check-input m-t-0"
+                                                    [value]='row[col.title]' [checked]="row[col.title]" (change)="row[col.title] = !row[col.title]"
+                                                    disabled>
+                                                <label for='designat-{{i}}'>Làm ngoài</label>
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+                                </ng-container>
+                                <ng-template #noUpdate>
+                                    <ng-container *ngIf="col.title == 'name'; else noPath">
+                                        <span class="text-highlight"
+                                            (click)="onUpdateDesignat(row,i)">{{ row[col.title] | replaceNull }}</span>
+                                    </ng-container>
+                                    <ng-template #noPath>
+                                        {{ (col.title == "staffId" || col.title == "indicater")
+                                        ? (getStaffName(row[col.title]) | replaceNull)
+                                        : col.title == "createDateTime" ? (row[col.title] | date : 'dd/MM/yyyy' : "GMT" ) : (row[col.title] | replaceNull)}}
+
+                                    </ng-template>
+                                </ng-template>
+                            </td>
+                        </ng-container>
+                        <td class="w-px-100">
+                            <div ngbDropdown class="d-inline-block hide-arrow" container="body">
+                                <at-feather-icons ngbDropdownToggle class="c-pointer btn-icon" [icon]="'more-horizontal'"></at-feather-icons>
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                    <button class="btn border-white" ngbDropdownItem (click)="onCreateSchedule(row)">Tạo lịch hẹn</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-template #noData>
+                    <tr class="empty-row w-100">
+                        <td [attr.colspan]="designatCol.length">Không có dữ liệu</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </table>
+    </div>
+</ng-template>
+
+<ng-template #blockTb>
+    <div class="overflow-auto">
+        <table class="base-table needs-validation">
+            <thead>
+                <tr>
+                    <ng-container *ngFor="let col of columnDef">
+                        <th [style]="col.headerStyle">{{col.label}}</th>
+                    </ng-container>
+                    <th class="w-px-100 text-center">
+                        <span>&nbsp;</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background: #f8f8f9">
+                    <ng-container *ngFor="let col of columnDef">
+                        <td [style]="col.style">
+                            <ng-container [ngSwitch]="col.colType">
+                                <ng-container *ngSwitchCase="'date'">
+                                    <input class="form-control" autocomplete="off" type="date" [(ngModel)]="col.value">
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'select'">
+                                    <select class="form-control" [(ngModel)]="col.value">
+                                        <option [ngValue]="null">Không</option>
+                                        <option *ngFor="let obj of staffs" [value]="obj._id">
+                                            {{ obj.fullName}}
+                                        </option>
+                                    </select>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <input class="form-control" autocomplete="off" type="text" [(ngModel)]="col.value">
+                                </ng-container>
+                            </ng-container>
+                        </td>
+                    </ng-container>
+                    <td class="w-px-100">
+                        <div class="d-flex justify-content-center">
+                            <at-feather-icons class="c-pointer btn-icon" [icon]="'plus'" (click)="handleNewTreatment()"
+                                ngbTooltip="Thêm mới"></at-feather-icons>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngFor="let row of treamentData; let i = index">
+                    <ng-container *ngFor="let col of columnDef">
+                        <td [style]="col.style">
+                            <ng-container *ngIf="i == indexSelected else noUpdate">
+                                <ng-container [ngSwitch]="col.colType">
+                                    <ng-container *ngSwitchCase="'date'">
+                                        <input class="form-control" autocomplete="off" type="date"
+                                            [(ngModel)]="row[col.title]">
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'select'">
+                                        <select class="form-control" [(ngModel)]="row[col.title]">
+                                            <option [ngValue]="null">Không</option>
+                                            <option *ngFor="let obj of staffs" [value]="obj._id">
+                                                {{ obj.fullName}}
+                                            </option>
+                                        </select>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        <input class="form-control" autocomplete="off" type="text"
+                                            [(ngModel)]="row[col.title]">
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                            <ng-template #noUpdate>
+                                {{col.colType == "money"
+                                ? ( row[col.title] | currency:'VND':'symbol':null:'vi-VN' )
+                                : col.colType == "date"
+                                ? ( row[col.title] | date : 'dd/MM/yyyy' )
+                                : ( col.title == 'doctor' ? ( getStaffName(row[col.title]) | replaceNull)
+                                : ( row[col.title] | replaceNull))}}
+                            </ng-template>
+                        </td>
+                    </ng-container>
+                    <td class="w-px-100">
+                        <div class="d-flex justify-content-between" *ngIf="i !== indexSelected; else selectRow">
+                            <at-feather-icons class="c-pointer btn-icon" [icon]="'edit'" (click)="indexSelected = i"
+                                ngbTooltip="Sửa"></at-feather-icons>
+                            <at-feather-icons class="c-pointer btn-icon" [icon]="'trash-2'" (click)="onDeleteRow(i)"
+                                ngbTooltip="Xóa"></at-feather-icons>
+                        </div>
+                        <ng-template #selectRow>
+                            <div class="d-flex justify-content-center">
+                                <at-feather-icons class="c-pointer btn-icon" [icon]="'check'"
+                                    (click)="indexSelected = null; onSaveUpdate()" ngbTooltip="Lưu"></at-feather-icons>
+                            </div>
+                        </ng-template>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>

@@ -1,0 +1,81 @@
+<div class="custom-datatable">
+
+    <div id="batchDelete">
+
+        <div class="table-responsive">
+
+            <ngx-datatable class="bootstrap"
+                [rows]="tableData"
+                [columns]="columnDef"
+                [columnMode]="'force'"
+                [headerHeight]="'auto'"
+                [footerHeight]="tableData && tableData.length > 0 ? 50 : 0"
+                [rowHeight]="'auto'"
+                [limit]="limit"
+                [selectionType]="haveCheckbox ? 'single' : null"
+                #tables
+                [selected]="selected"
+                [selectionType]="SelectionType.checkbox"
+                (select)="onSelect($event)"
+                (activate)="onActivate($event)"
+                [scrollbarH]="castedScrollbarH"
+                [summaryRow]="true"
+                [summaryPosition]="'bottom'"
+                [messages]="{emptyMessage: emptyMessage}">
+
+                <ng-container *ngIf="haveCheckbox">
+                    <ngx-datatable-column
+                        [width]="30"
+                        [sortable]="false"
+                        [canAutoResize]="false"
+                        [draggable]="false"
+                        [resizeable]="false" name="">
+                        <ng-template
+                            ngx-datatable-header-template
+                            let-value="value"
+                            let-allRowsSelected="allRowsSelected"
+                            let-selectFn="selectFn">
+                            <input type="checkbox"
+                                [checked]="allRowsSelected"
+                                (change)="selectFn(!allRowsSelected)" />
+                        </ng-template>
+                        <ng-template
+                            ngx-datatable-cell-template
+                            let-value="value"
+                            let-isSelected="isSelected"
+                            let-onCheckboxChangeFn="onCheckboxChangeFn">
+                            <input type="checkbox"
+                                [checked]="isSelected"
+                                (change)="onCheckboxChangeFn($event)" />
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ng-container>
+
+                <ngx-datatable-footer>
+                    <ng-template
+                        ngx-datatable-footer-template
+                        let-rowCount="rowCount"
+                        let-pageSize="pageSize"
+                        let-selectedCount="selectedCount"
+                        let-curPage="curPage"
+                        let-offset="offset">
+                        <span>Tổng<span class="font-weight-bold">&nbsp;{{ tableData?.length }}</span></span>
+                        <datatable-pager
+                            [pagerLeftArrowIcon]="'datatable-icon-left'"
+                            [pagerRightArrowIcon]="'datatable-icon-right'"
+                            [pagerPreviousIcon]="'datatable-icon-prev'"
+                            [pagerNextIcon]="'datatable-icon-skip'"
+                            [page]="curPage" [size]="pageSize"
+                            [count]="rowCount" [hidden]="!((rowCount / pageSize) > 1)"
+                            (change)="tables.onFooterPage($event)">
+                        </datatable-pager>
+                    </ng-template>
+                </ngx-datatable-footer>
+
+            </ngx-datatable>
+
+        </div>
+
+    </div>
+
+</div>

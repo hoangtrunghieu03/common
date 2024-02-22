@@ -1,0 +1,669 @@
+<form action="">
+    <div class="needs-validation">
+        <h4 class="f-w-700 text-uppercase">bệnh án chỉnh hình</h4>
+        <ng-container *ngTemplateOutlet="orthopedicBlock"></ng-container>
+        <hr>
+
+        <h4 class="f-w-700 text-uppercase">khám ngoài mặt</h4>
+        <ng-container *ngTemplateOutlet="examineBlock"></ng-container>
+        <hr>
+
+        <h4 class="f-w-700 text-uppercase">khám trong miệng</h4>
+        <ng-container *ngTemplateOutlet="oralExamineBlock"></ng-container>
+        <hr>
+
+        <h4 class="f-w-700 text-uppercase hide_lt-md">Tóm tắt chẩn đoán</h4>
+        <ng-container *ngTemplateOutlet="diagnosticSumaryBlock"></ng-container>
+        <hr class="hide_lt-md">
+
+        <h4 class="f-w-700 text-uppercase">Mục tiêu và kế hoạch điều trị</h4>
+        <ng-container *ngTemplateOutlet="targetAndPlanBlock"></ng-container>
+        <hr>
+
+        <h4 class="f-w-700 text-uppercase">phân loại bệnh</h4>
+        <ng-container *ngTemplateOutlet="deseaseClassifyBlock"></ng-container>
+    </div>
+</form>
+<div class="d-flex justify-content-end">
+    <button class="btn btn-second m-r-12" (click)="onCreateMedicalRecordBrace()">lưu</button>
+    <!-- <button class="btn" (click)="onSavePatient()">quay lại</button> -->
+</div>
+
+<ng-template #orthopedicBlock>
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                <label class="f-w-700 m-b-12" for="reason">1. Lý do đến khám</label>
+                <textarea class="form-control" id="reason" type="text"
+                    [(ngModel)]="braceExamination.orthopedicCase.reason"></textarea>
+            </div>
+        </div>
+    </div>
+    <ng-container *ngFor="let obj of orthopedic; let firstIndex = index; let last = last">
+        <div class="form-group">
+            <span class="f-w-700">{{ (firstIndex + 1) + 1 + ". " }}{{ obj.label }}</span>
+            <div class="d-flex flex-wrap">
+                <ng-container *ngFor="let group of obj.group; let j = index">
+                    <div class="col-3 d-flex align-items-center">
+                        <span class="f-w-700">{{group?.label}}:</span>
+                    </div>
+                    <div class="col-9">
+                        <div class="row">
+                            <ng-container *ngFor="let option of group.option; let secondIndex = index">
+                                <div class="checkbox-primary px-17 checkbox col-4">
+                                    <ng-container
+                                        *ngTemplateOutlet="
+                                        checkboxOrthopedicBlock,
+                                                context: { $implicit: option, first: 'orthopedicCase', second: group.key, action: !option, name: option }">
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngFor="let sub of obj.option; let j = index">
+                    <div class="checkbox-primary px-17 checkbox col-12 col-md-6 col-xl-3">
+                        <ng-container
+                            *ngTemplateOutlet="
+                        checkboxOrthopedicBlock,
+                                    context: { $implicit: sub, first: 'orthopedicCase', second: obj.key, action: !sub, name: sub }">
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #examineBlock>
+    <ng-container *ngFor="let obj of examineContent; let last = last">
+        <div class="form-group row m-0">
+            <div class="col-12 col-md-6 col-xl-3 p-0">
+                <span class="f-w-700">{{ obj.label }}:</span>
+            </div>
+            <div class="col-12 col-md-6 col-xl-9">
+                <div class="row m-0">
+                    <ng-container *ngFor="let op of obj?.options; let i = index">
+                        <div class="checkbox-primary px-17 checkbox col-12 col-md-6 col-xl-4">
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    checkboxJawSide,
+                                    context: { $implicit: op, first: 'braceExaminationCheck', second: obj.key, action: !op, name: op }">
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-12 p-0" *ngIf="obj.group?.length > 0">
+                <ng-container *ngFor="let group of obj.group; let i = index">
+                    <div class="row m-0">
+                        <div class="col-12 col-md-6 col-xl-3 d-flex align-items-center">
+                            <span class="f-w-700">+ {{group.label}}:</span>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-9">
+                            <div class="row m-0">
+                                <ng-container *ngFor="let gOp of group?.options">
+                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-6 col-xl-4">
+                                        <ng-container
+                                            *ngTemplateOutlet="
+                                            checkboxOrthopedicBlock,
+                                                context: { $implicit: gOp, first: 'braceExaminationCheck', second: obj.key, thir: group.key, action: !gOp, name: gOp + i }">
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="group?.sub?.length > 0">
+                            <div class="col-12 p-0" *ngFor="let sub of group?.sub">
+                                <div class="row m-0">
+                                    <div class="col-3 d-flex align-items-center">
+                                        <span class="f-w-700 m-l-15">{{sub.label}}:</span>
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="row m-0">
+                                            <ng-container *ngFor="let item of sub?.options">
+                                                <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                                    <ng-container
+                                                        *ngTemplateOutlet="
+                                                        checkboxOrthopedicBlock,
+                                                            context: { $implicit: item, first: 'braceExaminationCheck', second: obj.key, thir: sub.key, action: !item, name: item + i }">
+                                                    </ng-container>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #oralExamineBlock>
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex flex-column">
+                <span class="f-w-700 form-group">1. Khám răng</span>
+
+                <div class="row m-b-40 hide_lt-md">
+                    <div class="col-12 d-flex justify-content-center">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex" *ngFor='let row of [].constructor(2); let rowInd = index'>
+                                <div class='d-flex' [ngClass]="{'flex-column-reverse': rowInd == 0, 'flex-column': rowInd == 1}"
+                                    *ngFor='let obj of [].constructor(2); let colInd = index'>
+                                    <div class="d-flex bg-siler-f">
+                                        <ng-container
+                                            *ngFor="let title of handleRenderTitle(colInd == 0 ? false : true)">
+                                            <div class="p-12 c-pointer w-px-46 h-px-46 p-relative text-center" style="border: 1px solid black"
+                                                (click)="onCheckCharacters(title, rowInd, colInd)"
+                                                [style.color]="checkIncludeCharacters(title, rowInd, colInd) ? '#f99f2a' : null">
+                                                <span class="p-6 f-w-700">{{title}}</span>
+                                                <span style="top: 7px; left: 19px;" class="p-absolute f-w-400 f-20"
+                                                    [ngClass]="{'d-none': !checkIncludeCharacters(title, rowInd, colInd)}">\</span>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="d-flex">
+                                        <ng-container *ngFor='let num of handleRenderData(colInd == 0 ? false : true)'>
+                                            <div class="p-12 c-pointer w-px-46 h-px-46 p-relative text-center" style="border: 1px solid black"
+                                                (click)="onCheckNumber(num, rowInd, colInd)"
+                                                [style.color]="checkIncludeNum(num, rowInd, colInd) ? '#f99f2a' : null">
+                                                <span class="p-6 f-w-700">{{num}}</span>
+                                                <span style="top: 7px; left: 19px;" class="p-absolute f-w-400 f-20"
+                                                    [ngClass]="{'d-none': !checkIncludeNum(num, rowInd, colInd)}">\</span>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-container *ngFor="let obj of oralExamineContent; let firstIndex = index">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <span class="f-w-700">{{ obj.label }}: </span>
+                    <div class="d-flex flex-wrap">
+                        <ng-container *ngIf="obj.options?.length > 0">
+                            <ng-container
+                                *ngFor="let op of obj.options;let secondIndex = index let first = first let last = last">
+                                <div class="checkbox-primary px-17 checkbox col-12"
+                                    [ngClass]="{'d-flex': last || first, 'px-17' : op?.options?.length == 0}">
+                                    <ng-container *ngIf="op?.options?.length == 0; else plus">
+                                        <ng-container
+                                            *ngTemplateOutlet="checkboxOrthopedicBlock, context: 
+                                            { $implicit: op.label, first: 'braceExaminationCheckMount', second: obj.key, action: !op.label, name: op.label }">
+                                        </ng-container>
+                                    </ng-container>
+                                    <ng-template #plus>
+                                        <span class="form-group p-t-10">+ {{op.label}}</span>
+                                    </ng-template>
+                                    <div class="m-l-15" *ngIf="op?.options?.length > 0">
+                                        <ng-container *ngFor="let sub of op?.options; let thirIndex = index">
+                                            <div class="checkbox-primary px-17 checkbox col-12">
+                                                <ng-container
+                                                    *ngTemplateOutlet="
+                                                    checkboxOrthopedicBlock,
+                                                    context: { $implicit: sub, first: 'braceExaminationCheckMount', second: op.key, action: !sub, name: sub }">
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <div class="col-12">
+            <div class="d-flex">
+                <span class="f-w-700 form-group">Phân tích mẫu hàm:</span>
+                <div class="m-l-24">
+                    <div class="checkbox-primary px-17 checkbox">
+                        <ng-container>
+                        </ng-container>
+                    </div>
+                    <div class="m-b-4 d-flex">
+                        <div style="width: 80px">U – ALD:</div>
+                        <input type="text" class="input-diagnostic"
+                            [(ngModel)]="braceExamination.braceExaminationCheckMount.analyticPartern.uald">
+                        <span>%</span>
+                    </div>
+                    <div class="m-b-4 d-flex">
+                        <div style="width: 80px">L – ALD:</div>
+                        <input type="text" class="input-diagnostic"
+                            [(ngModel)]="braceExamination.braceExaminationCheckMount.analyticPartern.lald">
+                        <span>%</span>
+                    </div>
+                    <div class="m-b-4 d-flex">
+                        <div style="width: 80px">Bolton:</div>
+                        <input type="text" class="input-diagnostic"
+                            [(ngModel)]="braceExamination.braceExaminationCheckMount.analyticPartern.bolton">
+                        <span>%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="d-flex flex-column">
+                <span class="f-w-700 form-group">2. Tương quan hai hàm</span>
+                <!-- Jaw front -->
+                <span class="f-w-700 form-group">- Phía trước</span>
+                <ng-container *ngFor="let obj of jawBeforeContent">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-12 col-md-3"><span class="f-w-700 m-l-12">+ {{ obj.label }}: </span></div>
+                            <div class="col-12 col-md-9 d-flex flex-wrap">
+                                <!--start opion: parent -> option-->
+                                <ng-container *ngFor="let op of obj?.options; let i = index">
+                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                        <ng-container
+                                            *ngTemplateOutlet="
+                                            checkboxOrthopedicBlock,
+                                                context: { $implicit: op, first: 'braceExaminationCheckMount', second: obj.key, action: !op, name: op + i}">
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                                <!--end opion: parent -> option-->
+                            </div>
+                            <div class="col-12">
+                                <div class="row">
+                                    <!--start sub: parent -> sub-->
+                                    <ng-container *ngIf="obj?.sub?.length> 0">
+                                        <ng-container *ngFor="let firSub of obj?.sub">
+                                            <div class="col-3 d-flex"
+                                                [ngClass]="firSub?.sub?.length > 0 ? 'm-t-12' : ' align-items-center'">
+                                                <span class="f-w-700 m-l-36">{{ firSub.label }}: </span>
+                                            </div>
+                                            <div class="col-9 flex-wrap d-flex">
+                                                <!--start option: parent -> sub -> option-->
+                                                <ng-container *ngFor="let op of firSub?.options; let i = index">
+                                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                                        <ng-container
+                                                            *ngTemplateOutlet="
+                                                            checkboxOrthopedicBlock,
+                                                                context: { $implicit: op, first: 'braceExaminationCheckMount', second: firSub.key, action: !op, name: op + i }">
+                                                        </ng-container>
+                                                    </div>
+                                                </ng-container>
+                                                <!--end option: parent -> sub -> option-->
+
+                                                <!--start sub: parent -> sub -> sub-->
+                                                <ng-container *ngIf="firSub?.sub?.length > 0">
+                                                    <ng-container
+                                                        *ngFor="let firOp of firSub?.sub; let secondIndex = index">
+                                                        <div class="col-12 col-md-3 d-flex align-items-center">
+                                                            <span class="f-w-700">{{ firOp.label }}: </span>
+                                                        </div>
+                                                        <div class="col-12 col-md-9 flex-wrap d-flex">
+                                                            <!--start option: parent -> sub -> sub -> option-->
+                                                            <ng-container
+                                                                *ngFor="let secValue of firOp?.options; let thirIndex = index">
+                                                                <div class="checkbox-primary px-17 checkbox col-12 col-md-6">
+                                                                    <ng-container
+                                                                        *ngTemplateOutlet="
+                                                                        checkboxOrthopedicBlock,
+                                                                            context: { $implicit: secValue, first: 'braceExaminationCheckMount', second: firOp.key, action: !secValue, name: secValue }">
+                                                                    </ng-container>
+                                                                </div>
+                                                            </ng-container>
+                                                            <!--end option: parent -> sub -> sub -> option-->
+                                                        </div>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <!--start sub: parent -> sub -> sub-->
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+                                    <!--end sub: parent -> sub-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <!-- Jaw side -->
+                <span class="f-w-700 form-group">- Phía bên</span>
+
+                <table class="base-table">
+                    <thead>
+                        <tr>
+                            <td rowspan="2" style="border-right: 1px solid #ced4da"></td>
+                            <th class="text-center" colspan="2" scope="colgroup">Răng nanh</th>
+                            <th class="text-center" colspan="2" scope="colgroup">Răng cối</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" scope="col">Bên phải</th>
+                            <th class="text-center" scope="col">Bên trái</th>
+                            <th class="text-center" scope="col">Bên phải</th>
+                            <th class="text-center" scope="col">Bên trái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of angleType | keyvalue: correctOrder, let i = index">
+                            <th style="border-right: 1px solid #ced4da" scope="row">{{ row.value }}</th>
+                            <td *ngFor="let col of [].constructor(4), let j = index">
+                                <div class="checkbox-primary d-flex justify-content-center align-content-center checkbox m-b-12">
+                                    <input type="checkbox" id='{{row.value + j}}' class="form-check-input m-t-0"
+                                    [checked]="getValueColumn(row.value, j)" (change)="handleRenderColumn($event, row.value, j)">
+                                    <label for='{{row.value + j}}'></label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <ng-container *ngFor="let obj of jawSideContent">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-12 col-md-3 p-t-12"><span class="f-w-700 m-l-10">+ {{ obj.label }}: </span></div>
+                            <div class="col-12 col-md-9 d-flex flex-wrap">
+                                <!--start opion: parent -> option-->
+                                <ng-container *ngFor="let op of obj?.options; let i = index">
+                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                        <ng-container
+                                            *ngTemplateOutlet="
+                                            checkboxJawSide,
+                                            context: { $implicit: op, first: 'braceExaminationCheckMount', second: obj.key, thir: null, four: null, name: op + i }">
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                                <!--end opion: parent -> option-->
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <span class="f-w-700 form-group">3. {{functionalContent.title}}</span>
+                <!--start block-->
+                <ng-container *ngFor="let block of functionalContent.block">
+                    <span class="f-w-700 form-group">- {{block.title}}</span>
+                    <!--start block: block -> option-->
+                    <ng-container *ngFor="let option of block?.options">
+                        <div class="form-group m-l-20">
+                            <div class="row">
+                                <div class="col-12 col-md-3 p-0 p-t-12" [ngClass]="{'col-12 col-md-3': option?.options.length > 1}">
+                                    <span class="f-w-700 m-l-10">+ {{ option.label }}: </span>
+                                </div>
+                                <div class="col-9 d-flex flex-wrap" [ngClass]="{'col-12 col-md-9': option?.options.length > 1}">
+                                    <!--start opion: parent -> option -> option-->
+                                    <ng-container *ngFor="let op of option?.options; let i = index">
+                                        <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                            <ng-container
+                                                *ngTemplateOutlet="
+                                                    checkboxOrthopedicBlock,
+                                                    context: { $implicit: op, first: 'braceExaminationFuntional', second: option.key, action: !op, name: op + i }">
+                                            </ng-container>
+                                        </div>
+                                    </ng-container>
+                                    <!--end opion: parent -> option -> option-->
+                                </div>
+                                <!--start sub: parent -> option -> sub-->
+                                <div class="col-12" *ngIf="option?.sub?.length > 0">
+                                    <div class="row">
+                                        <ng-container *ngFor="let sub of option?.sub; let i = index">
+                                            <div class="col-6 p-t-12">
+                                                <span class="f-w-700 m-l-36"> {{ sub.label }}: </span>
+                                            </div>
+                                            <div class="col-6 d-flex flex-wrap">
+                                                <!--start opion: parent -> option -> sub -> option-->
+                                                <ng-container *ngFor="let op of sub?.options">
+                                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                                        <ng-container
+                                                            *ngTemplateOutlet="
+                                                                checkboxOrthopedicBlock,
+                                                                context: { $implicit: op, first: 'braceExaminationFuntional', second: sub.key, action: !op, name: op + i }">
+                                                        </ng-container>
+                                                    </div>
+                                                </ng-container>
+                                                <!--end opion: parent -> option -> sub -> option-->
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <!--end sub: parent -> option -> sub-->
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <!--end block-->
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #diagnosticSumaryBlock>
+    <table class="base-table hide_lt-md">
+        <col>
+        <col>
+        <colgroup></colgroup>
+        <thead>
+            <tr>
+                <th class="text-center" *ngFor='let col of header'>{{col}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th rowspan="3" scope="rowgroup" style="border-right: 1px solid #ced4da">Xương</th>
+                <td>NpA = <input class="input-diagnostic" type="text" [(ngModel)]="braceExamination.diagnostic.anteriorNpa">
+                    mm.</td>
+                <td>6 – 6 width = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranvese6_6_width"> mm.
+                </td>
+                <td>PP – MP = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.verticalPP_MP"></td>
+            </tr>
+            <tr>
+                <td>NpB = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.anteriorSkeletalNpb"> mm.</td>
+                <td>6’ – 6’ width = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseSkeletal6_6_width">
+                    mm.</td>
+                <td>PP – OP = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.verticalSkeletalPP_OP">
+                </td>
+            </tr>
+            <tr>
+                <td>PA – PB = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.anteriorSkeletalPA_PB"> mm.</td>
+                <td></td>
+                <td>MP – OP = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.verticalSkeletalMP_OP">
+                </td>
+            </tr>
+            
+        </tbody>
+        <tbody>
+            <tr>
+                <th rowspan="3" scope="rowgroup" style="border-right: 1px solid #ced4da">Mô mềm</th>
+                <td>Profile: <input class="input-diagnostic w-px-100" type="text"
+                    [(ngModel)]="braceExamination.diagnostic.profile"></td>
+                <td>Ngắt hành lang : <input class="input-diagnostic w-px-100" type="text"
+                    [(ngModel)]="braceExamination.diagnostic.breakCorridor"></td>
+                <td>Lipe : <input class="input-diagnostic w-px-100" type="text"
+                    [(ngModel)]="braceExamination.diagnostic.lipe"></td>
+            </tr>
+            <tr>
+                <td>NLA : <input class="input-diagnostic w-px-100" type="text"
+                    [(ngModel)]="braceExamination.diagnostic.NLA"></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>E – line = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.anteriorSofttissueEline">
+                    mm.</td>
+                <td></td>
+                <td>Hình dáng mặt : <input class="input-diagnostic w-px-100" type="text"
+                    [(ngModel)]="braceExamination.diagnostic.surfaceLook"></td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th rowspan="6" scope="rowgroup" style="border-right: 1px solid #ced4da">Răng</th>
+                <td>Molar : <input class="input-diagnostic w-px-100" type="text"
+                    [(ngModel)]="braceExamination.diagnostic.molar"></td>
+                <td>UDML = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseSofttissueUDML"> mm.
+                </td>
+                <td>OB = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.verticalSofttissueOB"> mm.</td>
+            </tr>
+            <tr>
+                <td>OJ = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.anteriorDentalOJ"> mm.</td>
+                <td>LDML = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseDentalLDML"> mm.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>U1 – PP = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.anteriorDentalUI_PP"> mm.
+                </td>
+                <td>U – ALD = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseDentalU_ALD"> mm.
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>IMPA = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.anteriorDentalUIMPA"> mm.</td>
+                <td>L – ALD = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseDentalL_ALD"> mm.
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>3 – 3 width = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseDentalL_3_3_width"> mm.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>3’ – 3’ width = <input class="input-diagnostic" type="text"
+                        [(ngModel)]="braceExamination.diagnostic.tranveseDentalL_3_3__width"> mm.</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</ng-template>
+
+<ng-template #targetAndPlanBlock>
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex flex-column">
+                <span class="f-w-700 form-group">1. Các vấn đề cần quan tâm</span>
+                <div class="form-group">
+                    <textarea class="form-control" id="reason" type="text"
+                        [(ngModel)]="braceExamination.braceExaminationPlan.treatmentGoals"></textarea>
+                </div>
+
+                <span class="f-w-700 form-group">2. Kế hoạch điều trị</span>
+                <ng-container *ngFor="let obj of planContent; let firstIndex = index">
+                    <div class="form-group">
+                        <div class="row m-0">
+                            <div class="col-6 col-md-3 p-0"><span class="f-w-700">{{ obj.label }}: </span></div>
+                            <div class="col-6 col-md-9 d-flex flex-wrap">
+                                <!--start opion: parent -> option-->
+                                <ng-container *ngFor="let op of obj?.options; let i = index">
+                                    <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                        <ng-container
+                                            *ngTemplateOutlet="
+                                                checkboxJawSide,
+                                                context: { $implicit: op, first: 'braceExaminationPlan', second: obj.key, action: !op, name: op + i }">
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                                <!--end opion: parent -> option-->
+                            </div>
+                            <!--start sub: parent -> sub-->
+                            <div class="col-12 p-0" *ngIf="obj?.sub?.length > 0">
+                                <div class="row m-0">
+                                    <ng-container *ngFor="let sub of obj?.sub;let i = index">
+                                        <div class="col-6 col-md-3 p-t-12">
+                                            <span class="f-w-700 m-l-36">+ {{ sub.label }}: </span>
+                                        </div>
+                                        <div class="col-6 col-md-9 d-flex flex-wrap">
+                                            <!--start opion: parent -> sub -> option-->
+                                            <ng-container *ngFor="let op of sub?.options">
+                                                <div class="checkbox-primary px-17 checkbox col-12 col-md-4">
+                                                    <ng-container
+                                                        *ngTemplateOutlet="
+                                                            checkboxJawSide,
+                                                            context: { $implicit: op, first: 'braceExaminationPlan', second: sub.key, action: !op, name: op + i }">
+                                                    </ng-container>
+                                                </div>
+                                            </ng-container>
+                                            <!--end opion: parent -> sub -> option-->
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                            <!--end sub: parent -> sub-->
+                        </div>
+                    </div>
+                </ng-container>
+                <span class="f-w-700 form-group">Ghi chú</span>
+                <div class="form-group">
+                    <textarea class="form-control" id="reason" type="text"
+                        [(ngModel)]="braceExamination.braceExaminationPlan.note"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #deseaseClassifyBlock>
+    <div>
+        <div class="form-group px-17">
+            <div class="row">
+                <ng-container *ngFor="let sub of deseaseClassifyContent; let j = index">
+                    <div class="checkbox-primary px-17 checkbox col-6 col-md-3">
+                        <ng-container *ngTemplateOutlet="
+                            checkboxDeseaseClassifyBlock,
+                            context: { $implicit: sub, first: 'classificationDisease', name: sub }">
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #checkboxOrthopedicBlock let-data let-first="first" let-second="second" let-thir="thir" let-action="action"
+    let-name="name">
+    <input type="checkbox" id='{{name}}-{{first}}-{{second}}' class="form-check-input m-t-0" [value]='data'
+        (change)='handleCheckboxOrthopedicBlock($event, first, second, thir, action)'
+        [checked]='toothChecked(data, first, second, thir, null, action)' #value>
+    <label [ngClass]="{'d-flex w-100': data == 'Khác: '}" for='{{name}}-{{first}}-{{second}}'>
+        <span>{{data}}</span>
+        <ng-container *ngIf="data == 'Khác: '">
+            <input type="text" style="opacity: 1; border: none; background: #fff" placeholder="............"
+                [value]="onInputOtherRender(first, second, data)"
+                [disabled]="!toothChecked(data, first, second, thir, null, action)"
+                (change)="onInputOtherReason($event, first, second, data, toothChecked(data, first, second, thir, null, action))">
+        </ng-container>
+    </label>
+</ng-template>
+
+<ng-template #checkboxJawSide let-data let-first="first" let-second="second" let-action="action" let-name="name">
+    <input type="checkbox" id='{{name}}-{{first}}-{{second}}' class="form-check-input m-t-0" [value]='data'
+        (change)='handleCheckboxJawSide($event, first, second, action)'
+        [checked]='toothChecked(data, first, second, null, null, action)'>
+    <label for='{{name}}-{{first}}-{{second}}'>{{data}}</label>
+</ng-template>
+
+<ng-template #checkboxDeseaseClassifyBlock let-data let-first="first" let-name="name">
+    <input type="checkbox" id='{{name}}-{{first}}' class="form-check-input m-t-0" [value]='data'
+        (change)='handleCheckboxDeseaseClassifyBlock($event, first)'
+        [checked]='toothChecked(data, first, null, null, null, null)'>
+    <label for='{{name}}-{{first}}'>{{data}}</label>
+</ng-template>

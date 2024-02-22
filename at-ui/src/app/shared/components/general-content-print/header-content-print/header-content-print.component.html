@@ -1,0 +1,29 @@
+<div class="m-t-20">
+    <div class="d-flex flex-column">
+        <h3 class="f-w-700 mb-16 text-uppercase" *ngIf="settingForm.value.name">{{ settingForm.value.name }}</h3>
+        <ng-container *ngIf="settingForm.value.address && settingForm.value.address.length != 0">
+            <div class="d-flex">
+                <span>Địa chỉ:&nbsp;</span>
+                <div class="d-flex flex-column align-items-start">
+                    <ng-container *ngFor="let address of settingForm.value.address">
+                        <span>{{ address }}</span>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="settingForm.value.tel && settingForm.value.tel.length != 0">
+            <div class="d-flex">
+                <span>Điện thoại:&nbsp;</span>
+                <div class="f-flex">
+                    <ng-container *ngFor="let tel of settingForm.value.tel; let first = first">
+                        <span *ngIf="!!tel?.trim()"><span *ngIf="!first"> - </span>{{ formatPhoneNumber(tel) }}</span>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+        <div *ngIf="settingForm.value.website && settingForm.value.email">
+            <span>Website:&nbsp;{{ settingForm.value.website }}</span>
+            <span>&ensp;E-mail:&nbsp;{{ settingForm.value.email }}</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,184 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center hide-arrow">
+            <h5 class="text-uppercase">DANH SÁCH LÀM CUNG</h5>
+        </div>
+        <div class="card-body validateSearch">
+            <div class="block-search-filter row p-lg-0 m-b-15">
+                <div class="col-12 col-md-4 col-xl-3">
+                    <ng-container *ngTemplateOutlet="filter"></ng-container>
+                </div>
+
+                <at-input-delay-search  class='col-12 col-md-8 col-xl-9 w-100 block-search'
+                                        (inputEmitter)="onSearch($event)">
+                </at-input-delay-search>
+            </div>
+
+            <ng-container *ngTemplateOutlet="result"></ng-container>
+
+            <ng-container *ngTemplateOutlet="bowmaking"></ng-container>
+
+            <div class="d-flex justify-content-end m-t-16" *ngIf="bowMakingSelected.length !== 0">
+                <button class="btn btn-second" (click)="onMedicalRecordSampleDelivery('get')">phiếu nhận</button>
+            </div>
+
+        </div>
+    </div>
+    <at-examina-footer (eventCancel)="location.back()" [_isComplete]="true">
+    </at-examina-footer>
+</div>
+
+<ng-template #filter class="">
+    <at-filter-view (eventAddFilter)="onAddCondiotion()" [title]="'Hiển thị lịch hẹn theo'">
+        <select class="form-control" [(ngModel)]="filterResult.condition" (change)="onFilterConditionChange()">
+            <ng-container *ngFor="let item of conditionData | keyvalue">
+                <option [value]="item.key">
+                    {{item.value}}
+                </option>
+            </ng-container>
+        </select>
+
+        <div class="row m-0" *ngIf="filterResult.condition == 'dateDelivery' || filterResult.condition == 'dateReceiver'">
+            <div class="col-12 p-0">
+                <span>Từ</span>
+                <input class="form-control" type="date" required="" [(ngModel)]="filterResult.fromDate" />
+            </div>
+            <div class="col-12 p-0">
+                <span>Đến</span>
+                <input class="form-control" type="date" required="" [(ngModel)]="filterResult.toDate" />
+            </div>
+        </div>
+
+        <ng-container *ngIf="filterResult.condition == 'status'">
+            <select class="form-control mt-2" [(ngModel)]="filterResult.value">
+                <option [ngValue]="null">Chọn điều kiện</option>
+                <option [ngValue]="false">{{ confirmStatus.NOT_CONFIRM}} </option>
+                <option [ngValue]="true">{{ confirmStatus.CONFIRM}} </option>
+            </select>
+        </ng-container>
+
+        <ng-container *ngIf="filterResult.condition == 'executeOutSide'">
+            <select class="form-control mt-2" [(ngModel)]="filterResult.value">
+                <option [ngValue]="null">Chọn điều kiện</option>
+                <option [ngValue]="false">{{ bowMakingWorkplace.IN_SIDE}} </option>
+                <option [ngValue]="true">{{ bowMakingWorkplace.OUT_SIDE}} </option>
+            </select>
+        </ng-container>
+
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15" *ngIf="renderSelect?.length > 0">
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <ng-container *ngIf="item.key == 'executeOutSide'">
+                <span>{{item.firstCondition + ' là ' + (item.secondCondition ? bowMakingWorkplace.OUT_SIDE :
+                    bowMakingWorkplace.IN_SIDE)}}</span>
+            </ng-container>
+            <ng-container *ngIf="item.key == 'status'">
+                <span>{{item.firstCondition + ' là ' + (item.secondCondition ? confirmStatus.CONFIRM :
+                    confirmStatus.NOT_CONFIRM)}}</span>
+            </ng-container>
+
+            <ng-container *ngIf="item.key == 'dateDelivery' || item.key == 'dateReceiver'">
+                <span *ngIf="item.from && item.to">
+                    {{item.firstCondition +' '+ (item.from | date : 'dd/MM/yyyy') + ' - '
+                    + (item.to | date : 'dd/MM/yyyy')}}
+                </span>
+            </ng-container>
+            <button (click)="onRemoveFilter(item)">X</button>
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #bowmaking>
+  <div class="custom-datatable">
+      <div id="batchDelete">
+          <div class="table-responsive">
+              <ngx-datatable
+                class="bootstrap"
+                [rows]="bowMakingList"
+                [columns]="columnDef"
+                [columnMode]="'force'"
+                [headerHeight]="'auto'"
+                [footerHeight]="bowMakingList && bowMakingList.length > 0 ? 50 : 0"
+                [rowHeight]="'auto'"
+                [selectionType]="'checkbox'"
+                [selected]="bowMakingSelected"
+                (select)="onSelect($event)"
+                [limit]="10"
+                [scrollbarH]="true"
+                [messages]="{emptyMessage: 'Không có dữ liệu'}"
+                #tables>
+                <ngx-datatable-column
+                    [width]="30"
+                    [sortable]="false"
+                    [canAutoResize]="false"
+                    [draggable]="false"
+                    [resizeable]="false" name="">
+                    <ng-template
+                        ngx-datatable-header-template
+                        let-value="value"
+                        let-allRowsSelected="allRowsSelected"
+                        let-selectFn="selectFn">
+                        <input type="checkbox"
+                            [checked]="allRowsSelected"
+                            (change)="selectFn(!allRowsSelected)" />
+                    </ng-template>
+                    <ng-template
+                        ngx-datatable-cell-template
+                        let-value="value"
+                        let-isSelected="isSelected"
+                        let-onCheckboxChangeFn="onCheckboxChangeFn">
+                        <input type="checkbox"
+                            [checked]="isSelected"
+                            (change)="onCheckboxChangeFn($event)" />
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column *ngFor="let col of columnDef" [prop]="col.prop" [width]='col.width'>
+                    <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+                        <div [style]="col.styleHeader">
+                            <span class="mobile-hidden">{{col.name}}</span>
+                        </div>
+                    </ng-template>
+                    <ng-template let-value="value" ngx-datatable-cell-template let-row='row'>
+                        <div [style]="col.styleBody" *ngIf="col.prop != 'statusArc'; else other"
+                            [routerLink]="['/benh-an/chi-tiet/I']" [queryParams]="{_id: row?.medicalRecordId}">
+                            <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                {{
+                                col.colType == "date" && value ? ( value | date : 'dd/MM/yyyy')
+                                : col.colType == "dateTime" && value ? ( value | date : 'dd/MM/yyyy' : "GMT")
+                                : value | replaceNull
+                                }}
+                            </span>
+                        </div>
+                        <ng-template #other>
+                        <div [style]="col.styleBody">
+                            <select class="form-control" style="width: 120px;" [(ngModel)]="row[col.prop]" (change)="onChangeStatus($event, row)"
+                                [disabled]="!(actionRole.updateStatusArcMaking || row[col.prop] == arcMakingStatus.NOTYET)">
+                                <option *ngFor="let status of bowMakingStatus">
+                                    {{ status.label }}
+                                </option>
+                            </select>
+                        </div>
+                        </ng-template>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-footer>
+                    <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                        let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                        <span>Tổng<span class="font-weight-bold">&nbsp;{{ bowMakingList?.length }}</span></span>
+                        <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                            [pagerRightArrowIcon]="'datatable-icon-right'"
+                            [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'"
+                            [page]="curPage" [size]="pageSize" [count]="rowCount"
+                            [hidden]="!((rowCount / pageSize) > 1)" (change)="tables.onFooterPage($event)">
+                        </datatable-pager>
+                    </ng-template>
+                </ngx-datatable-footer>
+              </ngx-datatable>
+          </div>
+      </div>
+  </div>
+</ng-template>

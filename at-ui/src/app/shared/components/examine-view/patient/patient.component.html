@@ -1,0 +1,66 @@
+<form action="">
+    <div class="needs-validation">
+        <ng-container *ngFor="let obj of patientOption; let i = index">
+            <div class="form-group">
+                <h4>{{ i + 1 + ". " }}{{ obj.label }}</h4>
+                <div class="row m-0">
+                    <div class="checkbox-primary px-17 checkbox col-xl-3 col-md-4 col-12"
+                        [ngClass]="sub.class"
+                        *ngFor="let sub of obj.value; let j = index">
+                        <input type="checkbox" id="service-group-{{ i }}-{{ j }}"
+                            class="form-check-input m-t-0"
+                            [value]="sub.value"
+                            (change)="onSelectedPatient($event, obj.key)" 
+                            [checked]='toothChecked(sub.value, obj.key)'/>
+                        <label class="w-100" for="service-group-{{ i }}-{{ j }}">
+                            <span>{{ sub.label }}</span>
+                            <ng-container *ngIf="sub?.input">
+                                <input type="text" style="opacity: 1; border: none;background-color: #fff;" placeholder="............"
+                                    [value]="onInputOtherRender(obj.key, sub.label)"
+                                    [disabled]="!toothChecked(sub.value, obj.key)"
+                                    (change)="onInputOtherReason($event, obj.key, sub.label, toothChecked(sub.value, obj.key))">
+                            </ng-container>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <at-tooth-diagram 
+        class="hide_lt-md"
+        [tooth]="generalExamination?.tooth"
+        (selectedTooth$)="onSelectedTooth($event)"></at-tooth-diagram>
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="dentalSymptoms">Triệu chứng nha khoa</label>
+                <textarea class="form-control" id="dentalSymptoms" type="text" [(ngModel)]="generalExamination.dentalSymptoms"
+                    [ngModelOptions]="{standalone: true}"></textarea>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label for="diagnostic">Chẩn đoán</label>
+                <textarea class="form-control" id="diagnostic" type="text" [(ngModel)]="generalExamination.diagnostic"
+                    [ngModelOptions]="{standalone: true}"></textarea>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label for="treatment">Điều trị</label>
+                <textarea class="form-control" id="treatment" type="text" [(ngModel)]="generalExamination.treatment"
+                    [ngModelOptions]="{standalone: true}"></textarea>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label for="advice">Lời khuyên</label>
+                <textarea class="form-control" id="advice" type="text" [(ngModel)]="generalExamination.advice"
+                    [ngModelOptions]="{standalone: true}"></textarea>
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-end" *ngIf="_footerAction">
+            <button class="btn btn-second" (click)="onCreateMedicalRecordGeneral()">lưu</button>
+        </div>
+    </div>
+</form>

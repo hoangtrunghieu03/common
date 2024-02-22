@@ -1,0 +1,26 @@
+<div class="row my-40">
+    <div class="col-12 d-flex">
+        <div class="d-flex flex-column w-100">
+            <div class="d-flex"
+                *ngFor='let row of [].constructor(2); let rowInd = index'
+                [ngStyle]='{"border-bottom": rowInd == 0 ? "1px solid black" : null}'>
+                <div class='d-flex justify-content-md-between'
+                    style="flex: 0.5; "
+                    *ngFor='let obj of [].constructor(2); let colInd = index'
+                    [ngStyle]='{"border-right": colInd == 0 ? "1px solid black" : null}'>
+                    <div *ngFor='let num of handleRenderData(colInd == 0 ? false : true); let first = first; let last = last'>
+                        <div class="p-relative py-12 c-pointer text-center"
+                            (click)="onCheckNumber(num, rowInd, colInd)"
+                            [ngClass]="{'p-r-24': last, 'p-l-24': first }"
+                            [style.color]="checkIncludeNum(num, rowInd, colInd) ? '#f99f2a' : null">
+                            <span class="f-w-700">{{num}}</span>
+                            <span style="top: 7px" class="p-absolute f-w-400 f-22"
+                                [ngClass]="{'d-none': !checkIncludeNum(num, rowInd, colInd)}"
+                                [ngStyle]="{'left': first ? '24px' : '0'}">\</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

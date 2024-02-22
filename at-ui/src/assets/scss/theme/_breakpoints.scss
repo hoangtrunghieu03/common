@@ -1,0 +1,57 @@
+$breakpoints: (
+    xs: 'screen and (max-width: 575px)',
+    sm: 'screen and (min-width: 576px) and (max-width: 767px)',
+    md: 'screen and (min-width: 768px) and (max-width: 991px)',
+    lg: 'screen and (min-width: 992px) and (max-width: 1199px)',
+    xl: 'screen and (min-width: 1200px) and (max-width: 5000px)',
+    lt-sm: 'screen and (max-width: 575px)',
+    lt-md: 'screen and (max-width: 767px)',
+    lt-lg: 'screen and (max-width: 991px)',
+    lt-xl: 'screen and (max-width: 1199px)',
+    gt-xs: 'screen and (min-width: 576px)',
+    gt-sm: 'screen and (min-width: 768px)',
+    gt-md: 'screen and (min-width: 992px)',
+    gt-lg: 'screen and (min-width: 1200px)'
+) !default;
+
+// Re-map the breakpoints for the helper classes
+$helper-breakpoints: (
+    xs: null,
+    sm: 'gt-xs',
+    md: 'gt-sm',
+    lg: 'gt-md',
+    xl: 'gt-lg'
+);
+
+@mixin media-breakpoint($breakpointName) {
+
+    $mediaQuery: map-get($breakpoints, $breakpointName);
+
+    @if ($mediaQuery == null) {
+        @content
+    } @else {
+        @media #{$mediaQuery} {
+            @content
+        }
+    }
+}
+
+@each $pointName,
+$point in $breakpoints {
+    .hide_#{$pointName} {
+        @include media-breakpoint($pointName) {
+            display: none !important;
+        }
+    }
+
+    $i: none, flex, block, grid, inline;
+    @each $val in $i {
+        .show_#{$pointName}_#{$val} {
+
+            @include media-breakpoint($pointName) {
+                display: #{$val} !important;
+            }
+        }
+
+    }
+}

@@ -1,0 +1,177 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ title }}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form action="" class="needs-validation">
+    <ng-container *ngTemplateOutlet="treatmentContent"></ng-container>
+    <hr>
+    <ng-container *ngTemplateOutlet="scheduleContent"></ng-container>
+    <hr>
+    <ng-container *ngTemplateOutlet="supplyContent"></ng-container>
+  </form>
+</div>
+<div class="modal-footer">
+  <div class='btn-position-default'>
+    <button type="button" class="btn btn-primarys m-r-12" (click)="onSaveForm()" *ngIf="!treatmentProcess?.id || treatmentProcess?.treatmentStatus != serviceStatus.FINISH">lưu</button>
+    <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+  </div>
+</div>
+
+<ng-template #treatmentContent>
+  <div class="row" [formGroup]="treatmentForm">
+    <div class="col-12 col-md-6">
+      <at-datepicker
+        [label]="'Ngày thực hiện'"
+        [formCtrlName]="'processDay'"
+        [date]="treatmentForm.get('processDay').value"
+        [required]="true"
+        [inputRequired]="validateForm(treatmentForm, 'processDay')">
+        <div class="dp-valid" *ngIf="validateForm(treatmentForm, 'processDay')">
+            <p class="text-danger m-0" *ngIf="treatmentForm.controls.processDay.errors?.required">Chọn Ngày thực hiện</p>
+            <p class="text-danger m-0" *ngIf="treatmentForm.controls.processDay.errors?.ngbDate">Ngày không hợp lệ</p>
+        </div>
+    </at-datepicker>
+    </div>
+    <div class="col-12 col-md-6">
+      <at-select
+        [label]="'Dịch vụ'"
+        [formName]="'serviceId'"
+        [AtData]="medicalServices"
+        [formControlSelect]="treatmentForm?.controls.serviceId">
+      </at-select>
+    </div>
+    <div class="col-12 col-md-6">
+      <ng-container *ngTemplateOutlet="staff,
+      context: { title: 'Dịch vụ chỉ định', dataList: medicalServiceIndicates, control: 'serviceIndicateId' }"></ng-container>
+    </div>
+    <div class="col-12 col-md-6">
+      <ng-container *ngTemplateOutlet="staff,
+      context: { title: 'Người thực hiện', dataList: staffFilter, control: 'staffId' }"></ng-container>
+    </div>
+    <div class="col-12 col-md-6">
+      <at-select
+        [label]="'Người tạo quy trình'"
+        [formName]="'staffCreateId'"
+        [AtData]="staffCreateList"
+        [formControlSelect]="treatmentForm?.controls.staffCreateId">
+    </at-select>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class='checkbox-primary px-17 checkbox m-t-12'>
+        <input type="checkbox"
+            id='designat'
+            class="form-check-input m-t-0"
+            formControlName="executeOutSide">
+        <label for='designat'>Thực hiện ngoài</label>
+    </div>
+    </div>
+
+
+    <div class="col-12 form-group">
+      <label for="serviceId" class="col-12 px-0"><span>*</span> Nội dung</label>
+      <textarea class=" form-control col-12" formControlName="note" [ngClass]="{'input-danger': validateForm(treatmentForm, 'note')}">
+      </textarea>
+      <div class="dp-valid" *ngIf="validateForm(treatmentForm, 'note')">
+        <p class="text-danger m-0" *ngIf="treatmentForm.controls.note.errors?.required">Nhập Nội dung</p>
+    </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #scheduleContent>
+  <div class="row" [formGroup]="scheduleForm">
+    <div class="col-12 col-md-6">
+      <at-datepicker
+        [label]="'Ngày hẹn tiếp theo'"
+        [formCtrlName]="'scheduleTime'"
+        [date]="scheduleForm.get('scheduleTime').value"
+        [inputRequired]="validateForm(scheduleForm, 'scheduleTime')"
+        [minDate]="minScheduleTime"
+        [disabled]="treatmentProcess?.hasSchedule">
+        <div class="dp-valid" *ngIf="validateForm(scheduleForm, 'scheduleTime')">
+            <p class="text-danger m-0" *ngIf="scheduleForm.controls.scheduleTime.errors?.ngbDate">Ngày không hợp lệ</p>
+        </div>
+      </at-datepicker>
+    </div>
+    <div class="col-12 form-group">
+      <label for="content" class="col-12 px-0">Nội dung</label>
+      <textarea class=" form-control col-12" formControlName="content" placeholder="Có nội dung mới tạo lịch hẹn"
+        [attr.disabled]="treatmentProcess?.hasSchedule ? true : null"></textarea>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #supplyContent>
+  <div class="row" [formGroup]="treatmentForm">
+    <div class="col-12 col-md-6">
+      <span class="col-12 p-0">Vật dụng tiêu hao: </span>
+      <ng-container *ngTemplateOutlet="searchSupply"></ng-container>
+    </div>
+    <div class="col-12 m-t-16">
+      <at-base-table [colDef]="columnDef" [tableData]="treatmentForm.get('medicalSupply').value"
+          [action]="{isDelete: true, isDone: false}" (deleteRowEvent)="onRemoveSupply($event)">
+      </at-base-table>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #searchSupply>
+  <div ngbDropdown #myDrop="ngbDropdown" class="col-12 p-0">
+      <div class="hide-arrow" #search>
+          <at-input-delay-search class='w-100 f-14' (inputEmitter)="onSearchSupply($event)" ngbDropdownToggle>
+          </at-input-delay-search>
+      </div>
+      <ul [matchWidth]='search' class='dropdown-dialog' ngbDropdownMenu>
+          <ng-container *ngFor="let supply of medicalSupplyFilter">
+              <li ngbDropdownItem class='w-100 dropdown-item ' (mousedown)="onSelectSupply(supply)">
+                  <div class="d-flex justify-content-between align-items-center c-pointer icon">
+                      <div [style.whiteSpace]='"normal"'>
+                          <span>{{supply.name}}</span>
+                      </div>
+                  </div>
+              </li>
+          </ng-container>
+          <li class='px-24' *ngIf="medicalSupplyFilter?.length == 0">
+              <span class='f-14'>Không có kết quả</span>
+          </li>
+      </ul>
+  </div>
+</ng-template>
+
+<ng-template #staff let-title="title" let-dataList="dataList" let-control="control">
+  <div class="form-group">
+    <label [for]="control" class="btn-default-font">{{ title }}</label>
+    <div ngbDropdown #myDrop="ngbDropdown" class="col-12 p-0">
+      <div class="hide-arrow" #search>
+        <at-input-delay-search class='w-100 f-14' (inputEmitter)="control == 'staffId' ? onSearchStaff($event) : onSearchServiceIndicate($event)" ngbDropdownToggle>
+        </at-input-delay-search>
+      </div>
+      <ul [matchWidth]='search' class='dropdown-dialog' ngbDropdownMenu>
+        <ng-container *ngFor="let data of dataList">
+          <li ngbDropdownItem class='w-100 dropdown-item' (mousedown)="handleStaffSelected(data.value, control)">
+            <div class="d-flex justify-content-between align-items-center c-pointer icon">
+              <div class="d-flex justify-content-between w-100">
+                <span>{{data.label}}</span>
+                <at-feather-icons class="h-px-18" [icon]="'check'"
+                  *ngIf="onCheckStaffSelected(data.value, control)"></at-feather-icons>
+              </div>
+            </div>
+          </li>
+        </ng-container>
+        <li class='px-24' *ngIf="dataList?.length == 0">
+          <span class='f-14'>Không có kết quả</span>
+        </li>
+      </ul>
+    </div>
+    <div class="m-t-6">
+      <span class="selected d-inline-block m-r-6 m-b-6" *ngFor="let value of this.treatmentForm.get(control).value">
+        {{ control == 'staffId' ? getStaffName(value) : getServiceIndicateName(value) }}
+        <span class="c-pointer m-l-4" (click)="handleStaffSelected(value, control)">X</span>
+      </span>
+    </div>
+  </div>
+</ng-template>

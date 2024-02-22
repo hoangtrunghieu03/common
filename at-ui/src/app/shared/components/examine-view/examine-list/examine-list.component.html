@@ -1,0 +1,194 @@
+<div class="block-search-filter row p-lg-0 m-b-15">
+    <div class="col-12 col-md-4 col-xl-3">
+        <ng-container *ngTemplateOutlet="filter"></ng-container>
+    </div>
+
+    <at-input-delay-search class='col-12 col-md-8 col-xl-9 w-100 block-search'
+                            (inputEmitter)="onSearch($event)">
+    </at-input-delay-search>
+</div>
+
+<ng-container *ngTemplateOutlet="result"></ng-container>
+<ng-container *ngTemplateOutlet="braceWait"></ng-container>
+<!-- <ng-container *ngIf="!braceWait; else braceWait">
+    <at-table
+        [tableData]="customers"
+        [columnDef]="columnDef"
+        [limit]="10"
+        [scrollbarH]="true"
+        [emptyMessage]="'Hiện chưa có bệnh nhân nào đang chờ'">
+    </at-table>
+</ng-container> -->
+
+<ng-template #filter>
+    <at-filter-view (eventAddFilter)="onAddCondiotion()" [title]="'Hiển thị bệnh nhân chờ theo'">
+        <select class="form-control" [(ngModel)]="filterResult.condition" (change)="onFilterConditionChange()">
+            <option *ngFor="let item of conditionData | keyvalue" [value]="item.key">
+                {{item.value}}
+            </option>
+        </select>
+        <select class="form-control mt-2" [(ngModel)]="filterResult.value" *ngIf="filterResult.condition == 'room'">
+            <option [ngValue]="null">Chọn điều kiện</option>
+            <ng-container *ngFor="let item of rooms">
+                <option *ngIf="item._id !== roomId" [value]="item._id">
+                    {{item.name}}
+                </option>
+            </ng-container>
+        </select>
+        <select class="form-control mt-2" [(ngModel)]="filterResult.value"
+            *ngIf="filterResult.condition == 'chairStatus'">
+            <option [ngValue]="null">Chọn điều kiện</option>
+            <ng-container *ngFor="let item of chairStatus | keyvalue">
+                <option [value]="item.value" *ngIf="item.value !== chairStatus.AVAILABLE">
+                    {{item.value}}
+                </option>
+            </ng-container>
+        </select>
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15" *ngIf="renderSelect?.length > 0">
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <span>
+                {{item.firstCondition + ' là ' +
+                ( item.key === 'room' ? getRoomName(item.secondCondition) : item.secondCondition)}}
+            </span>
+            <button (click)="onRemoveFilter(item)">X</button>
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #braceWait>
+    <div class="row">
+        <div class="col-12">
+            <div class="custom-datatable">
+                <div id="batchDelete">
+                    <div class="table-responsive">
+
+                        <ngx-datatable class="bootstrap"
+                            [rows]="customers ? customers : []"
+                            [columns]="columnDef"
+                            [columnMode]="'force'"
+                            [headerHeight]="'auto'"
+                            [footerHeight]="customers && customers.length > 0 ? 50 : 0"
+                            [rowHeight]="'auto'"
+                            [limit]="10"
+                            [scrollbarH]="true"
+                            [messages]="{emptyMessage: 'Hiện chưa có bệnh nhân nào đang chờ'}"
+                            #tables>
+
+                            <ng-container *ngFor="let col of columnDef">
+                                <ngx-datatable-column
+                                    [prop]="col.prop"
+                                    [width]='col.width'
+                                    *ngIf="col.prop != 'action' && col.prop != 'chairName'">
+                                    <ng-template
+                                        let-column="column"
+                                        let-sort="sortFn"
+                                        ngx-datatable-header-template>
+                                        <div [style]="col.styleHeader">
+                                            <span class="mobile-hidden">{{col.name}}</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template
+                                        let-value="value"
+                                        ngx-datatable-cell-template
+                                        let-row='row'>
+                                        <div [style]="col.styleBody" (click)="onSelectRow(row)">
+                                            <span class="mobile-hidden"
+                                            [ngClass]="{'text-highlight': col.router}">
+                                                {{ !value ? "--"
+                                                : col.colType == "date" ? ( value | date : 'dd/MM/yyyy' )
+                                                : value | replaceNull }}
+                                            </span>
+                                        </div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column
+                                [prop]="col.prop"
+                                [width]='col.width'
+                                *ngIf="col.prop == 'action' && onCheckHideColumn()">
+                                <ng-template ngx-datatable-header-template>
+                                </ng-template>
+                                <ng-template
+                                    let-value="value"
+                                    ngx-datatable-cell-template
+                                    let-row='row'>
+                                    <div [style]="col.styleBody" *ngIf="!onCheckChairEnter(row)">
+                                        <button class="btn btn-second" (click)="onSelectChair(row)">Vào ghế</button>
+                                    </div>
+                                </ng-template>
+                              </ngx-datatable-column>
+                                <ngx-datatable-column
+                                [prop]="col.prop"
+                                [width]='col.width'
+                                *ngIf="col.prop == 'chairName'">
+                                <ng-template
+                                        let-column="column"
+                                        let-sort="sortFn"
+                                        ngx-datatable-header-template>
+                                        <div [style]="col.styleHeader">
+                                            <span class="mobile-hidden">{{col.name}}</span>
+                                        </div>
+                                    </ng-template>
+                                <ng-template ngx-datatable-header-template>
+                                </ng-template>
+                                <ng-template
+                                    let-value="value"
+                                    ngx-datatable-cell-template
+                                    let-row='row'>
+                                    <span class="mobile-hidden" *ngIf="value">{{value}}</span>
+                                    <div [style]="col.styleBody" *ngIf="!onCheckChairEnter(row)">
+
+                                        <button class="btn btn-second" (click)="onSelectChair(row)">Vào ghế</button>
+                                    </div>
+                                </ng-template>
+                              </ngx-datatable-column>
+                                <ngx-datatable-column
+                                    [prop]="col.prop"
+                                    [width]='col.width'
+                                    *ngIf="col.prop == 'action' && onCheckHideColumn()">
+                                    <ng-template ngx-datatable-header-template>
+                                    </ng-template>
+                                    <ng-template
+                                        let-value="value"
+                                        ngx-datatable-cell-template
+                                        let-row='row'>
+                                        <div [style]="col.styleBody" *ngIf="!onCheckChairEnter(row)">
+                                            <button class="btn btn-second" (click)="onSelectChair(row)">Vào ghế</button>
+                                        </div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                            </ng-container>
+
+
+                            <ngx-datatable-footer>
+                                <ng-template
+                                    ngx-datatable-footer-template
+                                    let-rowCount="rowCount"
+                                    let-pageSize="pageSize"
+                                    let-curPage="curPage">
+                                    <span>Tổng<span class="font-weight-bold">&nbsp;{{ customers?.length }}</span></span>
+                                    <datatable-pager
+                                        [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                        [pagerRightArrowIcon]="'datatable-icon-right'"
+                                        [pagerPreviousIcon]="'datatable-icon-prev'"
+                                        [pagerNextIcon]="'datatable-icon-skip'"
+                                        [page]="curPage" [size]="pageSize"
+                                        [count]="rowCount" [hidden]="!((rowCount / pageSize) > 1)"
+                                        (change)="tables.onFooterPage($event)">
+                                    </datatable-pager>
+                                </ng-template>
+                            </ngx-datatable-footer>
+
+                        </ngx-datatable>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</ng-template>

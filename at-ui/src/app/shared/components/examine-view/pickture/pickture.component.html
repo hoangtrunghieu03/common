@@ -1,0 +1,126 @@
+
+<div class="needs-validation">
+    <div class="row">
+        <ng-container *ngFor="let item of folderImage; let first = first; let last = last; let i = index">
+            <div class="col-12" [ngClass]="{'m-t-16': !first}">
+                <div class="d-flex align-items-center m-b-20 justify-content-between">
+                    <span class="f-16 f-w-700">{{item.indicateGroupName}}</span>
+                </div>
+                <hr>
+                <div class="d-flex flex-column">
+                    <ng-container *ngFor="let indicate of item.medicalServiceIndicates; let j = index">
+                        <div class="m-l-12">
+                            <div class="d-flex" *ngIf="indicate.haveUpdate; else notUpdate">
+                                <ng-container *ngIf="!indicate.isUpdate; else updateIndicateName">
+                                    <span class="f-w-700">{{ indicate.indicateName }}</span>
+                                    <at-feather-icons class="d-flex c-pointer m-l-16 feather-20" [icon]="'edit'"
+                                        (click)="indicate.isUpdate = !indicate.isUpdate"></at-feather-icons>
+                                </ng-container>
+                                <ng-template #updateIndicateName>
+                                    <input id="{{ item.indicateGroupName + i + j }}" [value]="indicate.indicateName">
+                                    <span class="c-pointer m-l-16 font-weight-bold" style="color: #f99f2a"
+                                        (click)="onSaveUpdate(item.indicateGroupName, i, j)">Lưu</span>
+                                    <at-feather-icons class="d-flex c-pointer m-l-16 feather-20" [icon]="'x-square'"
+                                        (click)="indicate.isUpdate = !indicate.isUpdate"></at-feather-icons>
+                                </ng-template>
+                            </div>
+                            <ng-template #notUpdate>
+                                <span class="f-w-700">{{indicate.indicateName}}</span>
+                            </ng-template>
+                            <div class="row">
+                                <at-picture-block
+                                    [_imgData]="indicate.imgUrl"
+                                    (_onDeleteImg)="deleteImage($event, imageType.IMAGE)"
+                                    [pictureAction]="pictureAction">
+                                </at-picture-block>
+                                <ng-container
+                                    *ngTemplateOutlet="add_indicate,
+                                                                context: { title: indicate.indicateName, typeUpload: typeUpload.indicate, 
+                                                                    indicateGroupShortName: item.indicateGroupShortName, indicateShortName: indicate.indicateShortName }"></ng-container>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+        <div class="col-12">
+            <div class="d-flex align-items-center my-20">
+                <span class="f-16 f-w-700">KHÁC</span>
+            </div>
+            <hr>
+            <div class="m-l-12">
+                <div class="d-flex align-items-center">
+                    <span class="f-16 f-w-700">Bản cam kết</span>
+                </div>
+                <div class="row">
+                    <at-picture-block
+                        [_imgData]="medicalRecordCommitment"
+                        (_onDeleteImg)="deleteImage($event, imageType.COMMITMENT)"
+                        [pictureAction]="pictureAction">
+                    </at-picture-block>
+                    <ng-container
+                        *ngTemplateOutlet="add_indicate, context: { title: typeUpload.commitment, typeUpload: typeUpload.commitment }"></ng-container>
+                </div>
+            </div>
+
+            <ng-container *ngIf="medicalRecord?.customerInfo && medicalRecord?.customerInfo.length !== 0">
+                <div class="m-l-12">
+                    <div class="d-flex align-items-center">
+                        <span class="f-16 f-w-700">Bản tự khai</span>
+                    </div>
+                    <div class="row">
+                        <at-picture-block
+                            [_imgData]="medicalRecord?.customerInfo"
+                            (_onDeleteImg)="deleteImage($event, imageType.CUSTOMER_INFO)"
+                            [pictureAction]="pictureAction">
+                        </at-picture-block>
+                    </div>
+                </div>
+            </ng-container>
+        
+            <ng-container *ngIf="medicalRecordDeliveryNotes && medicalRecordDeliveryNotes.length != 0">
+                <div class="m-l-12">
+                    <div class="d-flex align-items-center">
+                        <span class="f-16 f-w-700">Phiếu giao nhận</span>
+                    </div>
+                    <div class="row">
+                        <at-picture-block
+                            [_imgData]="medicalRecordDeliveryNotes"
+                            (_onDeleteImg)="deleteImage($event, imageType.DELIVERY_NOTES)"
+                            [pictureAction]="pictureAction">
+                        </at-picture-block>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    
+</div>
+
+<ng-template #add_indicate let-title="title"
+    let-typeUpload="typeUpload" let-indicateGroupShortName="indicateGroupShortName"
+    let-indicateShortName="indicateShortName">
+    <div class='product-img_list'>
+        <div class='product-img_list-item b-r-5 my-12 mx-12' (click)="onAddImage(title, indicateGroupShortName, indicateShortName, typeUpload)">
+            <img [src]="'../../../../assets/images/missing_img.png'" alt=""
+                (error)="$event.target.src = '../../../../assets/images/missing_img.png'">
+            <div class='product-img_list-item__action align-items-center justify-content-center b-r-5'>
+                <at-feather-icons [icon]="'plus'"></at-feather-icons>
+            </div>
+            <div class="product-img_list-item__overlay"></div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #add_commitment let-title="title" let-typeUpload="typeUpload">
+    <div class='product-img_list'>
+        <div class='product-img_list-item b-r-5 my-12 mx-12' (click)="onAddImage(title, null, null, typeUpload)">
+            <img [src]="'../../../../assets/images/missing_img.png'" alt=""
+                (error)="$event.target.src = '../../../../assets/images/missing_img.png'">
+            <div class='product-img_list-item__action align-items-center justify-content-center b-r-5'>
+                <at-feather-icons [icon]="'trash-2'"></at-feather-icons>
+            </div>
+            <div class="product-img_list-item__overlay"></div>
+        </div>
+    </div>
+</ng-template>

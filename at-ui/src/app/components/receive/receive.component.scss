@@ -1,0 +1,7 @@
+@import '../../../assets/scss/theme/breakpoints';
+
+@include media-breakpoint('gt-lg') {
+  .drop-input-search {
+    width: 75%;
+  }
+}

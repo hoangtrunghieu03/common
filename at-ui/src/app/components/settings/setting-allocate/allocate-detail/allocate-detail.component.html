@@ -1,0 +1,80 @@
+<div class="container-fluid p-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between hide-arrow">
+            <h5>chỉ định {{medicalIndicate ? (' - ' + medicalIndicate?.name) : null }}</h5>
+            <div class="d-flex align-items-center">
+                <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'edit'" (click)="handleUpdateIndicate()" *ngIf="!isEdit">
+                </at-feather-icons>
+                <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'x-square'" (click)="handleUpdateIndicate()" *ngIf="isEdit">
+                </at-feather-icons>
+                <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right">
+                    <button ngbDropdownToggle class="btn-icon m-0">
+                        <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" (click)="handleUpdateIndicate()">Chỉnh sửa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body needs-validation " [formGroup]="allocateForm">
+            <div class="row">
+                <ng-container *ngFor="let obj of allocateContent">
+                    <div class="col-12 col-md-6 col-xl-6" [ngClass]="!obj.isUpdate ? 'd-flex justify-content-between form-group' : null">
+                        <ng-container *ngIf="!obj.isUpdate; else checkEdit">
+                            <label class="">{{obj.label}}:</label><span class="f-w-700">{{obj.value}}</span>
+                        </ng-container>
+                        <ng-template #checkEdit>
+                            <div class="row needs-validation">
+                                <div class="col-12">
+                                    <ng-container *ngIf="obj.formName != 'typeIndicate'; else type">
+                                        <at-input
+                                            [label]="obj.label"
+                                            [formName]="obj.formName"
+                                            [inputType]="obj.inputType"
+                                            [inputRequired]="validateForm(allocateForm, obj.formName)"
+                                            [inputValid]="allocateForm.controls[obj.formName].errors?.required"
+                                            [required]="true">
+                                            <div class="regexTel" *ngIf="allocateForm.get('name')?.errors?.nameDuplicated && obj.formName === 'name'">
+                                                <p class="text-danger"> Tên chỉ định đã tồn tại </p>
+                                            </div>
+                                        </at-input>
+                                    </ng-container>
+                                    <ng-template #type>
+                                        <at-select
+                                            class="w-100"
+                                            [label]="'Loại'"
+                                            [formName]="'typeIndicate'"
+                                            [required]="true"
+                                            [AtData]="typeServiceIndicates"
+                                            [formControlSelect]="allocateForm?.controls.typeIndicate"
+                                            [selectRequired]="validateForm(allocateForm, 'typeIndicate')"
+                                            [selectValid]="allocateForm.controls.typeIndicate.errors?.required">
+                                        </at-select>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </ng-container>
+                <div class="col-12">
+                    <ng-container *ngIf="!isEdit; else checkEdit">
+                        <label for="">Mô tả:</label><span>&nbsp;{{ allocateForm.get('description').value }}</span>
+                    </ng-container>
+                    <ng-template #checkEdit>
+                        <label for="">Mô tả</label>
+                        <textarea class="form-control" id="reason" type="text" formControlName="description"></textarea>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+    <at-examina-footer #footer (eventCancel)="location.back()" [_isComplete]="true">
+        <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveIndicate()">Xóa</button>
+        <button class="btn btn-primary m-r-12" (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem  (click)="onRemoveIndicate()">Xóa</button>
+            <button ngbDropdownItem (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

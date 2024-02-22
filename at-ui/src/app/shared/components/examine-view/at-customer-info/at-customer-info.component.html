@@ -1,0 +1,8 @@
+<div class="d-flex flex-column m-b-15">
+    <label>Mã hồ sơ bệnh án: <span class="text-highlight"  [routerLink]="['/benh-an/chi-tiet/I']"
+        [queryParams]="{_id: medicalRecord?._id}">{{medicalRecord?.medicalRecordCode}}</span></label>
+    <label>Họ và tên bệnh nhân: <span class="f-w-600">{{customer?.fullName}}</span></label>
+    <label>Ngày tháng năm sinh: <span class="f-w-600">
+        {{customer && (customer?.birthday | date: 'dd/MM/yyyy')}}</span>
+    </label>
+</div>

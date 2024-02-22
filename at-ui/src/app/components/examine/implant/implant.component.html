@@ -1,0 +1,39 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>DANH SÁCH BỆNH NHÂN CHỜ</h5>
+            <div ngbDropdown class="d-inline-block hide-arrow" placement="bottom-right">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem [routerLink]="['/kham-benh/phong-cay-implant/danh-sach-vat-dung']" [queryParams]="{_id: getRoomId()}">Danh sách vật dụng</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body validateSearch">
+            <div class='tab2-card tab'>
+                <ul ngbNav #nav="ngbNav" class="nav-tabs"
+                    [destroyOnHide]="true"
+                    [hidden]="!actionRole?.waitExamination && !actionRole?.waitImplementation"
+                    [(activeId)]="activeId">
+                    <li ngbNavItem [destroyOnHide]="true" [hidden]="!actionRole?.waitExamination" [ngbNavItem]="0">
+                        <a ngbNavLink>Chờ khám</a>
+                        <ng-template ngbNavContent>
+                            <at-examine-list [columnDef]="columnDef" [roomId]="getRoomId()"
+                                [examinationFlag]="false"></at-examine-list>
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem [destroyOnHide]="true" [hidden]="!actionRole?.waitImplementation" [ngbNavItem]="1">
+                        <a ngbNavLink>Đợi thực hiện</a>
+                        <ng-template ngbNavContent>
+                            <at-examine-list [columnDef]="columnDef" [roomId]="getRoomId()"
+                                [examinationFlag]="true"></at-examine-list>
+                        </ng-template>
+                    </li>
+                </ul>
+                <div [ngbNavOutlet]="nav" [hidden]="!actionRole?.waitExamination && !actionRole?.waitImplementation"></div>
+            </div>
+        </div>
+    </div>
+</div>

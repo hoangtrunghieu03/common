@@ -1,0 +1,223 @@
+<div class="modal-header">
+    <h4 class="modal-title">Thêm mới lịch hẹn</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="" [formGroup]="customerForm">
+        <div class="row needs-validation">
+            <h5 class="col-12 row align-items-center hide-arrow p-0 mx-0 m-b-30">
+                <h5 class="col-12 col-md-4 m-b-0">THÔNG TIN BỆNH NHÂN</h5>
+                <div class='col-12 col-md-8' *ngIf="!medicalRecordData">
+                    <ng-container *ngTemplateOutlet="searchCustomer"></ng-container>
+                </div>
+                <span></span>
+            </h5>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input [label]="'Họ tên bệnh nhân'"
+                    [formName]="'fullName'"
+                    [disabled]="medicalRecordData"
+                    [required]="true"
+                    [inputRequired]="validateForm(customerForm,'fullName')"
+                    [inputValid]="validateForm(customerForm,'fullName') && customerForm.controls.fullName.errors?.required">
+                    <div class="regexTel">
+                        <ng-container *ngIf="validInclude('fullName')">
+                            <p class="text-danger"> Họ tên bệnh nhân không đúng</p>
+                        </ng-container>
+                    </div>
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                    <at-input
+                        class="hidden-margin"
+                        [label]="'Số điện thoại'"
+                        [formName]="'tel'"
+                        [required]="true"
+                        [pattern]="telPattern"
+                        [inputType]="'phoneNumber'"
+                        [preValue]="customerForm.value.tel"
+                        [formControl]="customerForm?.controls.tel"
+                        [inputRequired]="validateForm(customerForm,'tel')"
+                        [inputValid]="customerForm.controls.tel.errors?.required"
+                        [disabled]="medicalRecordData">
+                        <div class="regexTel">
+                            <ng-container *ngIf='regexEmail(customerForm, "tel")'>
+                                <p class="text-danger m-0"> Số điện thoại không hợp lệ </p>
+                            </ng-container>
+                            <!-- <ng-container *ngIf="customerForm.get('tel')?.errors?.telDuplicated">
+                                <p class="text-danger m-0"> Số điện thoại đã được sử dụng</p>
+                            </ng-container> -->
+                            <ng-container *ngIf="!regexEmail(customerForm, 'tel') && validInclude('tel')">
+                                <p class="text-danger m-0"> Số điện thoại không đúng</p>
+                            </ng-container>
+                        </div>
+                    </at-input>
+                    <ng-container *ngIf="customerForm.get('isPhoneContact').value">
+                      <div class="needs-validation form-group p-l-18 m-b-5 m-t-1">
+                          <div class="checkbox-primary checkbox d-flex align-items-center p-0">
+                          <input class="form-check-input"
+                              type="checkbox"
+                              name="checkbox-contact"
+                              [checked]="customerForm.get('isPhoneContact').value"
+                              [disabled]="customerForm.get('isPhoneContact').value"
+                              id="checkbox-contact"
+                              >
+                          <label class="form-check-label m-t-0" for="checkbox-contact">
+                              Sử dụng SĐT người thân để liên hệ
+                          </label>
+                          </div>
+                      </div>
+                  </ng-container>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input [label]="'Email'"
+                    [formName]="'email'"
+                    [disabled]="medicalRecordData"
+                    [inputRequired]="regexEmail(customerForm, 'email') || validInclude('email')">
+                    <div class="regexTel">
+                        <ng-container *ngIf="regexEmail(customerForm, 'email')">
+                            <p class="text-danger"> Email không hợp lệ</p>
+                        </ng-container>
+                        <ng-container *ngIf="!regexEmail(customerForm, 'email') && validInclude('email')">
+                            <p class="text-danger"> Email không đúng</p>
+                        </ng-container>
+                    </div>
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-datepicker  [formCtrlName]="'birthday'" [label]="'Ngày sinh'"
+                    [date]="customerForm.get('birthday').value"
+                    [required]="true"
+                    [inputRequired]="validateForm(customerForm,'birthday')"
+                    [disabled]="medicalRecordData"
+                    [minDate]="minDate"
+                    [maxDate]="maxDate">
+                    <div class="dp-valid">
+                        <ng-container *ngIf="validateForm(customerForm,'birthday')">
+                            <p class="text-danger" *ngIf="customerForm.controls.birthday.errors?.required">Chọn Ngày tháng năm sinh</p>
+                            <p class="text-danger" *ngIf="customerForm.controls.birthday.errors?.ngbDate">Ngày không hợp lệ</p>
+                        </ng-container>
+                        <ng-container *ngIf="!validateForm(customerForm,'birthday') && validInclude('birthday')">
+                            <p class="text-danger"> Ngày tháng năm sinh không đúng</p>
+                        </ng-container>
+                    </div>
+                </at-datepicker>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <at-input [label]="'Địa chỉ'"
+                    [formName]="'address'"
+                    [required]="true"
+                    [disabled]="medicalRecordData"
+                    [inputRequired]="validateForm(customerForm, 'address')"
+                    [inputValid]="customerForm.controls.address.errors?.required">
+                    <div class="regexTel">
+                        <ng-container *ngIf="validInclude('address')">
+                            <p class="text-danger">Địa chỉ không đúng</p>
+                        </ng-container>
+                    </div>
+                </at-input>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <label for="">Giới tính</label>
+                <div class="d-flex">
+                    <ng-container *ngFor="let item of ['Nam', 'Nữ'];let i = index">
+                        <label class="d-block m-r-12 " for="group-mode{{i}}">
+                            <input class="radio_animated " id="group-mode{{i}}" type="radio" name="sex" [value]="item"
+                                formControlName='sex' [attr.disabled]="medicalRecordData ? true : null">
+                            {{item}}
+                        </label>
+                    </ng-container>
+                </div>
+                <div>
+                    <ng-container *ngIf="validInclude('sex')">
+                        <p class="text-danger m-b-12"> Giới tính không đúng</p>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <form action="" [formGroup]="scheduleForm">
+        <div class="row needs-validation">
+            <h5 class="col-12 text-uppercase m-b-30">thông tin cuộc hẹn</h5>
+            <div class="col-12 col-md-6">
+                <at-datepicker
+                    [label]="'Thời gian'"
+                    [required]="false"
+                    [formCtrlName]="'scheduleTime'"
+                    [date]="scheduleForm.get('scheduleTime').value"
+                    [required]="true"
+                    [inputRequired]="validateForm(scheduleForm,'scheduleTime')"
+                    [minDate]="minScheduleDate">
+                    <div class="dp-valid" *ngIf="validateForm(scheduleForm,'scheduleTime')">
+                        <p class="text-danger" *ngIf="scheduleForm.controls.scheduleTime.errors?.required">Chọn Thời gian</p>
+                        <p class="text-danger" *ngIf="scheduleForm.controls.scheduleTime.errors?.ngbDate">Ngày không hợp lệ</p>
+                    </div>
+                </at-datepicker>
+            </div>
+            <div class="col-12 col-md-6">
+                <at-select
+                    class="w-100"
+                    [label]="'Loại lịch hẹn'"
+                    [required]="true"
+                    [formName]="'typeSchedule'"
+                    [AtData]="scheduleTypeList"
+                    [formControlSelect]="scheduleForm?.controls.typeSchedule"
+                    [selectRequired]="validateForm(scheduleForm, 'typeSchedule')"
+                    [selectValid]="scheduleForm.controls.typeSchedule.errors?.required"
+                    (_onChangeValueSelected)="onChangeValueSelected($event)">
+                </at-select>
+            </div>
+            <div class="col-12">
+                <label for="note"><span>*</span> Nội dung</label>
+                <textarea class="form-control" id="note" type="text" formControlName="content"></textarea>
+                <div class="regexTel">
+                  <ng-container *ngIf="validateForm(scheduleForm,'content')">
+                      <p class="text-danger"> Nhập nội dung</p>
+                  </ng-container>
+              </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn btn-primarys m-r-12" (click)="onSaveForm()">lưu</button>
+        <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>
+
+<ng-template #searchCustomer>
+    <div ngbDropdown #myDrop="ngbDropdown">
+        <div #search class="drop-input-search">
+            <at-input-delay-search
+                (inputEmitter)="onSearch($event)"
+                [textPlaceHolder]="'Tìm bệnh nhân theo Mã bệnh nhân hoặc Tên hoặc Số điện thoại'"
+                [textSearch]="textSearch"
+                (clearTextSearchEmitter)="onSelectCustomer(null)"
+                ngbDropdownToggle
+                (click)="myDrop.open()">
+            </at-input-delay-search>
+        </div>
+        <div class='dropdown-dialog' ngbDropdownMenu [matchWidth]='search'>
+            <table class="base-table f-14 h6 m-0" *ngIf="customerFilter?.length != 0">
+                <tbody>
+                    <tr *ngFor="let customer of customerFilter">
+                        <td><span>{{ customer?.customerCode }}</span></td>
+                        <td><span>{{ customer?.fullName }}</span></td>
+                        <td><span>{{ formatPhoneNumber(customer?.tel) }}</span></td>
+                        <td>
+                            <span class="c-pointer" style="color: #f99f2a"
+                                (click)="onSelectCustomer(customer); myDrop.close()">Tiếp
+                                nhận</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class='px-24' *ngIf="customerFilter?.length == 0">
+                <span class='h6 f-14'>Không có kết quả</span>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,12 @@
+.icon-dollar-back {
+  position: relative;
+  .icon-arrow {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    transform: rotate(180deg);
+    background: #fff;
+    border-radius: 50%;
+  }
+}
+

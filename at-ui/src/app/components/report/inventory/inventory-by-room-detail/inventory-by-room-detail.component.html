@@ -1,0 +1,77 @@
+<div class="container-fluid">
+  <div class="card">
+      <div class="card-header">
+          <h5 class='d-flex justify-content-between hide-arrow align-items-center'>
+              <h5>Thông tin vật dụng</h5>
+          </h5>
+      </div>
+      <div class="card-body needs-validation">
+          <div class='row'>
+              <div class="col-12 col-md-6 row">
+                  <span class="col-5 form-group d-flex justify-content-between">Tên vật tư <span>:</span></span>
+                  <!-- [queryParams]="{_id: medicalRecord?._id} -->
+                  <span class="col-7 f-w-700">{{room?.name}}</span>
+                  <ng-container *ngFor="let obj of inventoryContent?.slice(0,4)">
+                      <span class="col-5 form-group d-flex justify-content-between">{{obj.label}} <span>:</span></span>
+                      <span class="col-7 f-w-700">{{obj.value | replaceNull}}</span>
+                  </ng-container>
+              </div>
+              <div class="col-12 col-md-6 row">
+                  <ng-container *ngFor="let obj of inventoryContent?.slice(4,6)">
+                      <span class="col-5 d-flex justify-content-between">{{obj.label}} <span>:</span></span>
+                      <span class="col-7 d-flex flex-column f-w-700">
+                          {{obj.value | replaceNull}}
+                      </span>
+                  </ng-container>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <at-card>
+      <h5 class="text-uppercase">Danh sách bệnh án đã dùng vật tư</h5>
+      <div class="custom-datatable">
+        <div id="batchDelete">
+            <div class="table-responsive">
+                <ngx-datatable class="bootstrap" [rows]="roomDetails" [columns]="columnDef" [columnMode]="'force'"
+                    [headerHeight]="'auto'" [footerHeight]="roomDetails && roomDetails.length > 0 ? 50 : 0" [rowHeight]="'auto'"
+                    [limit]="10" [scrollbarH]="true" [messages]="{emptyMessage: 'Không có dữ liệu'}" #tables>
+                    <ngx-datatable-column *ngFor="let col of columnDef" [prop]="col.prop" [width]='col.width'>
+                        <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+                            <div [style]="col.styleHeader">
+                                <span class="mobile-hidden">{{col.name}}</span>
+                            </div>
+                        </ng-template>
+                        <ng-template let-value="value" ngx-datatable-cell-template let-row='row'>
+                            <div [style]="col.styleBody" (click)="onSelectRow(row.medicalRecordId, col.prop)"  >
+                                <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                  {{
+                                    col.colType == "dateUse" ? ( value | date : 'dd/MM/yyyy' )
+                                    : (value | replaceNull)
+                                    }}
+                                </span>
+                            </div>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-footer>
+                        <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                            let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                            <span>Tổng<span class="font-weight-bold">&nbsp;{{ roomDetails?.length }}</span></span>
+                            <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                [pagerRightArrowIcon]="'datatable-icon-right'"
+                                [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'"
+                                [page]="curPage" [size]="pageSize" [count]="rowCount"
+                                [hidden]="!((rowCount / pageSize) > 1)" (change)="tables.onFooterPage($event)">
+                            </datatable-pager>
+                        </ng-template>
+                    </ngx-datatable-footer>
+                </ngx-datatable>
+            </div>
+        </div>
+    </div>
+      <!-- <label for="">Chỉ định: </label> -->
+      <!-- <at-fee [medicalRecord]="medicalRecord"></at-fee> -->
+  </at-card>
+  <at-examina-footer (eventCancel)="location.back()" [_isComplete]="true">
+</at-examina-footer>
+</div>

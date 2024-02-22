@@ -1,0 +1,40 @@
+<div [ngClass]="">
+    <label [for]="inpId" class="m-b-0">
+        <span class="star-color" *ngIf="castedRequire">* </span>
+        {{_label}}
+    </label>
+    <div class='d-inline-block w-100' ngbDropdown #productDropdow="ngbDropdown" [container]='container'>
+        <input type="text" class="form-control dropdown-input text-eclip" data-toggle="dropdown"
+            [id]="inpId"
+            [ngClass]="inpClass"
+            ngbDropdownAnchor
+            (focus)="productDropdow.open();ipAutocomplete.select()"
+            (blur)="blurInputScope()"
+            [(ngModel)]='_keySearch'
+            [ngModelOptions]="{standalone: true}"
+            [placeholder]="_label" #ipAutocomplete
+            [disabled]="castedDisabled"
+            autocomplete="off"
+            (keyup)="onkeyUp($event)">
+        <ul [matchWidth]='ipAutocomplete'
+            class='dropdown-dialog'
+            ngbDropdownMenu
+            aria-labelledby="contractPeriodDropDown">
+            <li ngbDropdownItem class='w-100 dropdown-item '
+                *ngFor="let item of _data | filterName: _keySearch : 'label'; let i = index"
+                (mousedown)="handleSelectData(item)">
+                <div class="d-flex justify-content-between align-items-center c-pointer icon">
+                    <div [style.whiteSpace]='"normal"'>
+                        <span>{{item.label}}</span>
+                    </div>
+                    <!-- <at-feather-icons class='h-px-18 c-pointer' [icon]="'check'"
+                        *ngIf='checkIncludesItem(item)'></at-feather-icons> -->
+                </div>
+            </li>
+            <li class='px-24' *ngIf="(_data | filterName: _keySearch : 'label')?.length == 0">
+                <span class='f-14'>Không có kết quả</span>
+            </li>
+        </ul>
+    </div>
+    <ng-content select=".ipC-valid"></ng-content>
+</div>

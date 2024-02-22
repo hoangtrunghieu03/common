@@ -1,0 +1,27 @@
+<at-modal-header (onClose)="activeModal.dismiss('Cross click')">
+  {{ title }}
+</at-modal-header>
+
+<div class="modal-body">
+  <div class='row'>
+    <div class="col-12 px-4" *ngIf="imgs && imgs.length != 0; else noImg">
+      <at-picture-block [_imgData]="imgs" [isAddPicture]="true" [pictureAction]="{ delete: true, download: false }" (_onDeleteImg)="deleteImage($event)"></at-picture-block>
+    </div>
+    <ng-template #noImg>
+      <div class="col-12 d-flex justify-content-center">
+        <span>Không có hình ảnh</span>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<at-modal-footer>
+  <div class="commit-btn">
+    <input type="file" (change)="handleAddImg($event)" [hidden]="true" #inpFile [accept]="imageType"
+      multiple>
+    <button class="btn btn-primary" (click)="inpFile.click()">Thêm ảnh</button>
+  </div>
+
+  <button type="button" class="btn btn-primarys m-r-20" (click)="onSaveModal()">Lưu</button>
+  <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>

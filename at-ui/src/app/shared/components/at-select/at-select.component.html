@@ -1,0 +1,38 @@
+<div class="form-group hide-arrow">
+  <label [for]="formName" class="btn-default-font" *ngIf="label">
+    <span class="star-color" *ngIf="required">* </span>{{label}}</label>
+  <div ngbDropdown #myDrop="ngbDropdown">
+    <div #search class="drop-input-search" [ngClass]="{'select-disabled': disabled}">
+      <div class="input-filter">
+        <div class="input-filter__box b-r-5 px-12 py-4 px-12 d-flex align-items-center" [ngClass]="{'input-danger': selectRequired}" ngbDropdownToggle>
+            <img class="h-px-18" src="../../../../assets/images/Icon/20px Icon/search.png">
+            <div class="d-flex w-100">
+                <input class='m-b-0'
+                  [placeholder]="textPlaceHolder"
+                  autocomplete="on" type="text"
+                  (keyup)="onKeyUp($event)"
+                  [(ngModel)]="textSearch"
+                  [ngModelOptions]="{standalone: true}"
+                  (click)="myDrop.close()">
+                <at-feather-icons class='c-pointer' *ngIf='!!textSearch' [icon]="'x'" (click)="removeText()"></at-feather-icons>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class='dropdown-dialog' ngbDropdownMenu [matchWidth]='search'>
+      <ng-container *ngIf="AtDataFilter?.length != 0; else dataNone">
+        <div ngbDropdownItem *ngFor="let val of AtDataFilter" (click)="handleSelectedChange(val.label, val.value)" [ngClass]="{'select-active': formControlSelect?.value == val?.value}">{{ val?.label }}</div>
+      </ng-container>
+      <ng-template #dataNone>
+        <div class='px-24'>
+          <span class='h6 f-14'>Không có kết quả</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div *ngIf="selectRequired && label">
+    <p class="text-danger" *ngIf="selectValid">Chọn {{ label }}</p>
+  </div>
+  <ng-content select=".regexTel"></ng-content>
+</div>

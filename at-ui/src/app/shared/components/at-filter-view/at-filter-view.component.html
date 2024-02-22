@@ -1,0 +1,15 @@
+<div ngbDropdown #myDrop="ngbDropdown" class="block-filter d-inline-block p-r-12 f-14 w-100" container="body">
+    <button ngbDropdownToggle class="btn-filter d-block btn-default-style align-items-center filterSize w-100 p-0" #drop>Chọn điều kiện lọc</button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1 fontDropdown" class='px-12 py-12 f-14 content-filter'>
+        <span class="my-6">{{title}}:</span>
+
+        <ng-content></ng-content>
+
+        <div class='m-t-12 d-flex justify-content-between block-btn-condition'>
+            <button class="btn dropdownButton btn-back"
+                (click)="$event.stopPropagation(); myDrop.close();">Quay lại</button>
+            <button class="btn btn-primarys btn-add-condition m-l-12"
+                (click)="onAddFilter();$event.stopPropagation();myDrop.close();">Thêm điều kiện</button>
+        </div>
+    </div>
+</div>

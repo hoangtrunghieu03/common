@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <h4 class="modal-title">Chuyển phòng</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="m-b-16" [innerHTML]="content"></div>
+    <select class="form-control m-b-16" [(ngModel)]="roomInfo.roomStatus" *ngIf="roomInfo.toRoomName == roomList.reception">
+        <option [ngValue]="null">Chọn trạng thái</option>
+        <option *ngFor="let item of roomStatusList" [value]="item.value">
+            {{ item.value === roomStatus.SEE_YOU ? 'Cho về' : item.value }}
+        </option>
+    </select>
+
+    <div class="m-b-16">
+        <label class="m-b-0">Ghi chú</label>
+        <textarea class="form-control" [(ngModel)]="roomInfo.noteTranfer" maxlength="50"></textarea>
+    </div>
+    
+    <div class="needs-validation px-16" *ngIf="onShowCheckbox()">
+        <div class="checkbox-primary checkbox d-flex align-items-center">
+            <input class="form-check-input" type="checkbox" name="checkboxSelect" id="checkbox" [(ngModel)]="isCreateMedicalRecord">
+            <label class="form-check-label m-0" for="checkbox">
+                Tạo hồ sơ bệnh án mới
+            </label>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn btn-primarys m-r-12" (click)="onSaveModal()">Đồng ý</button>
+        <button type="button" class="btn" (click)="activeModal.close()">Không</button>
+    </div>
+</div>

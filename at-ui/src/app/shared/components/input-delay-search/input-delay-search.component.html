@@ -1,0 +1,13 @@
+<div class="input-filter">
+    <div class="input-filter__box b-r-5 px-12 py-4 px-12 d-flex align-items-center">
+        <img class="h-px-18" src="../../../../assets/images/Icon/20px Icon/search.png">
+        <div class="d-flex w-100">
+            <input class='m-b-0'
+                [placeholder]="textPlaceHolder"
+                autocomplete="on" type="text"
+                (keyup)="onKeyUp($event)"
+                [(ngModel)]="textSearch">
+            <at-feather-icons class='c-pointer' *ngIf='!!textSearch' [icon]="'x'" (click)="removeText()"></at-feather-icons>
+        </div>
+    </div>
+</div>

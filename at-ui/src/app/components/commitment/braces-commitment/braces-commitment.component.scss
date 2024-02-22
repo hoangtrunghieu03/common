@@ -1,0 +1,76 @@
+.content {
+  width: 100%;
+  height: max-content;
+  margin: 24px auto;
+  background-color: #fff;
+  padding: 36px 60px;
+  line-height: 28px;
+
+  &_header {
+    &-top {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    &-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    &-infor {
+      input {
+        height: 25px;
+        width: 30px;
+        border: none;
+        border-bottom: 1px dotted #313131;
+      }
+    }
+  }
+
+  &_body {
+    &-customer {
+      &-infor {
+        &-value {
+          &-tel {
+            flex: .35;
+
+            input {
+              width: 100px;
+            }
+          }
+
+          &-address {
+            flex: .65;
+          }
+        }
+
+        &-code {
+          &-shs {
+            flex: 1; //0.5
+          }
+
+          // &-id {
+          //   flex: 0.5;
+          // }
+        }
+      }
+
+      input {
+        height: 25px;
+        flex: 1;
+        border: none;
+        border-bottom: 1px dotted #313131;
+        margin-left: 4px;
+      }
+    }
+  }
+
+  &_signature {
+    height: 300px;
+
+    &_block {
+      height: 100px;
+      cursor: pointer;
+    }
+  }
+}

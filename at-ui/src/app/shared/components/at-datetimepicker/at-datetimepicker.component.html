@@ -1,0 +1,41 @@
+<div class="form-group d-inline-block f-14 w-100"
+  autoClose="inside">
+  <label [for]="formCtrlName" class="btn-default-font" *ngIf="label">
+    <span class="star-color" *ngIf="castedRequired">* </span>{{label}}
+  </label>
+  <div class="input-group flex-nowrap">
+    <input (click)="editDateTimeDrop()"
+      id="date-time-picker"
+      class="datepicker-here form-control"
+      placeholder="dd/mm/yyyy hh:mm" 
+      autocomplete="true"
+      [disabled]="castedDisabled"
+      [(ngModel)]="dateTimeDisplay"
+      [ngClass]="{'input-danger': inputRequired}"
+      />
+    <button (click)="editDateTimeDrop()" class="calendar"
+      type="button" 
+      [ngClass]="{'input-danger': inputRequired}"
+      [disabled]="castedDisabled">
+      <i class="fa fa-calendar"></i>
+    </button>
+  </div>
+  <div aria-labelledby="dropdownBasic1 fontDropdown" class='date-time-picker px-12 py-12 f-14' *ngIf="showDateTimeDrop">
+    <div class="d-flex">
+      <ngb-datepicker [(ngModel)]="date"
+        [ngModelOptions]="{standalone:true}"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        #dp>
+      </ngb-datepicker>
+      <ngb-timepicker class="justify-content-center" [(ngModel)]="time"></ngb-timepicker>
+    </div>
+    <hr class="my-6">
+    <div class="d-flex justify-content-end py-2">
+      <button class="btn btn-primarys m-r-12 hide_lt-sm" (click)="getDateTime(); editDateTimeDrop() ">Áp dụng</button>
+      <button class="btn btn-primarys m-b-12 d-none show_lt-sm_block" (click)="getDateTime(); editDateTimeDrop() ">Áp dụng</button>
+      <button class="btn" (click)="editDateTimeDrop()">Quay lại</button>
+    </div>
+  </div>
+  <ng-content select=".dp-valid"></ng-content>
+</div>

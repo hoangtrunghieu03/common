@@ -1,0 +1,60 @@
+<div class="container-fluid p-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between hide-arrow">
+            <h5>dịch vụ {{medicalService ? (' - ' + medicalService?.name) : null }}</h5>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'edit'" (click)="handleUpdateService()" *ngIf="!isEdit">
+            </at-feather-icons>
+            <at-feather-icons class='btn-icon c-pointer hide_lt-md' [icon]="'x-square'" (click)="handleUpdateService()" *ngIf="isEdit">
+            </at-feather-icons>
+            <div ngbDropdown class="d-none show_lt-md_block" placement="bottom-right">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="btn border-white" ngbDropdownItem class="d-none show_lt-md_block" (click)="handleUpdateService()">Chỉnh sửa</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body needs-validation" [formGroup]="serviceForm">
+            <div class='row'>
+                <ng-container *ngFor="let obj of serviceContent">
+                    <div class="col-12 col-md-6 col-xl-6 " [ngClass]="!obj.isUpdate ? 'd-flex justify-content-between form-group' : null">
+                        <ng-container *ngIf="!obj.isUpdate; else checkEdit">
+                            <label class="">{{obj.label}}:</label><span class="f-w-700">{{obj.value}}</span>
+
+                        </ng-container>
+                        <ng-template #checkEdit>
+                            <div class="flex-column d-flex w-100">
+                                <at-input [label]="obj.label" [formName]="obj.formName" [inputType]="obj.inputType"
+                                    [inputRequired]="validateForm(serviceForm, obj.formName)"
+                                    [inputValid]="serviceForm.controls[obj.formName].errors?.required"
+                                    [required]="obj.required">
+                                    <div class="regexTel" *ngIf="serviceForm.get('name')?.errors?.nameDuplicated && obj.formName === 'name'">
+                                        <p class="text-danger"> Tên chỉ định đã tồn tại </p>
+                                    </div>
+                                </at-input>
+                            </div>
+                        </ng-template>
+                    </div>
+                </ng-container>
+                <div class="col-12">
+                    <ng-container *ngIf="!isEdit; else checkEdit">
+                        <label for="">Mô tả:</label><span>&nbsp;{{ serviceForm.get('description').value }}</span>
+                    </ng-container>
+                    <ng-template #checkEdit>
+                        <label for="">Mô tả</label>
+                        <textarea class="form-control" id="reason" type="text" formControlName="description"></textarea>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+    <at-examina-footer #footer (eventCancel)="location.back()" [_isComplete]="true">
+        <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveService()">Xóa</button>
+        <button class="btn btn-primary m-r-12" (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem  (click)="onRemoveService()">Xóa</button>
+            <button ngbDropdownItem (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

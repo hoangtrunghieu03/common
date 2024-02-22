@@ -1,0 +1,154 @@
+<div class="container-fluid m-b-15">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between ">
+            <h5 class="text-uppercase">{{ staffInfo?.fullName + ' - ' + getRoleName(staffInfo.roleId)}}</h5>
+            <div class="d-flex align-items-center hide_lt-md" *ngIf="staffInfo?._id">
+                <button class="btn btn-second m-l-12 move-room m-r-12" (click)="onChangePassword()">Đổi mật khẩu</button>
+                <at-feather-icons class='btn-icon c-pointer' [icon]="'edit'" (click)="handleUpdate()" *ngIf="isEdit">
+                </at-feather-icons>
+                <at-feather-icons class='btn-icon c-pointer' [icon]="'x-square'" (click)="handleUpdate()" *ngIf="!isEdit">
+                </at-feather-icons>
+            </div>
+            <span class="d-none show_lt-md_block hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" display="dynamic" *ngIf="staffInfo?._id">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div class='dropdown-dialog' ngbDropdownMenu>
+                    <div class="mobile-content d-flex flex-column">
+                        <ng-content select=".mobile"></ng-content>
+                        <button class="btn border-white" ngbDropdownItem (click)="onChangePassword()">Đổi mật khẩu</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleUpdate()">Chỉnh sửa</button>
+                    </div>
+                </div>
+            </span>
+        </div>
+        
+        <div class="card-body needs-validation" [formGroup]="staffForm">
+            <div class='row'>
+                <ng-container *ngFor="let item of contentForm">
+                    <div class="col-12 col-md-6 col-xl-6 d-flex justify-content-between">
+                        <ng-container *ngIf="isEdit; else checkEdit">
+                            <label for="">{{item.label}}:</label>
+                            <span class="f-w-700">
+                                {{item.formName == 'roleId' 
+                                ? getRoleName (staffForm.get(item.formName).value)
+                                : item.formName == 'tel' ? formatPhoneNumber(staffForm.get(item.formName).value)
+                                : staffForm.get(item.formName).value}}</span>
+                        </ng-container>
+                        <ng-template #checkEdit>
+                            <ng-container [ngSwitch]="item.formName">
+                                <ng-container *ngSwitchCase="'roleId'">
+                                    <at-select
+                                        class="w-100"
+                                        [label]="item.label"
+                                        [required]="true"
+                                        [formName]="'roleId'"
+                                        [AtData]="roles"
+                                        [formControlSelect]="staffForm?.controls.roleId"
+                                        [selectRequired]="validateForm(staffForm,'roleId')"
+                                        [selectValid]="staffForm.controls.roleId.errors?.required"
+                                        (_onChangeValueSelected)="onChangeValueSelected($event)"
+                                        [disabled]="item?.disable">
+                                    </at-select>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'tel'">
+                                    <div class="flex-column d-flex w-100">
+                                        <at-input
+                                            [label]="item.label"
+                                            [formName]="item.formName"
+                                            [inputType]="item.type"
+                                            [preValue]="staffForm.value[item.formName]"
+                                            [formControl]="staffForm?.controls[item.formName]"
+                                            [inputRequired]="validateForm(staffForm,item.formName)"
+                                            [inputValid]="staffForm.controls[item.formName].errors?.required"
+                                            [required]="item?.require">
+                                            <div class="regexTel" *ngIf='regexEmail(staffForm, item.formName)'>
+                                                <p class="text-danger"> {{item.label}} không hợp lệ </p> 
+                                            </div>
+                                            <div class="duplicate">
+                                                <ng-container *ngIf="item.formName == 'tel'">
+                                                    <ng-container *ngIf="staffForm.get('tel')?.errors?.telDuplicated">
+                                                        <p class="text-danger"> Số điện thoại đã được sử dụng</p>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </div>
+                                        </at-input>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <div class="flex-column d-flex w-100">
+                                        <at-input
+                                            [label]="item.label"
+                                            [formName]="item.formName"
+                                            [inputType]="item.type"
+                                            [inputRequired]="validateForm(staffForm,item.formName)"
+                                            [inputValid]="staffForm.controls[item.formName].errors?.required"
+                                            [required]="item?.require">
+                                            <div class="regexTel" *ngIf='regexEmail(staffForm, item.formName)'>
+                                                <p class="text-danger"> {{item.label}} không hợp lệ </p> 
+                                            </div>
+                                        </at-input>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </ng-template>
+                    </div>
+                </ng-container>
+                <div class="col-12 col-md-6 col-xl-6 ">
+                    <div class="d-flex justify-content-between " *ngIf="isEdit; else edit">
+                        <label for="">Ngày tháng năm sinh:</label>
+                        <span class="f-w-700">{{(staffInfo.birthday | date: 'dd/MM/yyyy') | replaceNull}}</span>
+                    </div>
+                    <ng-template #edit>
+                        <at-datepicker
+                            [formCtrlName]="'birthday'"
+                            [label]="'Ngày tháng năm sinh'"
+                            required
+                            [inputRequired]="validateForm(staffForm,'birthday')"
+                            [date]="staffForm.get('birthday').value"
+                            [minDate]="minDate"
+                            [maxDate]="maxDate">
+                            <div class="dp-valid" *ngIf="validateForm(staffForm,'birthday')">
+                                <p class="text-danger" *ngIf="staffForm.controls.birthday.errors?.required">Chọn Ngày tháng năm sinh</p>
+                                <p class="text-danger" *ngIf="staffForm.controls.birthday.errors?.ngbDate">Ngày không hợp lệ</p>
+                            </div>
+                        </at-datepicker>
+                    </ng-template>
+                </div>
+                <div class="col-12 col-md-6 col-xl-6">
+                    <div class="d-flex justify-content-between" *ngIf="isEdit">
+                        <label for="">Danh sách phòng:</label>
+                        <div>
+                            <span class="f-w-700" *ngFor="let roomId of staffInfo?.roomIds; let last = last">
+                                {{onGetRoomName(roomId) + (!last ? ', ' : '') }}
+                            </span>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="!isEdit;">
+                        <div class="d-flex justify-content-between">
+                            <label for="" class="btn-default-font m-b-0">
+                                Danh sách phòng
+                            </label>
+                        </div>
+                        <div class="receiver-rigth">
+                            <div class="list p-1 b-r-4">
+                                <div class='list-user'>
+                                    <div class="selected d-inline-block m-r-5 m-b-5"
+                                        *ngFor="let roomId of staffForm.get('roomIds').value">
+                                        <span>{{ onGetRoomName(roomId) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    <at-examina-footer (eventCancel)="_location.back()" [_isComplete]="true">
+        <button class="btn btn-primarys m-r-12" (click)="onSaveForm()" *ngIf="!isEdit">lưu</button>
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onSaveForm()" *ngIf="!isEdit">Lưu</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

@@ -1,0 +1,19 @@
+<div class="d-flex flex-wrap">
+    <div class="row w-100">
+        <div class="col-xl-4 col-md-4 col-6" *ngFor="let access of dataAccessGroup; let fir = index">
+            <span class="f-w-700" style="color: #f99f2a">{{access}}</span>
+            <ng-container *ngFor="let item of mapDataAccess.get(access); let se = index">
+                <div class="checkbox-primary p-l-17 checkbox">
+                    <input type="checkbox"
+                        id='data-access-{{fir}}-{{se}}'
+                        class="form-check-input m-t-0"
+                        [value]='item._id'
+                        (change)='handleCheckboxChange(item)'
+                        [checked]='checked(item.dataAccessName)'
+                        [disabled]="isDisable">
+                    <label for='data-access-{{fir}}-{{se}}'>{{item.dataAccessName}}</label>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

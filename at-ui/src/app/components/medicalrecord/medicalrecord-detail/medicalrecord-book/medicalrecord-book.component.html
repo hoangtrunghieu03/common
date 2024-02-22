@@ -1,0 +1,170 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{title}}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="custom-datatable">
+    <div id="batchDelete">
+        <div class="table-responsive">
+            <ngx-datatable class="bootstrap"
+                [rows]="medicalrecord ? medicalrecord : []"
+                [columns]="columnDef"
+                [columnMode]="'force'"
+                [headerHeight]="'auto'"
+                [footerHeight]="medicalrecord && medicalrecord.length > 0 ? 50 : 0"
+                [rowHeight]="'auto'"
+                [limit]="10"
+                [selectionType]="'single'"
+                #tables
+                [scrollbarH]="true"
+                [messages]="{emptyMessage: 'Không có dữ liệu'}">
+
+                <ngx-datatable-row-detail
+                    [rowHeight]="'auto'"
+                    #myDetailRow >
+                    <ng-template
+                        let-row="row"
+                        let-expanded="expanded"
+                        ngx-datatable-row-detail-template>
+
+                        <ng-container *ngTemplateOutlet="medicalRecordDetailTable,
+                                                        context: { datas: row.medicalRecordDetail, limit: row.medicalRecordDetail?.length}">
+                        </ng-container>
+
+                    </ng-template>
+                </ngx-datatable-row-detail>
+                <ng-container>
+                    <ngx-datatable-column
+                        [width]="30"
+                        [sortable]="false"
+                        [canAutoResize]="false"
+                        [draggable]="false"
+                        [resizeable]="false">
+                        <ng-template
+                            let-row="row"
+                            let-rowIndex="rowIndex"
+                            let-expanded="expanded"
+                            ngx-datatable-cell-template>
+
+                            <at-feather-icons class='feather-20' [icon]="'chevron-up'" (click)="onCollapseExpandRow(row)" *ngIf="expanded">
+                            </at-feather-icons>
+
+                            <at-feather-icons class='feather-20' [icon]="'chevron-down'" (click)="onToggleExpandRow(row)" *ngIf="!expanded">
+                            </at-feather-icons>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ng-container>
+
+                <ngx-datatable-column
+                    *ngFor="let col of columnDef"
+                    [prop]="col.prop"
+                    >
+                    <ng-template
+                        let-column="column"
+                        let-sort="sortFn"
+                        ngx-datatable-header-template>
+                        <div [style]="col.styleHeader">
+                            <span class="mobile-hidden">{{col.name}}</span>
+                        </div>
+                    </ng-template>
+                    <ng-template
+                        let-value="value"
+                        ngx-datatable-cell-template
+                        let-row='row'>
+                        <div [style]="col.styleBody" [routerLink]="['benh-an/chi-tiet/I']" [queryParams]="{_id: row?._id}" (click)="activeModal.close()">
+                            <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                {{
+                                col.colType == "date" ? ( value | date : 'dd/MM/yyyy' )
+                                : col.colType == "money" ? ( value | currency:'VND':'symbol':null:'vi-VN')
+                                : (value | replaceNull)
+                                }}
+                            </span>
+                        </div>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-footer>
+                    <ng-template
+                        ngx-datatable-footer-template
+                        let-rowCount="rowCount"
+                        let-pageSize="pageSize"
+                        let-selectedCount="selectedCount"
+                        let-curPage="curPage"
+                        let-offset="offset">
+                        <span>Tổng<span class="font-weight-bold">&nbsp;{{ medicalrecord?.length }}</span></span>
+                        <datatable-pager
+                            [pagerLeftArrowIcon]="'datatable-icon-left'"
+                            [pagerRightArrowIcon]="'datatable-icon-right'"
+                            [pagerPreviousIcon]="'datatable-icon-prev'"
+                            [pagerNextIcon]="'datatable-icon-skip'"
+                            [page]="curPage" [size]="pageSize"
+                            [count]="rowCount" [hidden]="!((rowCount / pageSize) > 1)"
+                            (change)="tables.onFooterPage($event)">
+                        </datatable-pager>
+                    </ng-template>
+                </ngx-datatable-footer>
+            </ngx-datatable>
+        </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class='btn-position-default'>
+      <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+  </div>
+</div>
+
+
+<ng-template #medicalRecordDetailTable let-limit="limit" let-datas="datas">
+  <div class="custom-datatable" style="margin-left: 50px;">
+      <div id="batchDelete">
+          <div class="table-responsive">
+
+              <ngx-datatable class="bootstrap"
+                  [rows]="datas ? datas : []"
+                  [columns]="columnRowDetail"
+                  [columnMode]="'force'"
+                  [headerHeight]="'auto'"
+                  [rowHeight]="'auto'"
+                  [limit]="limit"
+                  #tableDetail
+                  [messages]="{emptyMessage: 'Không có dữ liệu'}">
+
+                  <ngx-datatable-column
+                      *ngFor="let col of columnRowDetail"
+                      [prop]="col.prop"
+                      [width]='col.width'>
+                      <ng-template
+                          let-column="column"
+                          let-sort="sortFn"
+                          ngx-datatable-header-template>
+                          <div [style]="col.styleHeader">
+                              <span class="mobile-hidden">{{col.name}}</span>
+                          </div>
+                      </ng-template>
+                      <ng-template
+                          let-value="value"
+                          ngx-datatable-cell-template
+                          let-row='row'>
+                          <div [style]="col.styleBody">
+                            <ng-container *ngIf="col.colType != 'innerHTML'; else inner">
+                              <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                  {{
+                                  col.colType == "date" ? ( value | date : 'dd/MM/yyyy' )
+                                  : (value | replaceNull)
+                                  }}
+                              </span>
+                            </ng-container>
+                            <ng-template #inner>
+                              <span [innerHTML]="value"></span>
+                          </ng-template>
+                          </div>
+                      </ng-template>
+                  </ngx-datatable-column>
+              </ngx-datatable>
+          </div>
+      </div>
+  </div>
+</ng-template>

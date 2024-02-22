@@ -1,0 +1,184 @@
+<div class='tab2-card tab needs-validation'>
+    <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false" [(activeId)]="activeId" (navChange)="onNavChange($event)">
+        <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="1">
+            <a ngbNavLink>Chỉ định</a>
+            <ng-template ngbNavContent>
+                <at-designat [medicalRecordData]="medicalRecordData" [serviceIndicateSelected]="medicalDesignatData"></at-designat>
+
+                <!-- <div class=" m-t-24">
+                    <h4>DANH SÁCH CHỈ ĐỊNH</h4>
+                    <at-base-table
+                        [colDef]="medicalServiceIndicatesColDef"
+                        [tableData]="_designat?.serviceIndicateSelected">
+                    </at-base-table>
+                    <ng-container *ngTemplateOutlet="serviceIndicate"></ng-container>
+                </div> -->
+
+                <div class="w-100 m-t-16 d-flex justify-content-end">
+                    <button class="btn btn-second" (click)="onSaveDesignat(2)">lưu</button>
+                </div>
+            </ng-template>
+        </li>
+        <li ngbNavItem [destroyOnHide]="true" [ngbNavItem]="2">
+            <a ngbNavLink>Dịch vụ</a>
+            <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="serviceTab"></ng-container>
+
+                <div class="w-100 m-t-16 d-flex justify-content-end">
+                    <button class="btn btn-second" (click)="onSaveService(4)">lưu</button>
+                </div>
+            </ng-template>
+        </li>
+    </ul>
+
+    <div [ngbNavOutlet]="nav"></div>
+</div>
+
+<ng-template #serviceTab>
+    <div class="row mt-4" >
+        <div class="col-12 col-md-6 m-b-12" *ngFor="let group of medicalServiceGroup;let i = index">
+            <div class="d-flex align-items-center w-100 justify-content-between c-pointer p-r-15"
+                [attr.aria-expanded]="!group.isCollapsed"
+                aria-controls="collapseExample"
+                (click)="group.isCollapsed = !group.isCollapsed">
+                <h4 class="m-r-12 text-uppercase f-w-600">{{group.tagService}}</h4>
+                <ng-container *ngIf="!group.isCollapsed; else icon">
+                    <at-feather-icons [icon]="'chevron-down'" >
+                    </at-feather-icons>
+                </ng-container>
+                <ng-template #icon>
+                    <at-feather-icons [icon]="'chevron-up'">
+                    </at-feather-icons>
+                </ng-template>
+            </div>
+            <div class="needs-validation" [ngbCollapse]="group.isCollapsed">
+                <ng-container *ngFor="let item of group.medicalService;let j = index">
+                    <div class='checkbox-primary px-17 checkbox'>
+                        <input type="checkbox"
+                            id='service-group-{{i}}-{{j}}'
+                            class="form-check-input m-t-0"
+                            [value]='item?.label'
+                            (change)='onSelectedService($event, item, true)'
+                            [disabled]="item?.disable"
+                        >
+                        <label class="d-flex  justify-content-between" for='service-group-{{i}}-{{j}}'>
+                            <span class="text-uppercase">{{item?.name}}</span>
+                            <span class="f-w-600 text-right"> {{item.price | currency:'VND':'symbol':null:'vi-VN' }} 
+                                {{item?.priceMax ? ' - ' + ( item?.priceMax | currency:'VND':'symbol':null:'vi-VN') : null}}</span>
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <div class="col-12 m-t-24">
+            <h4>DANH SÁCH DỊCH VỤ</h4>
+            <div class="overflow-auto">
+                <table class="base-table needs-validation">
+                    <thead>
+                        <tr>
+                            <ng-container *ngFor="let col of medicalServiceColDef">
+                                <th [style]="col.headerStyle">{{col.label}}</th>
+                            </ng-container>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="medicalServiceData && medicalServiceData?.length != 0; else noData">
+                            <tr *ngFor="let row of medicalServiceData; let i = index">
+                                <ng-container *ngFor="let col of medicalServiceColDef">
+                                    <td [style]="col.style">
+                                        <ng-container *ngIf="col.canUpdate else noUpdate">
+                                            <ng-container [ngSwitch]="col.title">
+                                                <ng-container *ngSwitchCase="'staffId'">
+                                                    <select class="form-control" [(ngModel)]="row[col.title]">
+                                                        <option [ngValue]="null">Không</option>
+                                                        <option *ngFor="let obj of staffs" [value]="obj._id">
+                                                            {{ obj.fullName}}
+                                                        </option>
+                                                    </select>
+                                                </ng-container>
+                                                <ng-container *ngSwitchCase="'money'">
+                                                    <input class="form-control" currencyInput autocomplete="off"
+                                                        [(ngModel)]="row[col.fieldUpdate]"
+                                                        (input)="onChangeDiscountValue(row, null)">
+                                                </ng-container>
+                                                <ng-container *ngSwitchCase="'trash'">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <at-feather-icons class="c-pointer" [icon]="'trash-2'" (click)="onDeleteService(row)" >
+                                                        </at-feather-icons>
+                                                    </div> 
+                                                </ng-container>
+                                                <ng-container *ngSwitchCase="'quantity'">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <at-feather-icons class="c-pointer d-flex align-items-center" [icon]="'minus'"
+                                                            (click)="row[col.fieldUpdate] > 1 ? onDecrease(row, col.fieldUpdate) : $event.stopPropagation">
+                                                        </at-feather-icons>
+                                                        <input class="form-control mx-12 text-center" disabled format-number autocomplete="off"
+                                                            [value]="row[col.fieldUpdate]" (input)="changeQuantity(row, $event)">
+                                                        <at-feather-icons class="c-pointer d-flex align-items-center" [icon]="'plus'"
+                                                            (click)="onIncrease(row, col.fieldUpdate)"></at-feather-icons>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngSwitchCase="'discountValue'">
+                                                    <div class="input-group">
+                                                        <input class="form-control discount-form"
+                                                            format-number
+                                                            id="discountValue"
+                                                            autocomplete="off"
+                                                            placeholder="Nhập giảm giá"
+                                                            *ngIf="row.discountUnit === '%'; else currentcy"
+                                                            [(ngModel)]="row.discountValue"
+                                                            (input)="onChangeDiscountValue(row, $event)">
+                                                        <ng-template #currentcy>
+                                                            <input class="form-control discount-form"
+                                                                currencyInput
+                                                                autocomplete="off"
+                                                                placeholder="Nhập giảm giá"
+                                                                [(ngModel)]="row.discountValue"
+                                                                (input)="onChangeDiscountValue(row, $event)">
+                                                        </ng-template>
+                                                        <div class="units-dropdown hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" container="body">
+                                                            <button class="btn-unit" type="button" ngbDropdownToggle>
+                                                                <span>{{ row.discountUnit }}</span>
+                                                            </button>
+                                                            <div class='dropdown-dialog' ngbDropdownMenu>
+                                                                <button ngbDropdownItem *ngFor="let unit of units"
+                                                                    (click)="onChangeUnit(row, unit.value)">{{ unit.label }}</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngSwitchDefault>
+                                                    <input class="form-control" autocomplete="off" type="text"
+                                                        [(ngModel)]="row[col.fieldUpdate]">
+                                                </ng-container>
+                                            </ng-container>
+                                        </ng-container>
+                
+                                        <ng-template #noUpdate>
+                                            {{col.colType == "money"
+                                            ? ( row[col.title] | currency:'VND':'symbol':null:'vi-VN' )
+                                            : col.colType == "date"
+                                            ? ( row[col.title] | date : 'dd/MM/yyyy' )
+                                            : row[col.title]}}
+                                        </ng-template>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-container>
+                        <ng-template #noData>
+                            <tr class="empty-row w-100">
+                                <td [attr.colspan]="medicalServiceColDef.length">Không có dữ liệu</td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12">
+            <label class=" m-t-24 m-b-0" for="">
+                Tổng giá dịch vụ
+                <span class="f-w-700">{{handleCountPriceService() | currency:'VND':'symbol':null:'vi-VN'}}</span>
+            </label>
+        </div>
+    </div>
+</ng-template>

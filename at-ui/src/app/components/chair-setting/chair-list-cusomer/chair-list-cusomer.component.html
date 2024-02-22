@@ -1,0 +1,56 @@
+<div class="overflow-auto needs-validation">
+  <table class="base-table">
+    <thead>
+        <tr>
+            <ng-container *ngFor="let col of chairCol">
+                <th [style]="col.headerStyle">{{col.label}}</th>
+            </ng-container>
+            <th style="width: 100px; min-width: 100px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="chairActive?.medicalRecord && chairActive?.medicalRecord?.length != 0; else noData">
+          <tr *ngFor="let row of chairActive?.medicalRecord; let i = index">
+              <ng-container *ngFor="let col of chairCol">
+                  <td [style]="col.style" (click)="isManager ? $event.preventDefault() : onNavigate('examine', row.medicalRecordId)">
+                    <ng-container>
+                      <ng-container *ngIf="col.title== 'customerCode'">
+                          <span class="text-highlight hide_lt-md" (click)="!isManager ? $event.preventDefault() : onNavigate('medicalRecord', row.customerId)">{{ row[col.title] | replaceNull }}</span>
+                          <span class="text-highlight d-none show_lt-md_block">{{ row[col.title] | replaceNull }}</span>
+                      </ng-container>
+                      <ng-container *ngIf="col.title == 'medicalRecordCode'">
+                          <span class="hide_lt-md" [ngClass]="{'text-highlight': isManager}" (click)="!isManager ? $event.preventDefault() : onNavigate('medicalRecordDetail', row.medicalRecordId)">{{ row[col.title] | replaceNull }}</span>
+                          <span class="d-none show_lt-md_block" [ngClass]="{'text-highlight': isManager}">{{ row[col.title] | replaceNull }}</span>
+                      </ng-container>
+                      <ng-container *ngIf="col.title != 'customerCode' && col.title != 'medicalRecordCode'">
+                          {{ row[col.title] | replaceNull }}
+                      </ng-container>
+                    </ng-container>
+                  </td>
+              </ng-container>
+              <td style="width: 50px; min-width: 50px;">
+                <div ngbDropdown class="d-inline-block hide-arrow" container="body">
+                    <at-feather-icons ngbDropdownToggle class="c-pointer btn-icon" [icon]="'more-horizontal'"></at-feather-icons>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <ng-container *ngIf="!isManager">
+                          <button class="btn border-white" ngbDropdownItem (click)="onChangeStatusChair(row, chairStatus.WAITING_PROCESS)">Đợi thực hiện</button>
+                          <button class="btn border-white" ngbDropdownItem (click)="onChangeStatusChair(row, chairStatus.TODO)">Đợi chỉ định</button>
+                          <button class="btn border-white" ngbDropdownItem (click)="onChangeStatusChair(row, chairStatus.IN_PROGRESS)">Tiến hành</button>
+                          <button class="btn border-white" ngbDropdownItem (click)="onChangeStatusChair(row, chairStatus.IN_TEST)">Đợi kiểm tra</button>
+                          <button class="btn border-white" ngbDropdownItem (click)="onChangeStatusChair(row, chairStatus.FINISH)">Hoàn thành</button>
+                          <button class="btn border-white" ngbDropdownItem (click)="onTransferRoomAndCloseMedicalRecord(row)">Cho về</button>
+                        </ng-container>
+                        <button class="btn border-white" ngbDropdownItem (click)="onChangeStatusChair(row, chairStatus.AVAILABLE)">Rời ghế</button>
+                    </div>
+                </div>
+              </td>
+          </tr>
+      </ng-container>
+      <ng-template #noData>
+        <tr class="empty-row w-100">
+            <td [attr.colspan]="chairCol.length + 1">Không có dữ liệu</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+</div>

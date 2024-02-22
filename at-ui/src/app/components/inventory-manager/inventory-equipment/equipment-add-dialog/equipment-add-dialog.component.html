@@ -1,0 +1,32 @@
+
+<div class="modal-header">
+    <h4 class="modal-title">Thông tin trang thiết bị</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="" [formGroup]="inventoryForm" class="needs-validation">
+        <div class="row">
+            <ng-container *ngFor="let formItem of formContent">
+                <div class="col-12 col-md-6">
+                    <at-input
+                        [label]="formItem.label"
+                        [formName]="formItem.formName"
+                        [typeInput]="formItem.typeInput"
+                        [inputType]="formItem.inputType"
+                        [required]="formItem.require"
+                        [inputRequired]="validateForm(inventoryForm, formItem.formName)"
+                        [inputValid]="inventoryForm.controls[formItem.formName].errors?.required">
+                    </at-input>
+                </div>
+            </ng-container>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn btn-primarys m-r-12" (click)="onSaveForm()">lưu</button>
+        <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+
+
+<div class="card">
+  <div class="card-body">
+    <div class='tab2-card tab'>
+      <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false">
+        <li [ngbNavItem]="1" [destroyOnHide]="true">
+          <a ngbNavLink (click)="onFilterCollectMoney()">Doanh thu</a>
+          <ng-template ngbNavContent>
+            <ng-container *ngTemplateOutlet="done"></ng-container>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2" [destroyOnHide]="true">
+          <a ngbNavLink (click)="onFilterHasTreatment()">Đã thực hiện</a>
+          <ng-template ngbNavContent>
+            <ng-container *ngTemplateOutlet="revenue"></ng-container>
+          </ng-template>
+        </li>
+      </ul>
+
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-end">
+  <button class="btn m-b-30" (click)="location.back()">Quay lại</button>
+</div>
+<ng-template #done>
+  <at-table-sumary [tableData]="revenueReport" [columnDef]="columnDef" [limit]="10" [scrollbarH]="true">
+  </at-table-sumary>
+</ng-template>
+
+<ng-template #revenue>
+  <at-table-sumary [tableData]="revenueReport" [columnDef]="columnDef" [limit]="10" [scrollbarH]="true">
+  </at-table-sumary>
+</ng-template>
+
+<ng-template #filter>
+  <at-filter-view (eventAddFilter)="onAddCondiotion()" [title]="'Hiển thị doanh thu theo'">
+    <select class="form-control">
+      <option>
+        Trạng thái
+      </option>
+    </select>
+    <ng-container>
+      <select class="form-control mt-2" [(ngModel)]="filterResult.condition">
+        <option [(ngModel)]="filterResult.condition">Chọn điều kiện</option>
+        <ng-container *ngFor="let item of conditionData">
+          <option>
+            {{item.value}}
+          </option>
+        </ng-container>
+      </select>
+    </ng-container>
+  </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+  <div class="render p-b-15">
+    <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngIf="collectMoney">
+      <span>
+        {{ 'Trạng thái là ' + (filterResult.condition)}}
+      </span>
+      <button (click)="onRemoveFilter()">X</button>
+    </span>
+  </div>
+</ng-template>

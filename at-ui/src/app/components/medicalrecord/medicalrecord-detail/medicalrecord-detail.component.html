@@ -1,0 +1,26 @@
+<div class="container-fluid m-b-15">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h5>{{ customerInfo?.customerCode }} - {{ customerInfo?.fullName }}</h5>
+            <button class="btn btn-second hide_lt-md" (click)="handleMedicalRecordBook()">Sổ bệnh án</button>
+        </div>
+        <div class="card-body">
+            <at-general-info
+                [customer]="customerInfo"
+                (eventChangeAction)="isEdit = $event"
+                #customerCp>
+            </at-general-info>
+        </div>
+    </div>
+    <at-card>
+        <h5>DANH SÁCH HỒ SƠ BỆNH ÁN</h5>
+        <at-history [customerMedical]="customerMedReHistory"></at-history>
+    </at-card>
+    <at-examina-footer (eventCancel)="location.back()" [_isComplete]="true">
+        <button class="btn btn-primarys m-r-12" (click)="onUpdateCustomer()" *ngIf="isEdit">lưu</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onUpdateCustomer()" *ngIf="isEdit">Lưu</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

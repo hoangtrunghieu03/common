@@ -1,0 +1,150 @@
+<div class="container-fluid content" #htmlData id="htmlData">
+
+  <ng-container *ngTemplateOutlet="header"></ng-container>
+
+  <ng-container *ngTemplateOutlet="body"></ng-container>
+
+  <ng-container *ngTemplateOutlet="signature"></ng-container>
+
+</div>
+<div class="container-fluid d-flex justify-content-end">
+  <button class="btn btn-primary m-b-30 m-r-20" (click)="saveImage()">Lưu</button>
+  <button class="btn m-b-30 m-r-15" (click)="activeModal.close()">Quay lại</button>
+</div>
+
+
+<ng-template #header>
+  <div class="content_header">
+    <div class="row content_header-top">
+      <div class="col-5 d-flex flex-column text-center">
+        <span>SỞ Y TẾ TP.ĐÀ NẴNG</span>
+        <span>NHA KHOA A&T</span>
+      </div>
+      <div class="col-7 d-flex flex-column text-center">
+        <span>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span>
+        <span>Độc lập - Tự do - Hạnh phúc</span>
+      </div>
+    </div>
+    <div class="content_header-title text-center m-t-12">
+      <span>BẢN CAM KẾT</span>
+    </div>
+    <div class="content_header-infor m-t-12">
+      <span>Hôm nay vào ngày <input /> tháng <input /> năm 20<input />, tại nha khoa A&T (địa chỉ 170 Nguyễn Hữu Thọ,
+        Hải Châu, Đà Nẵng) chúng
+        tôi thống nhất cam kết một số nội dung như sau:
+      </span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #body>
+  <div class="content_body m-t-12" [formGroup]="bracesForm">
+    <div class="content_body-infor">
+      <span class="font-weight-bold">A/ Nha khoa A&T</span>
+      <div class="content_body-infor-doctor p-l-24 py-12 d-flex flex-column">
+        <span>Đại diện: Bác sĩ LÊ VĂN TIÊN</span>
+        <span>Số điện thoại: 0983 110 025</span>
+      </div>
+      <span class="font-italic">Cam kết như sau:</span>
+      <div class="content_body-infor-commit p-l-24 py-12 d-flex flex-column">
+        <span>1. Sử dụng vật liệu niềng răng đúng chủng loại và chất lượng.</span>
+        <span>2. Đảm bảo thực hiện hoàn tất điều trị đạt hiệu quả theo đúng nội dung đã tư vấn với khách hàng. (Nếu
+          không đạt được như nội dung đã thỏa thuận thì sẽ được hoàn trả lại số tiền đã đóng)</span>
+        <span>3. Cung cấp dịch vụ trọn gói như đã thỏa thuận với khách hàng không phát sinh phí trong quá trình điều
+          trị. (Trừ những trường hợp phát sinh trám răng, cạo vôi răng, chữa tủy, bọc răng sứ, tẩy trắng răng thì thu
+          phí như bình thường).</span>
+        <span>4. Sau khi hoàn thành sẽ được bảo hành 8 năm. (Trường hợp bệnh nhân không mang hàm duy trì theo chỉ định
+          của bác sĩ, nếu tái phát thì phải chịu phí làm lại từ đầu).</span>
+      </div>
+    </div>
+
+    <div class="content_body-customer">
+      <span class="font-weight-bold">B/ Khách hàng (bệnh nhân)</span>
+      <div class="content_body-customer-infor p-l-24 py-12 d-flex flex-column">
+        <div class="content_body-customer-infor-represent d-flex justify-content-around">
+          <span>Đại diện:</span>
+          <input formControlName="fullName" />
+          <span>(là cha/mẹ nếu dưới 18 tuổi)
+          </span>
+        </div>
+        <div class="content_body-customer-infor-value d-flex">
+          <div class="content_body-customer-infor-value-tel d-flex">
+            <span>Số điện thoại:</span>
+            <input
+              id="tel"
+              phone-number
+              formControlName="tel"
+              [formName]="'tel'"
+              [formControl]="bracesForm.controls['tel']"
+              [preValue]="bracesForm.value.tel" />
+          </div>
+          <div class="content_body-customer-infor-value-address d-flex">
+            <span>Địa chỉ:</span>
+            <input formControlName="address" />
+          </div>
+        </div>
+        <div class="content_body-customer-infor-name d-flex">
+          <span>Người niềng răng:</span>
+          <input formControlName="fullName" />
+        </div>
+        <div class="content_body-customer-infor-code d-flex">
+          <div class="content_body-customer-infor-code-shs d-flex">
+            <span>SHS:</span>
+            <input formControlName="shs" />
+          </div>
+          <!-- <div class="content_body-customer-infor-code-id d-flex">
+            <span>ID:</span>
+            <input formControlName="id" />
+          </div> -->
+        </div>
+      </div>
+      <span class="font-italic">Cam kết như sau:</span>
+      <div class="content_body-customer-commit p-l-24 py-12 d-flex flex-column">
+        <span>1. Thực hiện đúng yêu cầu của bác sĩ trong suốt quá trình điều trị như: tái khám đúng hẹn, vệ sinh răng
+          miệng sạch sẽ, không ăn nhai đồ cứng. (Nếu đã được nhắc nhở mà tôi không thực hiện thì bác sĩ có quyền ngưng
+          điều trị).</span>
+        <span>2. Trong quá trình niềng răng nếu có ý định từ bỏ mà không có sự đồng ý của bác sĩ thì tôi không được hoàn
+          lại số tiền đã đóng trước đó.</span>
+        <span>3. Khi kết thúc điều trị tôi sẽ đeo hàm duy trì thường xuyên theo chỉ định của bác sĩ. (Nếu không đeo
+          thường xuyên mà bị tái phát thì tôi sẽ tự chịu trách nhiệm).</span>
+        <span>4. Trong quá trình điều trị tôi sẽ không đi xa như du học, định cư nước ngoài, trường hợp đi công tác quá
+          3 tháng sẽ thông báo lại cho bác sĩ để xin chỉ định. (Nếu không tôi sẽ tự chịu trách nhiệm về vấn đề xảy ra
+          trong quá trình niềng).</span>
+        <span>5. Tổng số tiền còn lại tôi sẽ thanh toán trong vòng 1 năm kể từ ngày gắn mắc cài hoặc khí cụ (sẽ trả hằng
+          tháng hoặc 3 tháng đóng 1 lần)</span>
+        <span>6. Tôi sẽ đi đúng lịch hẹn gắn cung. Nếu đi sai hẹn đóng <span>{{ '1000000' | currency:'VND':'symbol':null:'vi-VN'
+            }} </span> làm lại cung.</span>
+        <span>7. Nếu có gọt xương, cắt lợi đóng thêm <span>{{ '1000000' | currency:'VND':'symbol':null:'vi-VN' }} </span> -
+          <span>{{ '5000000' | currency:'VND':'symbol':null:'vi-VN' }} </span>.</span>
+        <span>8. Mắc cài rớt giữ lại, mang đến gắn lại. Mất đóng phí <span>{{ '200000' | currency:'VND':'symbol':null:'vi-VN' }}
+          </span>/MC</span>
+        <span>Tôi đã đọc hiểu bản cam kết trên</span>
+        <div class="d-flex m-t-12">
+          <span>Số tiền đóng trước:</span>
+          <input currencyInput autocomplete="off" formControlName="moneyPaymented" />
+        </div>
+        <div class="d-flex">
+          <span>Còn thiếu:</span>
+          <input currencyInput autocomplete="off" formControlName="moneyPayment" />
+        </div>
+      </div>
+      <span class="font-italic">Trong quá trình điều trị nếu có gì thay đổi 2 bên sẽ thông báo trước cho nhau để cùng
+        thảo luận.</span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #signature>
+  <div class="content_signature m-t-24">
+    <div class="row">
+      <div class="col-6 d-flex flex-column text-center">
+        <span class="font-weight-bold">Đại diện Nha khoa A&T</span>
+        <at-signature-pad></at-signature-pad>
+      </div>
+      <div class="col-6 d-flex flex-column text-center">
+        <span class="font-weight-bold">Đại diện khách hàng</span>
+        <at-signature-pad></at-signature-pad>
+      </div>
+    </div>
+  </div>
+</ng-template>

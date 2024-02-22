@@ -1,0 +1,83 @@
+<div class="container-fluid p-b-15">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h5>{{ medicalSupply?.name }}</h5>
+            <div class="d-flex align-items-center hide_lt-md">
+                <button type="button" class="btn btn-second m-r-12" (click)="handleEventInventoryWarehouse()">Nhập kho</button>
+                <at-feather-icons class='btn-icon c-pointer' [icon]="'edit'" (click)="handleUpdateInventory()" *ngIf="!isEdit">
+                </at-feather-icons>
+                <at-feather-icons class='btn-icon c-pointer' [icon]="'x-square'" (click)="handleUpdateInventory()" *ngIf="isEdit">
+                </at-feather-icons>
+            </div>
+            <div class="d-none show_lt-md_block hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" display="dynamic">
+                <button ngbDropdownToggle class="btn-icon m-0">
+                    <at-feather-icons class="h-px-18" [icon]="'more-horizontal'"></at-feather-icons>
+                </button>
+                <div class='dropdown-dialog' ngbDropdownMenu>
+                    <div class="mobile-content d-flex flex-column">
+                        <ng-content select=".mobile"></ng-content>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleUpdateInventory()">Chỉnh sửa</button>
+                        <button class="btn border-white" ngbDropdownItem (click)="handleEventInventoryWarehouse()">Nhập kho</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body needs-validation" [formGroup]="medicalSupplyForm">
+            <div class='row'>
+                <ng-container *ngFor="let formItem of medicalSupplyContent">
+                    <div class="col-12 col-md-6">
+                        <ng-container *ngIf="!formItem.isUpdate; else checkEdit">
+                            <div class="d-flex justify-content-between form-group">
+                                <span class="w-50">{{formItem.label}}:</span><span class="f-w-700">{{formItem.value}}</span>
+                            </div>
+                        </ng-container>
+                        <ng-template #checkEdit>
+                            <div class="flex-column d-flex w-100">
+                                <ng-container *ngIf="formItem.inputType != 'date'; else date">
+                                    <at-input 
+                                        [label]="formItem.label"
+                                        [formName]="formItem.formName"
+                                        [inputType]="formItem.inputType"
+                                        [typeInput]="formItem.typeInput"
+                                        [inputRequired]="validateForm(medicalSupplyForm, formItem.formName) || (formItem.formName === 'name' && validInclude())"
+                                        [inputValid]="medicalSupplyForm.controls[formItem.formName].errors?.required"
+                                        [required]="formItem.required"
+                                        [disabled]="formItem.disabled">
+                                        <div class="regexTel">
+                                            <ng-container *ngIf="formItem.formName === 'name' && validInclude()">
+                                                <p class="text-danger"> Vật dụng tiêu hao đã tồn tại </p>
+                                            </ng-container>
+                                        </div>
+                                    </at-input>
+                                </ng-container>
+                                <ng-template #date>
+                                    <at-datepicker 
+                                        [required]="formItem.required" 
+                                        [formCtrlName]="formItem.formName" 
+                                        [label]="formItem.label"
+                                        [date]="medicalSupplyForm.get(formItem.formName).value"
+                                        [inputRequired]="validateForm(medicalSupplyForm, formItem.formName)"
+                                        [disabled]="formItem.disabled">
+                                        <div class="dp-valid" *ngIf="validateForm(medicalSupplyForm,'expDate')">
+                                            <p class="text-danger" *ngIf="medicalSupplyForm.controls.expDate.errors?.required">Chọn hạn sử dụng</p>
+                                            <p class="text-danger" *ngIf="medicalSupplyForm.controls.expDate.errors?.ngbDate">Ngày không hợp lệ</p>
+                                        </div>
+                                    </at-datepicker>
+                                </ng-template>
+                            </div>
+                        </ng-template>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <at-examina-footer #footer (eventCancel)="_location.back()" [_isComplete]="true">
+        <button class="remove btn btn-delete m-r-12 hide_lt-md" (click)="onRemoveService()">Xóa</button>
+        <button class="btn btn-primary m-r-12" (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+
+        <ng-container class="mobile">
+            <button ngbDropdownItem (click)="onSaveForm()" *ngIf="isEdit">Lưu</button>
+            <button ngbDropdownItem (click)="onRemoveService()">Xóa</button>
+        </ng-container>
+    </at-examina-footer>
+</div>

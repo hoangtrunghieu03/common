@@ -1,0 +1,28 @@
+.input-filter
+{
+    &__box {
+        border: 1px solid #c1c1c1;
+        height: 38px;
+        background: #fff;
+        input
+        {
+            width: 100%;
+            border: none;
+            color: #495057;
+        }
+        &:focus-within{
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+        }
+    }
+    ::ng-deep{
+        at-feather-icons{
+            height: 22px;
+            svg{
+                width: 20px !important;
+                height: 20px !important;
+                color: #6c798f;
+            }
+        }
+    }
+}

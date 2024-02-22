@@ -1,0 +1,28 @@
+.chair {
+  overflow-y: auto;
+  height: 65vh;
+
+  &-item {
+    line-height: 25px;
+    height: max-content;
+    min-height: 270px;
+
+    &-border {
+      border: 1px solid silver;
+      padding: 16px;
+      margin: 16px;
+      min-height: 238px;
+
+    }
+
+    &-name {
+      border-bottom: 1px solid #f8f8f9;
+    }
+  }
+
+  .col-status {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+}

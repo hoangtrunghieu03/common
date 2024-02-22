@@ -1,0 +1,69 @@
+<at-modal-header (onClose)="activeModal.dismiss('Cross click')">
+    {{ title }}
+</at-modal-header>
+<div class="modal-body">
+    <div class="needs-validation" [formGroup]="medicalSupplyForm">
+        <div class="row">
+            <div class="col-12 row align-items-center mx-0 p-0 form-group" *ngIf="!roomId">
+                <span class="col-12 col-md-3"><span class="star-color">* </span>Phòng: </span>
+                <at-select
+                    class="col-12 col-md-5 hidden-margin"
+                    [formName]="'roomId'" 
+                    [AtData]="rooms" 
+                    [required]="true"
+                    [formControlSelect]="medicalSupplyForm?.controls.roomId"
+                    [selectRequired]="validateForm(medicalSupplyForm, 'roomId')"
+                    [selectValid]="medicalSupplyForm.controls.roomId.errors?.required">
+                    <div class="regexTel">
+                        <ng-container *ngIf="medicalSupplyForm.controls.roomId.errors?.required">
+                            <span class="text-danger" *ngIf="validateForm(medicalSupplyForm, 'roomId')">Chọn Phòng</span>
+                        </ng-container>
+                    </div>
+                </at-select>
+            </div>
+            <div class="col-12 row align-items-center m-0 p-0">
+                <span class="col-12 col-md-3">Vật dụng tiêu hao: </span>
+                <ng-container *ngTemplateOutlet="searchSupply"></ng-container>
+            </div>
+            <div class="col-12 m-t-16">
+                <at-base-table [colDef]="columnDef" [tableData]="medicalSupplyForm.get('listSupply').value"
+                    [action]="{isDelete: true, isDone: false}" (deleteRowEvent)="onRemoveSupply($event)">
+                </at-base-table>
+            </div>
+        </div>
+    </div>
+</div>
+<at-modal-footer>
+    <div class="commit-btn" *ngIf="medicalSupplyRequest">
+        <button class="btn btn-delete" (click)="onRemoveSupplyRequest()">Xóa</button>
+    </div>
+
+    <button type="button" class="btn btn-primary m-r-20" (click)="onSaveForm()">Lưu</button>
+    <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+</at-modal-footer>
+
+
+<ng-template #searchSupply>
+    <div ngbDropdown #myDrop="ngbDropdown" container="body" class="col-12 col-md-5">
+        <div #search>
+            <at-input-delay-search class='w-100 f-14' (inputEmitter)="onSearch($event)" ngbDropdownToggle
+                (click)="myDrop.open()">
+            </at-input-delay-search>
+        </div>
+        <ul [matchWidth]='search' class='dropdown-dialog' ngbDropdownMenu>
+            <ng-container *ngFor="let supply of medicalSupplyFilter">
+                <li ngbDropdownItem class='w-100 dropdown-item ' (mousedown)="onSelectSupply(supply)"
+                    *ngIf="supply?.quantity && supply.quantity > 0">
+                    <div class="d-flex justify-content-between align-items-center c-pointer icon">
+                        <div [style.whiteSpace]='"normal"'>
+                            <span>{{supply.name}}</span>
+                        </div>
+                    </div>
+                </li>
+            </ng-container>
+            <li class='px-24' *ngIf="medicalSupplyFilter?.length == 0">
+                <span class='f-14'>Không có kết quả</span>
+            </li>
+        </ul>
+    </div>
+</ng-template>

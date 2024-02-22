@@ -1,0 +1,11 @@
+<div [class.app-printing]="printService.isPrinting" class="main-page">
+    <router-outlet></router-outlet>
+    <router-outlet name="print"></router-outlet>
+    <div class='notifycation d-flex justify-content-center' *ngIf='notify?.show'>
+        <span class='p-12 message' [innerHTML]="notify?.message"></span>
+    </div>
+</div>
+<div class="justify-content-center align-items-center flex-column landscape-page">
+    <img src="../assets/images/phone-position.png" alt="">
+    <span>Vui lòng xoay điện thoại để tiếp tục sử dụng</span>
+</div>

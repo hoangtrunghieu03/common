@@ -1,0 +1,106 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <at-card [bodyClass]="'custom-datatable'">
+                <h5>danh sách hàng tồn theo phòng</h5>
+                <div class="validateSearch">
+                    <div class="block-search-filter row p-lg-0 m-b-15">
+                        <div class="col-12 col-md-4 col-xl-3">
+                            <ng-container *ngTemplateOutlet="filter"></ng-container>
+                        </div>
+
+                        <at-input-delay-search class='col-12 col-md-8 col-xl-9 w-100 block-search' (inputEmitter)="onSearch($event)">
+                        </at-input-delay-search>
+                    </div>
+
+                    <ng-container *ngTemplateOutlet="result"></ng-container>
+                </div>
+                <div class="custom-datatable">
+                  <div id="batchDelete">
+                      <div class="table-responsive">
+                          <ngx-datatable class="bootstrap" [rows]="inventory" [columns]="columnDef" [columnMode]="'force'"
+                              [headerHeight]="'auto'" [footerHeight]="inventory && inventory.length > 0 ? 50 : 0" [rowHeight]="'auto'"
+                              [limit]="10" [scrollbarH]="true" [messages]="{emptyMessage: 'Không có dữ liệu'}" #tables>
+                              <ngx-datatable-column *ngFor="let col of columnDef" [prop]="col.prop" [width]='col.width'>
+                                  <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+                                      <div [style]="col.styleHeader">
+                                          <span class="mobile-hidden">{{col.name}}</span>
+                                      </div>
+                                  </ng-template>
+                                  <ng-template let-value="value" ngx-datatable-cell-template let-row='row'>
+                                      <div [style]="col.styleBody" (click)="onSelectRow(row, col.prop)" >
+                                          <span class="mobile-hidden" [ngClass]="{'text-highlight': col.router}">
+                                              {{value}}
+                                          </span>
+                                      </div>
+                                  </ng-template>
+                              </ngx-datatable-column>
+                              <ngx-datatable-footer>
+                                  <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                                      let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                                      <span>Tổng<span class="font-weight-bold">&nbsp;{{ inventory?.length }}</span></span>
+                                      <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                          [pagerRightArrowIcon]="'datatable-icon-right'"
+                                          [pagerPreviousIcon]="'datatable-icon-prev'" [pagerNextIcon]="'datatable-icon-skip'"
+                                          [page]="curPage" [size]="pageSize" [count]="rowCount"
+                                          [hidden]="!((rowCount / pageSize) > 1)" (change)="tables.onFooterPage($event)">
+                                      </datatable-pager>
+                                  </ng-template>
+                              </ngx-datatable-footer>
+                          </ngx-datatable>
+                      </div>
+                  </div>
+              </div>
+            </at-card>
+        </div>
+    </div>
+</div>
+
+<ng-template #filter>
+    <at-filter-view (eventAddFilter)="onAddCondiotion()" [title]="'Hiển thị hàng tồn theo'">
+        <select class="form-control" [(ngModel)]="filterResult.condition" (change)="onFilterConditionChange()">
+            <option *ngFor="let item of conditionData | keyvalue" [value]="item.key">
+                {{item.value}}
+            </option>
+        </select>
+        <ng-container *ngIf="filterResult.condition == 'room'">
+          <select class="form-control mt-2 "
+            [(ngModel)]="filterResult.value">
+            <option [ngValue]="null">Chọn phòng</option>
+            <option *ngFor="let item of rooms" [value]="item._id">
+                {{item.name}}
+            </option>
+          </select>
+        </ng-container>
+        <ng-container *ngIf="filterResult.condition == 'date'">
+          <div class="row m-0">
+              <div class="col-12 p-0">
+                  <span>Từ</span>
+                  <input class="form-control" type="date" required="" [(ngModel)]="filterResult.fromDate" />
+              </div>
+              <div class="col-12 p-0">
+                  <span>Đến</span>
+                  <input class="form-control" type="date" required="" [(ngModel)]="filterResult.toDate" />
+              </div>
+          </div>
+        </ng-container>
+
+    </at-filter-view>
+</ng-template>
+
+<ng-template #result>
+    <div class="render p-b-15" *ngIf="renderSelect?.length > 0">
+        <span class="spanRender px-4 py-2 b-r-4 m-r-12 f-12" *ngFor="let item of renderSelect">
+            <ng-container *ngIf="item.key === 'room'">
+              <span>{{item.firstCondition + ' là ' + getRoomId(item.secondCondition) }}</span>
+          </ng-container>
+          <ng-container *ngIf="item.key === 'date'">
+            <span *ngIf="item.from && item.to">
+              {{item.firstCondition + ' ' + (item.from | date : 'dd/MM/yyyy') + ' - ' + (item.to | date : 'dd/MM/yyyy')}}
+          </span>
+          </ng-container>
+
+            <button (click)="onRemoveFilter(item)">X</button>
+        </span>
+    </div>
+</ng-template>

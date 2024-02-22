@@ -1,0 +1,40 @@
+<div class="examine-footer d-flex needs-validation align-items-center justify-content-between" 
+    [formGroup]="examineForm">
+    <span class="d-flex align-items-end hidden-margin">
+        <at-select
+            *ngIf="!_isComplete"
+            [label]="'Bạn muốn chuyển phòng?'"
+            [textPlaceHolder]="'Phòng'"
+            [formName]="'roomList'"
+            [AtData]="rooms"
+            [formControlSelect]="examineForm?.controls.roomList"
+            (_onChangeValueSelected)="getValueSelected($event)">
+        </at-select>
+
+        <ng-container *ngIf="examineForm.get('roomList').value">
+            <ng-content select=".move-room"></ng-content>
+        </ng-container>
+        
+        <div class="hide_lt-md d-flex flex-column">
+            <span>&nbsp;</span>
+            <ng-content select=".remove"></ng-content>
+        </div>
+    </span>
+    <span class="hide_lt-md">
+        <span>&nbsp;</span>
+        <div>
+            <ng-content></ng-content>
+
+            <button class="btn" (click)="onCanCel()">quay lại</button>
+        </div>
+    </span>
+    <span class="d-none show_lt-md_block hide-arrow" ngbDropdown #myDrop="ngbDropdown" placement="top-right">
+        <at-feather-icons ngbDropdownToggle [icon]="'more-horizontal'"></at-feather-icons>
+        <div class='dropdown-dialog' ngbDropdownMenu>
+            <div class="mobile-content d-flex flex-column">
+                <ng-content select=".mobile"></ng-content>
+                <button class="btn border-white" ngbDropdownItem (click)="onCanCel()">Quay lại</button>
+            </div>
+        </div>
+    </span>
+</div>

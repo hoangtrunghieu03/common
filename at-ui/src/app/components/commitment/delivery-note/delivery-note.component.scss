@@ -1,0 +1,25 @@
+.content {
+  width: 100%;
+  min-height: 600px;
+  margin: 24px auto;
+  background-color: #fff;
+  padding: 36px 60px;
+  line-height: 28px;
+
+  &_body {
+    .form-input {
+      height: 25px;
+      flex: 1;
+      border: none;
+      border-bottom: 1px dotted #313131;
+      margin-left: 4px;
+    }
+    &-label {
+      width: max-content;
+    }
+  }
+
+  &_signature {
+    height: 300px;
+  }
+}

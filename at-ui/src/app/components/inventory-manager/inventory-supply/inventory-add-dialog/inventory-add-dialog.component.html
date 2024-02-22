@@ -1,0 +1,77 @@
+<div class="modal-header">
+    <h4 class="modal-title">Thông tin vật dụng tiêu hao</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="" [formGroup]="medicalSupplyForm" class="needs-validation">
+        <div class="row">
+            <ng-container *ngFor="let formItem of formContent">
+                <div class="col-12 col-md-6" *ngIf="formItem.inputType != 'date'; else date">
+                    <ng-container *ngIf="formItem.formName == 'name'">
+                        <at-select [label]="'Tên vật dụng'" [formName]="'name'" [textPlaceHolder]="'Nhập thông tin'" [AtData]="medicalSupply"
+                            [formControlSelect]="medicalSupplyForm?.controls.name"
+                            [selectRequired]="validateForm(medicalSupplyForm, 'name') || validInclude()"
+                            [selectValid]="medicalSupplyForm.controls.name.errors?.required"
+                            (_onChangeValue)="medicalSupplyForm.get('name').setValue($event);medicalSupplyForm.get('name').markAsTouched({ onlySelf: true })"
+                            [required]="'true'">
+                            <div class="regexTel">
+                                <ng-container *ngIf="validInclude()">
+                                    <p class="text-danger">Vật dụng tiêu hao đã tồn tại</p>
+                                </ng-container>
+                            </div>
+                        </at-select>
+                    </ng-container>
+                    
+                    <ng-container *ngIf="formItem.formName == 'origin'">
+                        <at-select [label]="'Đơn vị cung cấp'" [formName]="'origin'" [textPlaceHolder]="'Nhập thông tin'"
+                            [AtData]="medicalServiceIndicates" [formControlSelect]="medicalSupplyForm?.controls.origin"
+                            (_onChangeValue)="medicalSupplyForm.get('origin').setValue($event)">
+                        </at-select>
+                    </ng-container>
+                    <ng-container *ngIf="formItem.formName != 'origin' && formItem.formName != 'name' ">
+                    <!-- <ng-template #other> -->
+                        <at-input 
+                        [label]="formItem.label" 
+                        [formName]="formItem.formName" 
+                        [typeInput]="formItem.typeInput"    
+                        [inputType]="formItem.inputType" 
+                        [required]="formItem.require"
+                        [inputRequired]="validateForm(medicalSupplyForm, formItem.formName) || (formItem.formName === 'name' && validInclude())"
+                        [inputValid]="medicalSupplyForm.controls[formItem.formName].errors?.required">
+                        <div class="regexTel">
+                            <ng-container *ngIf="formItem.formName === 'name' && validInclude()">
+                                <p class="text-danger"> Vật dụng tiêu hao đã tồn tại </p>
+                            </ng-container>
+                        </div>
+                    </at-input>
+                    <!-- </ng-template> -->
+                </ng-container>
+                </div>
+                <ng-template #date>
+                    <div class="col-12 col-md-6">
+                        <at-datepicker 
+                            [required]="formItem.require" 
+                            [formCtrlName]="formItem.formName" 
+                            [label]="formItem.label"
+                            [date]="medicalSupplyForm.get(formItem.formName).value"
+                            [inputRequired]="validateForm(medicalSupplyForm, formItem.formName)">
+                            <div class="dp-valid">
+                                <ng-container *ngIf="medicalSupplyForm.controls[formItem.formName].errors?.ngbDate">
+                                    <p class="text-danger"> Ngày không hợp lệ</p>
+                                </ng-container>
+                            </div>
+                        </at-datepicker>
+                    </div>
+                </ng-template>
+            </ng-container> 
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn btn-primarys m-r-12" (click)="onSaveForm()">lưu</button>
+        <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>

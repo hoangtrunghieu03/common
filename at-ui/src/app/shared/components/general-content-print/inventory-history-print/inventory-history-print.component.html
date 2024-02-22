@@ -1,0 +1,36 @@
+<div class="row container-fluid m-0 px-24 f-16" id="print-demo">
+  <div class="col-12 py-20">
+    <h3 class="text-center text-uppercase f-w-700 m-b-0">{{ dataCustom?.title }}</h3>
+  </div>
+
+  <div class="col-12 py-20">
+    <table class="table-print w-100">
+      <thead>
+        <th *ngFor="let head of columnDef" [style]="head.styleHeader" class="px-6">{{head.name}}</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of dataCustom?.data, let i = index">
+          <td *ngFor="let col of columnDef" [style]="col.styleBody" class="px-6">
+            {{
+            col.colType == "date"
+            ? ( row[col.prop] | date : 'dd/MM/yyyy' )
+            : col.colType == "money" ? ( row[col.prop] | currency:'VND':'symbol':null:'vi-VN')
+            : row[col.prop]
+            }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-12 p-b-10 d-flex justify-content-end">
+    <div class="d-flex flex-column justify-content-center">
+      <span>Ngày {{ dateCurrent[0] }} tháng {{ dateCurrent[1] }} năm {{ dateCurrent[2] }}</span>
+
+      <div class="d-flex flex-column text-center m-t-12">
+        <span>Ký tên</span>
+      </div>
+    </div>
+
+  </div>
+</div>

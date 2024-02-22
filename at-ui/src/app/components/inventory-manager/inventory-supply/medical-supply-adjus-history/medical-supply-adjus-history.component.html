@@ -1,0 +1,14 @@
+<div class="modal-header">
+    <h4 class="modal-title">Lịch sử điều chỉnh vật tư</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+  <at-table [columnDef]="colDef" [limit]="10" [tableData]="AdjusHistoryList"></at-table>
+</div>
+<div class="modal-footer">
+    <div class='btn-position-default'>
+        <button type="button" class="btn" (click)="activeModal.close()">Quay lại</button>
+    </div>
+</div>

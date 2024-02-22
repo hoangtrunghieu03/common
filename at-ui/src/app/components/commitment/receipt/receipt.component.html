@@ -1,0 +1,68 @@
+<div class="container-fluid content" #htmlData id="htmlData">
+
+  <ng-container *ngTemplateOutlet="header"></ng-container>
+
+  <ng-container *ngTemplateOutlet="body"></ng-container>
+
+  <ng-container *ngTemplateOutlet="signature"></ng-container>
+
+</div>
+<div class="container-fluid d-flex justify-content-end">
+  <button class="btn btn-primary m-b-30 m-r-20" (click)="saveImage()">Lưu</button>
+  <button class="btn m-b-30 m-r-15" (click)="activeModal.close()">Quay lại</button>
+</div>
+
+<ng-template #header>
+  <div class="content_header d-flex justify-content-center">
+    <span class="f-20">Phiếu nhận</span>
+  </div>
+</ng-template>
+
+<ng-template #body>
+  <div class="content_body m-t-12" [formGroup]="receiptForm">
+    <div class="d-flex">
+      <div class="d-flex"><span class="content_body-label">Họ tên người/ Đơn vị giao:</span></div>
+      <input class="form-input" formControlName="sender" *ngIf="isEdit else sender"/>
+      <ng-template #sender>
+        <div>&nbsp;{{ receiptForm.value.sender }}</div>
+      </ng-template>
+    </div>
+    <div class="d-flex">
+      <div class="d-flex"><span class="content_body-label">Họ tên người nhận:</span></div>
+      <input class="form-input" formControlName="receiver" *ngIf="isEdit else receiver"/>
+      <ng-template #receiver>
+        <div>&nbsp;{{ receiptForm.value.receiver }}</div>
+      </ng-template>
+    </div>
+    <div class="d-flex">
+      <div class="d-flex"><span class="content_body-label">Ngày nhận:</span></div>
+      <input class="form-input"
+      ngbDatepicker
+      #dp="ngbDatepicker"
+      autocomplete="off"
+      formControlName="dateDelivery"
+      placeholder="dd/mm/yyyy"
+      *ngIf="isEdit else dateDelivery"/>
+      <ng-template #dateDelivery>
+        <div>&nbsp;{{ customerFormatDate.format(receiptForm.value.dateDelivery) }}</div>
+      </ng-template>
+    </div>
+    <div class="d-flex">
+      <div class="d-flex"><span class="content_body-label">Nội dung:</span></div>
+      <textarea class="form-input form-textarea" formControlName="content" *ngIf="isEdit else content"></textarea>
+      <ng-template #content>
+        <div>&nbsp;{{ receiptForm.value.content }}</div>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #signature>
+  <div class="content_signature m-t-12 row">
+    <div class="col-6"></div>
+    <div class="col-6 d-flex flex-column">
+      <span class="text-center">Người nhận</span>
+      <at-signature-pad></at-signature-pad>
+    </div>
+  </div>
+</ng-template>

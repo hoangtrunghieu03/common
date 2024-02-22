@@ -1,0 +1,62 @@
+<div ngbDropdown #myDrop="ngbDropdown" class="d-inline-block p-r-12 f-14" placement="bottom-right">
+  <span class="badge badge-pill badge-primary pull-right notification-badge">
+    {{ countNotify}}</span>
+
+  <div [ngClass]="{'bell': isNewNoti}" ngbDropdownToggle class="d-flex align-items-center">
+    <div class="anchor material-icons bell-1">
+      <at-feather-icons class="notifier" [icon]="'bell'" (click)="onLoadNotification()">
+      </at-feather-icons>
+    </div>
+    <ng-container *ngIf="isNewNoti">
+      <div class="anchor material-icons" class="{{ 'bell-' + (i + 2) }}" *ngFor="let index of [].constructor(2), let i = index">
+        <at-feather-icons [icon]="'bell'"></at-feather-icons>
+      </div>
+    </ng-container>
+  </div>
+
+  <div ngbDropdownMenu aria-labelledby="dropdownBasic1 fontDropdown" class='my-12 f-14 notification-medical'
+    [ngStyle]="{'max-height': notificationList?.length != 0 ? '300px' : 'max-content'}">
+    <h5 class="px-15 f-18 font-weight-bold p-t-12 p-b-6">Thông báo</h5>
+    <hr class="px-15 m-t-6 m-b-0">
+    <ng-container *ngIf="notificationList?.length != 0; else notiEmty">
+      <div *ngFor="let item of notificationList, let last = last"
+      [ngStyle]="{'background-color': !item.markRead ? '#E4F7FA' : null}">
+      <div class="px-15 py-12 d-flex align-items-center">
+
+        <i *ngIf="!item.markRead" class="fa fa-circle m-r-12 c-pointer not-mark-read" title="Đánh dấu là đã đọc"
+          (click)="changeStatusNotify(item, false)"></i>
+        <i *ngIf="item.markRead" class="fa fa-circle m-r-12 c-pointer mark-read" title="Đã đọc"></i>
+
+        <div class="c-pointer w-100 hide_lt-md" (click)="changeStatusNotify(item, true); myDrop.close()">
+          <span (click)="myDrop.close()">
+            {{item.customerCode}} - {{item.customerName}}
+          </span>
+          <div class="d-flex justify-content-between">
+            <span>{{ item.time }}</span>
+            <span>{{item.roomName}}</span>
+          </div>
+        </div>
+        
+        <div class="c-pointer w-100 d-none show_lt-md_block" (click)="changeStatusNotify(item, false); myDrop.close()">
+          <span (click)="myDrop.close()">
+            {{item.customerCode}} - {{item.customerName}}
+          </span>
+          <div class="d-flex justify-content-between">
+            <span>{{ item.time }}</span>
+            <span>{{item.roomName}}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="px-15 m-t-12 m-b-0" *ngIf="!last">
+    </div>
+    </ng-container>
+
+    <ng-template #notiEmty>
+      <div class="notification-emty d-flex justify-content-center p-12">
+        <span>Không có thông báo</span>
+      </div>
+    </ng-template>
+  </div>
+</div>

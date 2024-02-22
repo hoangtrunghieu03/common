@@ -1,0 +1,31 @@
+.receiver-rigth {
+    .list {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        min-height: 38px;
+
+        .list-user {
+            .selected {
+                background-color: #ddd;
+                color: #323232;
+                width: auto;
+                padding: 2px 5px;
+                border-radius: 4px;
+
+                button {
+                    border: 0px !important;
+                    background: transparent;
+                }
+            }
+        }
+
+        .customer-drop {
+            height: max-content;
+            border: none;
+        }
+    }
+
+    input {
+        border: none;
+    }
+}

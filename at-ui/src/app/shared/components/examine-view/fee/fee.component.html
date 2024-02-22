@@ -1,0 +1,13 @@
+<at-base-table
+    [colDef]="feeColDef"
+    [tableData]="medicalRecordFee">
+</at-base-table>
+
+<div class="row m-t-24 d-flex justify-content-end">
+    <div class="col-12 col-md-6">
+        <div class="d-flex justify-content-between" *ngFor="let item of contentFee, let last = last" [ngClass]="{'m-b-6': !last}">
+            <span class="d-flex justify-content-between w-50"><span>{{item.label}}</span><span class="p-r-16">:</span></span>
+            <div class="f-w-600 f-16">{{item.price | currency:'VND':'symbol':null:'vi-VN'}}</div>
+        </div>
+    </div>
+</div>
